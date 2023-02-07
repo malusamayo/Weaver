@@ -1,27 +1,11 @@
 import os
 from .knowledge_models import ChatGPTModel
 from .cache import Cache
+from .relations import RELATIONS, PROMPT_TEMPLATES
 
 class Prompter(object):
     
     def __init__(self, config_file, domain=None):
-        self.relations = [
-            "TypesOf",
-            "PartOf",
-            "HasA",
-            "HasProperty",
-            "UsedFor", 
-            "AtLocation",
-            "Causes",
-            "MotivatedBy",
-            "ObstructedBy",
-            "MannerOf",
-            "LocatedNear",
-            "HasAgent",
-            "HasPatient",
-            "AspectOf",
-            "RelatedTo"
-        ]
         self.model = ChatGPTModel(config_file)
         self.cache = Cache()
         if domain != None:
@@ -37,39 +21,27 @@ class Prompter(object):
     def select_prompts(self, prompts):
         return prompts[0]
 
-    def generate_prompt(self, topic, relation):
+    def generate_prompt(self, topic, relation, N=10):
+        """ Generate the best prompt for given topic and relation.
+        Parameters
+        ----------
+        topic : str
+            The topic under queries.
+        relation: str
+            The relation between user-given topic (A) and generated related topics (B).
+            It could be from the close set we provide or any open relations.
+            Open relation R will be parsed in this order: (B, R, A).  
+            For example: (?, features of, software).
+        N: int
+            The desired number of topics.
+        """
         prompts = []
-        if relation in self.relations:
-            if relation == "TypesOf":
-                prompts.append(f"List some types of {topic}.")
-            elif relation == "PartOf":
-                prompts.append(f"List some components of {topic}.")
-                prompts.append(f"List some parts of {topic}.")
-            elif relation == "MotivatedBy":
-                prompts.append(f"List some reasons behind {topic}.")
-                prompts.append(f"List some motivations behind {topic}.")
-            elif relation == "MannerOf":
-                prompts.append(f"List some ways of {topic}.")
-                prompts.append(f"List some forms {topic} could take.")
-            elif relation == "LocatedNear":
-                prompts.append(f"List some things that often locates near {topic}.")
-            elif relation == "AspectOf":
-                prompts.append(f"List some aspects of {topic}.")
-            elif relation == "UseFor":
-                prompts.append(f"List some usages of {topic}.")
-            elif relation == "AtLocation":
-                prompts.append(f"List some locations {topic} could appear in.")
-            elif relation == "HasAgent":
-                prompts.append(f"List some groups that perform {topic}.")
-            elif relation == "HasPatient":
-                prompts.append(f"List some groups that are influenced by {topic}.")
-            elif relation == "RelatedTo":
-                prompts.append(f"List some concepts related to {topic}.")
-            else:
-                assert(f"Relation is not supported: {relation}!")
+        if RELATIONS.has_relation(relation):
+            relation = RELATIONS.translate(relation)
+            prompts += [prompt.format(topic=topic, N=N) for prompt in PROMPT_TEMPLATES[relation]]
         else:
             # open relations
-            prompts.append(f"List some {relation} {topic}")
+            prompts.append(f"List {N}] {relation} {topic}")
         prompt = self.select_prompts(prompts)
         return prompt
 
@@ -97,7 +69,10 @@ class Prompter(object):
 
         # check caches
         if self.cache.exists_cached_queries(topic, relation):
-            known_topic_list = self.cache.read_cached_queries(topic, relation)
+            if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:
+                known_topic_list = self.cache.read_cached_queries_per_topic(topic)
+            else:
+                known_topic_list = self.cache.read_cached_queries(topic, relation)
             if not extend:
                 return known_topic_list
             else:
@@ -159,5 +134,5 @@ class Prompter(object):
         pass
 
 if __name__ == "__main__":
-    prompter = Prompter()
-    prompter.query_topics("hate speech", "IsA")
+    prompter = Prompter(config_file="notebooks/config.json")
+    prompter.query_topics("hate speech", "MANNEROF")

@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
-class Cache(object):
+from .relations import RELATIONS
 
+class Cache(object):
     def __init__(self) -> None:
         self.saved_prompts = dict()
         self.cache_dir = os.path.join(Path(__file__).parent.parent.parent, "query_cache")
@@ -40,4 +41,17 @@ class Cache(object):
         if os.path.exists(cache_path):
             with open(cache_path, "r") as f:
                 topic_list = f.read().splitlines()
+        return topic_list
+
+    def read_cached_queries_per_topic(self, topic):
+        topic_list = []
+
+        topic_dir = os.path.join(self.cache_dir, topic)
+
+        topic_list = []
+        for relation in RELATIONS.relations:
+            cache_path = os.path.join(topic_dir, relation + ".txt")
+            if os.path.exists(cache_path):
+                with open(cache_path, "r") as f:
+                    topic_list += f.read().splitlines()
         return topic_list
