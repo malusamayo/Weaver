@@ -2,3 +2,4 @@
 query_cache
 __pycache__
 notebooks/config.json
+output
