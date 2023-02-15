@@ -8,6 +8,8 @@
 
 # production
 /build
+/CapabilityTesting - DO NOT RUN
+/Data  - DO NOT EDIT
 
 # misc
 .DS_Store
