@@ -1,9 +1,10 @@
 import json
 from os.path import exists
 from os import getenv
-from revChatGPT.Official import Chatbot
+import os
+# from revChatGPT.Official import Chatbot
 import openai
-
+import tiktoken
 
 class LanguageModel(object):
     def __init__(self):
@@ -12,26 +13,62 @@ class LanguageModel(object):
     def __call__(self):
         pass
 
+# class ChatGPTModel(LanguageModel):
 
-class ChatGPTModel(LanguageModel):
+#     def __init__(self, config_file):
+#         super().__init__()
+#         self.model = Chatbot(self.config(config_file)["api_key"])
 
-    def __init__(self, config_file):
+#     def config(self, config_file):
+#         with open(config_file, encoding="utf-8") as f:
+#             config = json.load(f)
+#         return config
+
+#     def __call__(self, prompt, rollback=True):
+#         response = self.model.ask(prompt)
+#         # print(response)
+#         if rollback:
+#             self.model.rollback(1)
+#         return response["choices"][0]["text"]
+
+
+ENCODER = tiktoken.get_encoding("gpt2")
+def get_max_tokens(prompt: str) -> int:
+    """
+    Get the max tokens for a prompt
+    """
+    return 4000 - len(ENCODER.encode(prompt))
+
+class GPT3Model(LanguageModel):
+
+    def __init__(self, api_key: str = None) -> None:
         super().__init__()
-        self.model = Chatbot(self.config(config_file)["api_key"])
+        openai.api_key = api_key or os.environ.get("OPENAI_API_KEY")
 
-    def config(self, config_file):
-        with open(config_file, encoding="utf-8") as f:
-            config = json.load(f)
-        return config
+    def _get_completion(
+        self,
+        prompt: str,
+        temperature: float = 0.5,
+        stream: bool = False,
+    ):
+        """
+        Get the completion function
+        """
+        return openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            temperature=temperature,
+            max_tokens=get_max_tokens(prompt),
+            stop=["\n\n\n"],
+            stream=stream,
+        )
 
-    def __call__(self, prompt, rollback=True):
-        response = self.model.ask(prompt)
-        # print(response)
-        if rollback:
-            self.model.rollback(1)
+    def __call__(self, prompt):
+        response = self._get_completion(prompt)
         return response["choices"][0]["text"]
 
 
+
 if __name__ == "__main__":
-    model = ChatGPTModel()
+    model = GPT3Model()
     model('Hi!')

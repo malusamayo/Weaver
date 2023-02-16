@@ -1,21 +1,21 @@
 import os
-from .knowledge_models import ChatGPTModel
+from .knowledge_models import GPT3Model
 from .cache import Cache
 from .relations import RELATIONS, PROMPT_TEMPLATES
 
 class Prompter(object):
     
-    def __init__(self, config_file, domain=None):
-        self.model = ChatGPTModel(config_file)
+    def __init__(self, domain=None):
+        self.model = GPT3Model()
         self.cache = Cache()
-        if domain != None:
-            self.initialize_prompt(domain)
+        # if domain != None:
+        #     self.initialize_prompt(domain)
 
     
-    def initialize_prompt(self, domain):
-        prompt = ""
-        prompt += f"From now on, all your response should be around {domain}."
-        self.model(prompt, rollback=False)
+    # def initialize_prompt(self, domain):
+    #     prompt = ""
+    #     prompt += f"From now on, all your response should be around {domain}."
+    #     self.model(prompt, rollback=False)
 
     # [TODO] Use perplexity or external models to evaluate prompt likelihood
     def select_prompts(self, prompts):
@@ -41,7 +41,7 @@ class Prompter(object):
             prompts += [prompt.format(topic=topic, N=N) for prompt in PROMPT_TEMPLATES[relation]]
         else:
             # open relations
-            prompts.append(f"List {N}] {relation} {topic}")
+            prompts.append(f"List {N} {relation} {topic}")
         prompt = self.select_prompts(prompts)
         return prompt
 
@@ -81,8 +81,9 @@ class Prompter(object):
                 else:
                     prompt += self.generate_prompt(topic, relation)
                     self.cache.save_prompt(topic, relation, prompt)
+                prompt = prompt.replace("List", "List extra")
                 prompt += "\n"
-                prompt += f"Exclude these known topics: \"{', '.join(known_topic_list)}\"."
+                prompt += ', '.join(known_topic_list) + ", "
         else:
             if self.cache.exists_prompt(topic, relation):
                 prompt += self.cache.get_prompt(topic, relation)
@@ -92,9 +93,13 @@ class Prompter(object):
         
         # adding format instructions
         prompt += "\n"
-        prompt += "Summarize in a list of words. Separate the list by commas. Keep only the list."
+        if not extend:
+            prompt += "Summarize in a list of words. Separate the list by commas. Keep only the list."
         response = self.model(prompt)
         topic_list = self.postprocess_to_list(response)
+
+        # deal with the case when the model can't generate topics
+        # [TODO]
 
         self.cache.cache_queries(topic, relation, topic_list, extend=extend)
         return topic_list
@@ -134,5 +139,5 @@ class Prompter(object):
         pass
 
 if __name__ == "__main__":
-    prompter = Prompter(config_file="notebooks/config.json")
-    prompter.query_topics("hate speech", "MANNEROF")
+    prompter = Prompter()
+    print(prompter.query_topics("hate speech", "MANNEROF"))
