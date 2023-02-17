@@ -17,7 +17,7 @@ class Prompter(object):
     #     prompt += f"From now on, all your response should be around {domain}."
     #     self.model(prompt, rollback=False)
 
-    # [TODO] Use perplexity or external models to evaluate prompt likelihood
+    # [TODO] Use external models to evaluate prompt likelihood
     def select_prompts(self, prompts):
         return prompts[0]
 
@@ -50,7 +50,7 @@ class Prompter(object):
         words = text.split(", ")
         return words
 
-    def query_topics(self, topic, relation, extend=False):
+    def query_topics(self, topic, relation, extend=False, N=10):
         """ Query the model of related topics.
         Parameters
         ----------
@@ -69,10 +69,10 @@ class Prompter(object):
 
         # check caches
         if self.cache.exists_cached_queries(topic, relation):
-            if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:
-                known_topic_list = self.cache.read_cached_queries_per_topic(topic)
-            else:
-                known_topic_list = self.cache.read_cached_queries(topic, relation)
+            # if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:
+            #     known_topic_list = self.cache.read_cached_queries_per_topic(topic)
+            # else:
+            known_topic_list = self.cache.read_cached_queries(topic, relation)
             if not extend:
                 return known_topic_list
             else:
@@ -82,8 +82,6 @@ class Prompter(object):
                     prompt += self.generate_prompt(topic, relation)
                     self.cache.save_prompt(topic, relation, prompt)
                 prompt = prompt.replace("List", "List extra")
-                prompt += "\n"
-                prompt += ', '.join(known_topic_list) + ", "
         else:
             if self.cache.exists_prompt(topic, relation):
                 prompt += self.cache.get_prompt(topic, relation)
@@ -93,8 +91,12 @@ class Prompter(object):
         
         # adding format instructions
         prompt += "\n"
-        if not extend:
-            prompt += "Summarize in a list of words. Separate the list by commas. Keep only the list."
+        prompt += "Summarize in a list of words. Separate the list by commas. Keep only the list."
+        if extend:
+            prompt += "\n"
+            prompt += "Known examples: "
+            prompt += ', '.join(known_topic_list) + ".\n"
+            prompt += "Extra examples: "
         response = self.model(prompt)
         topic_list = self.postprocess_to_list(response)
 
@@ -133,9 +135,6 @@ class Prompter(object):
         pass
 
     def extract_relation(self, data):
-        pass
-
-    def rank_topic(self, topic_list):
         pass
 
 if __name__ == "__main__":

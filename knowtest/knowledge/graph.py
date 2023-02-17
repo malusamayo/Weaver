@@ -26,6 +26,10 @@ def build_graph(init_topic, prompter, max_depth = 3):
             
             # filter known topics
             topic_list = [topic for topic in topic_list if topic not in known_topics]
+
+            # [TODO] filter semantically similar topics
+            
+
             known_topics |= set(topic_list)
             if topic_list != []:
                 print(topic, relation, topic_list)
