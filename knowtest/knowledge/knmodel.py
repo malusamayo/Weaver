@@ -71,4 +71,4 @@ class GPT3Model(LanguageModel):
 
 if __name__ == "__main__":
     model = GPT3Model()
-    model('Hi!')
+    print(model('Hi!'))

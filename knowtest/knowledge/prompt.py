@@ -1,5 +1,5 @@
 import os
-from .knowledge_models import GPT3Model
+from .knmodel import GPT3Model
 from .cache import Cache
 from .relations import RELATIONS, PROMPT_TEMPLATES
 
