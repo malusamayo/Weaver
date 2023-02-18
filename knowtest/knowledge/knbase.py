@@ -20,14 +20,19 @@ class KnowledgeBase(object):
         children = children.merge(self.nodes, left_on='to', right_on='id')
         return children[['to', 'relation', 'weight']]
 
-    def extend_node(self, topic, relation):
-        old_topics = self.prompter.query_topics(topic, relation)
-        topic_list = self.prompter.query_topics(topic, relation, extend=True)
-        new_nodes = [{"id": new_topic, 'weight': 1} for new_topic in topic_list]
-        new_edges = [{"from": topic, "to": new_topic, "relation": relation} for new_topic in topic_list]
-        
-        # [TODO] deduplicate nodes and edges
+    def find_children_per_relation(self, topic, relation):
+        children = self.find_children(topic)
+        children = children[children['relation'] == relation]
+        return children
 
+    def extend_node(self, topic, relation):
+        children = self.find_children_per_relation(topic, relation)
+        known_topics = children['to'].to_list()
+        new_topics = self.prompter.query_topics(topic, relation, known_topics=known_topics)
+
+        node_ids = self.nodes['id'].to_list()
+        new_nodes = [{"id": new_topic, 'weight': 1} for new_topic in new_topics if new_topic not in node_ids]
+        new_edges = [{"from": topic, "to": new_topic, "relation": relation} for new_topic in new_topics]
 
         self.nodes = self.nodes.append(new_nodes, ignore_index=True)
         self.edges = self.edges.append(new_edges, ignore_index=True)

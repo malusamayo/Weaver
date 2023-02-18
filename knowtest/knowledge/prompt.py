@@ -50,7 +50,7 @@ class Prompter(object):
         words = text.split(", ")
         return words
 
-    def query_topics(self, topic, relation, extend=False, N=10):
+    def query_topics(self, topic, relation, known_topics=[], N=10):
         """ Query the model of related topics.
         Parameters
         ----------
@@ -61,20 +61,22 @@ class Prompter(object):
             It could be from the close set we provide or any open relations.
             Open relation R will be parsed in this order: (B, R, A).  
             For example: (?, features of, software).
-        extend: bool
-            Ask the model for more topics under the same (topic, relation) query tuple.
+        known_topics: list of str
+            The topics that are already known to the user.
         """
         
         prompt = ""
+        cached_topics = []
 
         # check caches
         if self.cache.exists_cached_queries(topic, relation):
             # if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:
             #     known_topic_list = self.cache.read_cached_queries_per_topic(topic)
             # else:
-            known_topic_list = self.cache.read_cached_queries(topic, relation)
-            if not extend:
-                return known_topic_list
+            cached_topics = self.cache.read_cached_queries(topic, relation)
+            if len(known_topics) < len(cached_topics):
+                new_topics = [topic for topic in cached_topics if topic not in known_topics]
+                return new_topics
             else:
                 if self.cache.exists_prompt(topic, relation):
                     prompt += self.cache.get_prompt(topic, relation)
@@ -92,18 +94,25 @@ class Prompter(object):
         # adding format instructions
         prompt += "\n"
         prompt += "Summarize in a list of words. Separate the list by commas. Keep only the list."
+        extend = len(cached_topics) > 0 # if there are cached topics, we are extending the list
         if extend:
             prompt += "\n"
             prompt += "Known examples: "
-            prompt += ', '.join(known_topic_list) + ".\n"
+            prompt += ', '.join(cached_topics) + ".\n"
             prompt += "Extra examples: "
         response = self.model(prompt)
         topic_list = self.postprocess_to_list(response)
 
         # deal with the case when the model can't generate topics
-        # [TODO]
+        if len(topic_list) <= 3:
+            return []
 
-        self.cache.cache_queries(topic, relation, topic_list, extend=extend)
+        # deduplication
+        topic_list = list(set(topic_list))
+        topic_list = [topic for topic in topic_list if topic not in cached_topics]
+        # [TODO] deduplication based on similarity and normalization
+
+        self.cache.cache_queries(topic, relation, cached_topics + topic_list)
         return topic_list
 
     # [TODO] more engineering needed

@@ -16,15 +16,12 @@ class Cache(object):
     def get_prompt(self, topic, relation):
         return self.saved_prompts[(topic, relation)]
 
-    def cache_queries(self, topic, relation, topic_list, extend=False):
+    def cache_queries(self, topic, relation, topic_list):
         topic_dir = os.path.join(self.cache_dir, topic)
         if not os.path.exists(topic_dir):
             os.mkdir(topic_dir)
         saved_path = os.path.join(topic_dir, relation + ".txt")
 
-        if extend:
-            topic_list_before = self.read_cached_queries(topic, relation)
-            topic_list = topic_list_before + topic_list
         with open(saved_path, "w") as f:
             f.write("\n".join(topic_list))
 
