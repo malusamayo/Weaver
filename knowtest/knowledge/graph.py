@@ -86,12 +86,12 @@ def print_tree(tree_pre_order):
     with open("output/tree.txt", "w") as file:
         file.write(tree_string)
 
+if __name__ == "__main__":
+    prompter = Prompter("notebooks/config.json")
+    graph = build_graph("hate speech", prompter)
+    tree = build_tree("hate speech", graph)
 
-prompter = Prompter("notebooks/config.json")
-graph = build_graph("hate speech", prompter)
-tree = build_tree("hate speech", graph)
-
-# output
-print_tree(tree)
-with open("output/graph.json", "w") as file:
-    json.dump(graph, file)
+    # output
+    print_tree(tree)
+    with open("output/graph.json", "w") as file:
+        json.dump(graph, file)
