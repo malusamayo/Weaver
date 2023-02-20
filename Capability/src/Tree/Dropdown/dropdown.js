@@ -24,21 +24,20 @@ const Dropdown = ({node}) => {
 
     // console.log("tag node: ", node)
 
-    let sampleTagAcronym = ""
-    for (let i = 0; i < relationships.length; i++) {
-        if (relationships[i].name === node.tag[0]) {
-            sampleTagAcronym = relationships[i].acronym
-            break
-        }
-    }
-    const [selectedTag, setSelectedTag] = useState(sampleTagAcronym)
-    const [isActive, setIsActive] = useState(false)
+    // let sampleTagAcronym = ""
+    // for (let i = 0; i < relationships.length; i++) {
+    //     if (relationships[i].name === node.tag[0]) {
+    //         sampleTagAcronym = relationships[i].acronym
+    //         break
+    //     }
+    // }
+    const [selectedTag, setSelectedTag] = useState(node.tag[0])
+    const [isActive, setIsActive] = useState(true)
 
     // Filter out the selected tag from the relationships array
-    const [tagsChoice, setTagsChoice] = useState(relationships.filter((relationship) => 
-                    relationship.name.charAt(0).toUpperCase() + relationship.name.slice(1) !== selectedTag))
+    const tagsChoice = relationships
 
-    const { dispatch, isImparative, onNodeClick } = useTreeContext();
+    const { dispatch } = useTreeContext();
 
     const commitTagSelection = async (node, selectedTag) => {
         console.log("node: ", node, "selectedTag: ", selectedTag)
@@ -52,22 +51,11 @@ const Dropdown = ({node}) => {
 
     // Handle the click event on the dropdown item
     const handleTagSelection = (e) => {
-        let selectedTagAcronym = e.target.innerText
-        let selectedTagName = ""
+        let selectedTagName = e.target.innerText
 
-        for (let i = 0; i < relationships.length; i++) {
-            if (relationships[i].acronym === selectedTagAcronym) {
-                selectedTagName = relationships[i].name
-                break
-            }
-        }
-
-        console.log("selectedTagAcronym: ", selectedTagAcronym, "selectedTagName: ", selectedTagName)
-        setSelectedTag(selectedTagAcronym)
-        setTagsChoice(relationships.filter((relationship) => 
-                    relationship.acronym !== selectedTagAcronym))
+        setSelectedTag(selectedTagName)
         commitTagSelection(node, selectedTagName)
-        setIsActive(false)
+        // setIsActive(false)
     }
 
     const handleDropdownClick = () => {
@@ -96,7 +84,9 @@ const Dropdown = ({node}) => {
                 {
                     tagsChoice.map((relationship) => {
                         return (
-                            <div onClick={handleTagSelection} className="dropdown-item" value={relationship.name}>{relationship.acronym}</div>
+                            <div onClick={handleTagSelection} className="dropdown-item" value={relationship.name} key={relationship.id}>
+                                {relationship.name}
+                            </div>
                         )
                     })
                 }
