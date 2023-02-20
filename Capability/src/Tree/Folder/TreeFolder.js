@@ -20,6 +20,7 @@ import {
   Collapse,
   StyledName,
   VerticalLine,
+  StyledTag
 } from "../Tree.style";
 import { StyledFolder } from "./TreeFolder.style";
 
@@ -28,16 +29,50 @@ import { PlaceholderInput } from "../TreePlaceholderInput";
 import {fetchAPIDATA} from "../../utils";
 import { Dropdown } from "../Dropdown/dropdown";
 
-const FolderName = ({ isOpen, name, handleClick, isHighlighted}) => (
-  <StyledName onClick={handleClick}>
-    {
-      isHighlighted ?
-        isOpen ? <AiFillFolderOpen /> : <AiFillFolder /> :
-        isOpen ? <AiOutlineFolderOpen /> : <AiOutlineFolder />
-    }
-    &nbsp;&nbsp;{name}
-  </StyledName>
-);
+const relationships = [
+  {id: 1, name: "RelatedTo", acronym: "RT"},
+  {id: 2, name: "TypeOf", acronym: "TO"},
+  {id: 3, name: "InstanceOf", acronym: "IO"},
+  {id: 4, name: "PartOf", acronym: "PO"},
+  {id: 5, name: "HasProperty", acronym: "HP"},
+  {id: 6, name: "UsedFor", acronym: "UF"},
+  {id: 7, name: "HasA", acronym: "HA"},
+  {id: 8, name: "AtLocation", acronym: "AL"},
+  {id: 9, name: "Causes", acronym: "Ca"},
+  {id: 10, name: "MotivatedByGoal", acronym: "MBG"},
+  {id: 11, name: "ObstructedBy", acronym: "OB"},
+  {id: 12, name: "MannerOf", acronym: "MO"},
+  {id: 13, name: "LocatedNear", acronym: "LN"},
+]
+
+const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing, type}) => {
+
+  let parentName = node.parentNode.name
+  let nodeTag = node.tag
+
+  if (type === "folderCreation") {
+    console.log("FolderName", node, type, isEditing, node.tag.length)
+    parentName = node.name
+    nodeTag = "RelatedTo"
+  }
+
+  // console.log("FolderName", node, type)
+
+  return (
+    <StyledName onClick={handleClick}>
+      {
+        isHighlighted ?
+          isOpen ? <AiFillFolderOpen /> : <AiFillFolder /> :
+          isOpen ? <AiOutlineFolderOpen /> : <AiOutlineFolder />
+      }
+      &nbsp;&nbsp;{name}
+      {!isEditing ? 
+        node.tag.length > 0 ? <StyledTag>{nodeTag}</StyledTag> : null : 
+        node.tag.length ? (<Dropdown node={node}/>): null
+      }
+    </StyledName>
+  )
+};
 
 const Folder = ({ id, name, children, node, root}) => {
   const { dispatch, isImparative, onNodeClick } = useTreeContext();
@@ -75,7 +110,7 @@ const Folder = ({ id, name, children, node, root}) => {
   const commitFolderCreation = async (name) => {
     try {
       if (name === "") {
-        name = "New Folder";
+        name = "New Topic";
       }
       console.log("commitFolderCreation");
       const newData = await fetchAPIDATA("addNode/parentID=" + node.id + "&nodeName=" + name + "&nodeTag=RelatedTo");
@@ -125,10 +160,12 @@ const Folder = ({ id, name, children, node, root}) => {
     setChilds([
       ...childs,
       <PlaceholderInput
-        type="folder"
+        type="folderCreation"
         onSubmit={commitFolderCreation}
         onCancel={handleCancel}
-        defaultValue="New Folder"
+        defaultValue="New Topic"
+        node={node}
+        isEditing={false}
       />,
     ]);
   };
@@ -140,23 +177,26 @@ const Folder = ({ id, name, children, node, root}) => {
 
   return (
     <StyledFolder id={id} onClick={handleNodeClick} className="tree__folder">
-        <VerticalLine root={root}>
+        <VerticalLine root={false}>
           <ActionsWrapper>
             {/* {root ? (<div style={{marginRight: "15px"}} >></div>) : null} */}
-            {node.tag.length ? (<Dropdown node={node}/>): null}
+            {/* {node.tag.length ? (<Dropdown node={node}/>): null} */}
             {isEditing ? (
               <PlaceholderInput
                 style={{ paddingLeft: 0}}
                 isHighlighted={node.isHighlighted}
                 defaultValue={name}
+                node={node}
                 onCancel={handleCancel}
                 onSubmit={commitFolderEdit}
+                isEditing={true}
               />
             ) : (
               <FolderName
                 name={name}
                 isOpen={isOpen}
                 isHighlighted={node.isHighlighted}
+                node={node}
                 handleClick={() => setNodeOpen(!isOpen)}
               />
             )}

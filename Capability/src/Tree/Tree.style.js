@@ -73,6 +73,21 @@ export const StyledName = styled.div`
   cursor: pointer;
 `;
 
+export const StyledTag = styled.div`
+  background-color: white;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 4px;
+  font-size: 8px;
+  font-weight: bold;
+  border-radius: 4px;
+  border: 2px solid;
+  border-color: rgb(89, 89, 89);
+  padding: 0px 4px 0px 4px;
+  background-color: rgb(195, 195, 195);
+`;
+
 export const Collapse = styled.div`
   height: max-content;
   max-height: "100%";
