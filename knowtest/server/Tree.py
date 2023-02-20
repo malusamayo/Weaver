@@ -2,9 +2,6 @@ from typing import Union
 import uuid
 import os
 import sys
-import openai
-
-openai.api_key = "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"
 
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:

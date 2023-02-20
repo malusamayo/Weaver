@@ -113,6 +113,38 @@ ae3fa6a0-91c5-4701-9934-28bce423fd89,Derogatory,266a3aed-3c80-4ce8-b1fb-e72d0481
 83b43256-16d8-4b7d-adcd-789d86a126e2,Ableism,266a3aed-3c80-4ce8-b1fb-e72d048177a5,False,False,TYPESOF
 b2c060fd-de5b-457e-a65d-0318881eac58,Ageism,266a3aed-3c80-4ce8-b1fb-e72d048177a5,False,False,TYPESOF
 d9ddc888-1a03-417c-8714-17c1e63256d4,Anti-semitism,266a3aed-3c80-4ce8-b1fb-e72d048177a5,False,False,TYPESOF
+ac6aa9c9-9593-49b2-8460-c3b133035a52,Scapegoating,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,USEDFOR
+a6bbc8e2-cd74-40c8-bfd9-7ef4a4b672f1,Racial,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,TYPESOF
+f4537fd4-bc1d-4f04-a44b-22469c0d361d,Ideological,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,TYPESOF
+de873ffb-c390-4dc5-aadc-021ee8f8e2bd,Political,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,TYPESOF
+3f6e2801-abc3-4578-ae56-1e01b64c989a,Racial hatred,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,RELATEDTO
+d43c2efa-5277-4af4-9881-f46d75d1a9db,Holocaust,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,RELATEDTO
+f91659a3-7bf8-4bc3-8d57-0e972fd3add2,Intoleranc,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,RELATEDTO
+14616a27-fc67-4262-8164-69e383b407a0,Persecution,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,PARTOF
+c33fe493-7479-4675-ac08-7de2a3f92cb2,Blood libel,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,PARTOF
+93c05731-7578-43ab-8fb1-0aab796bc51a,Conspiracy theories,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,PARTOF
+246b8e9e-1f67-4f8d-8e01-ea59a558db8e,Social media outreach,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,OBSTRUCTEDBY
+2b53b356-b1bf-477e-8b48-779949e3734e,Legal action,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,OBSTRUCTEDBY
+7b1d6946-ed2b-4cb7-bff9-287867fc27ad,Community support,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,OBSTRUCTEDBY
+8af57c82-df62-4d15-a723-794bb9b18cfb,Religious conflict,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,MOTIVATEDBY
+b21222a2-a96c-40a7-a1cd-90c89df0dd65,Historical resentment,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,MOTIVATEDBY
+9b1aac64-fcd4-4a26-ac15-b791d1d20bca,Ethnic tensions,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,MOTIVATEDBY
+cf335e00-5410-465b-82ca-1e540d62df1d,Stereotypes,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,MANNEROF
+3d65a7a0-3447-4df9-b3f2-1b3df6c338a8,Extremism,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,LOCATEDNEAR
+d7fa482d-4e84-4d2d-95ee-53bf08085a90,Conspiracy,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,LOCATEDNEAR
+b1dfba0e-2a9a-40e8-b579-af38e284d8cf,Propaganda,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,LOCATEDNEAR
+c58dddaa-6480-4c5d-92d4-18041e7bd619,Anti-zionists,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,HASPATIENT
+585c2d85-86d6-4b5b-9357-5b27e18b6743,Anti-israel activists,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,HASPATIENT
+d41aa1df-2ffc-4324-85ad-1f132e343f42,Anti-jewish activists,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,HASPATIENT
+0192bc22-78c6-43ae-b25a-992befb0d78e,Anti-semitic conspiracy theorists,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,HASAGENT
+5990f8d4-e9fa-4c73-9196-82a7432ad327,Holocaust deniers,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,HASAGENT
+6757a3be-f75c-430d-84f2-d1c9cb8149c3,Radical islamist groups,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,HASAGENT
+5ff0f8b7-7b9c-456c-bcd1-92a627847527,War,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,CAUSES
+7981e441-0b3e-41f7-a4f6-71a268412365,Loss of cultural heritage,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,CAUSES
+cdfa4b19-43c9-488e-868f-08c5bd293eac,Genocide,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,CAUSES
+f99b00fc-7033-4435-9211-1ff1ff1db2df,Neighborhoods,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,ATLOCATION
+0dde2775-bc77-4e8e-898f-c19df49dcdc5,Sports venues,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,ATLOCATION
+d48e4f6f-a3f2-4cc4-aba0-2ebe1e6c03ed,Workplaces,d9ddc888-1a03-417c-8714-17c1e63256d4,False,False,ATLOCATION
 a58e9053-5dc6-402a-9230-778a623fc0fb,Promoting prejudice,266a3aed-3c80-4ce8-b1fb-e72d048177a5,False,False,USEDFOR
 f9412c3c-8ade-40b9-9788-5961497c0d6b,Promoting racism,266a3aed-3c80-4ce8-b1fb-e72d048177a5,False,False,USEDFOR
 958391d4-d01f-4a47-894e-8892dd2b8b26,Spreading stereotypes,266a3aed-3c80-4ce8-b1fb-e72d048177a5,False,False,USEDFOR
