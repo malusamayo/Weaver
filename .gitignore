@@ -11,6 +11,11 @@
 /CapabilityTesting - DO NOT RUN
 /Data  - DO NOT EDIT
 
+# data
+query_cache
+output
+knowtest/server/data.csv
+
 # misc
 .DS_Store
 .env.local
@@ -20,9 +25,7 @@
 __pycache__
 *.pyc
 .ipynb_checkpoints
-query_cache
 notebooks/config.json
-output
 
 npm-debug.log*
 yarn-debug.log*
