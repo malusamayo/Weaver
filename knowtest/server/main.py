@@ -6,8 +6,8 @@ from Tree import Tree, Node
 import os
 
 # checkif ./Data folder exists and create it if not
-if not os.path.exists("Data"):
-    os.mkdir("Data")
+# if not os.path.exists("Data"):
+#     os.mkdir("Data")
 
 filename = "data.csv"
 t = Tree(filename=filename)
@@ -31,7 +31,7 @@ def edit_folder_name(node_id: str, new_name: str):
     t.write_csv(filename)
     return t.generate_json()
 
-@app.get("/delete/nodeId={node_id}")
+@app.get("/deleteNode/nodeId={node_id}")
 def delete_node(node_id: str):
     t.remove_node_with_id(node_id)
     t.write_csv(filename)
@@ -74,6 +74,13 @@ def select_topic(topic: str):
 
     return t.generate_json()
 
+@app.get("/getSuggestions/nodeId={node_id}")
+def get_suggestion(node_id: str):
+    print("Getting suggestion for: ", node_id)
+    t.set_open(node_id, bool)
+    t.refresh_suggestions(node_id)
+    t.write_csv(filename)
+    return t.generate_json()
 
 origins = [
     "http://localhost:3000",

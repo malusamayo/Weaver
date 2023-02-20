@@ -1,17 +1,20 @@
 import React, { useReducer, useLayoutEffect, useState } from "react";
 import { v4 } from "uuid";
 import { ThemeProvider } from "styled-components";
+import { BiRefresh } from "react-icons/bi";
 
 import { useDidMountEffect } from "../utils";
 import { TreeContext, reducer } from "./state";
 import {fetchAPIDATA} from "../utils";
 import { StyledTree } from "./Tree.style";
 import { Folder } from "./Folder/TreeFolder";
+import { loading } from "./Tree.css";
 
 const Tree = ({ children, data, onNodeClick, onUpdate }) => {
 
   const [state, dispatch] = useReducer(reducer, data);
   const [selection, setSelection] = useState("/");
+  const [isLoading, setIsLoading] = useState(false);
 
   const commitSelection = async (id) => {
     try {
@@ -34,19 +37,29 @@ const Tree = ({ children, data, onNodeClick, onUpdate }) => {
   const isImparative = data && !children;
 
   return (
-    <ThemeProvider theme={{ indent: 20 }}>
-        <TreeContext.Provider
-          value={{
-            isImparative,
-            state,
-            dispatch,
-            onNodeClick: (node) => {
-              commitSelection(node.node.id);
-              onNodeClick && onNodeClick(node);
-            },
-          }}
-        >
+    <div>
+      {
+        isLoading && (
+          <div className="loading">
+            <img src="https://cdn-icons-png.flaticon.com/512/6356/6356659.png" alt="loading..."/>
+          </div>
+        )
+      }
+      <ThemeProvider theme={{ indent: 20 }}>
+          <TreeContext.Provider
+            value={{
+              isImparative,
+              state,
+              dispatch,
+              setIsLoading: setIsLoading,
+              onNodeClick: (node) => {
+                commitSelection(node.node.id);
+                onNodeClick && onNodeClick(node);
+              },
+            }}
+            >
           <p>Selection: {selection}</p>
+          <br />
           <StyledTree>
             {isImparative ? (
               <TreeRecusive data={state} parentNode={state} root={true}/>
@@ -56,6 +69,7 @@ const Tree = ({ children, data, onNodeClick, onUpdate }) => {
           </StyledTree>
         </TreeContext.Provider>
       </ThemeProvider>
+    </div>
   );
 };
 

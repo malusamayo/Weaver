@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  AiOutlineFolderAdd,
   AiOutlineFolder,
   AiOutlineFolderOpen,
-  AiOutlineDelete,
   AiOutlinePlus,
   AiFillEdit,
   AiOutlineMinus,
@@ -29,22 +27,6 @@ import { PlaceholderInput } from "../TreePlaceholderInput";
 import {fetchAPIDATA} from "../../utils";
 import { Dropdown } from "../Dropdown/dropdown";
 
-const relationships = [
-  {id: 1, name: "RelatedTo", acronym: "RT"},
-  {id: 2, name: "TypeOf", acronym: "TO"},
-  {id: 3, name: "InstanceOf", acronym: "IO"},
-  {id: 4, name: "PartOf", acronym: "PO"},
-  {id: 5, name: "HasProperty", acronym: "HP"},
-  {id: 6, name: "UsedFor", acronym: "UF"},
-  {id: 7, name: "HasA", acronym: "HA"},
-  {id: 8, name: "AtLocation", acronym: "AL"},
-  {id: 9, name: "Causes", acronym: "Ca"},
-  {id: 10, name: "MotivatedByGoal", acronym: "MBG"},
-  {id: 11, name: "ObstructedBy", acronym: "OB"},
-  {id: 12, name: "MannerOf", acronym: "MO"},
-  {id: 13, name: "LocatedNear", acronym: "LN"},
-]
-
 const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing, type}) => {
 
   let parentName = node.parentNode.name
@@ -53,11 +35,8 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
   if (type === "folderCreation") {
     console.log("FolderName", node, type, isEditing, node.tag.length)
     parentName = node.name
-    nodeTag = "RelatedTo"
+    nodeTag = "RELATEDTO"
   }
-
-  // console.log("FolderName", node, type)
-
   return (
     <StyledName onClick={handleClick}>
       {
@@ -65,17 +44,17 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
           isOpen ? <AiFillFolderOpen /> : <AiFillFolder /> :
           isOpen ? <AiOutlineFolderOpen /> : <AiOutlineFolder />
       }
-      &nbsp;&nbsp;{name}
       {!isEditing ? 
         node.tag.length > 0 ? <StyledTag>{nodeTag}</StyledTag> : null : 
         node.tag.length ? (<Dropdown node={node}/>): null
       }
+      &nbsp;&nbsp;{name}
     </StyledName>
   )
 };
 
 const Folder = ({ id, name, children, node, root}) => {
-  const { dispatch, isImparative, onNodeClick } = useTreeContext();
+  const { dispatch, onNodeClick, setIsLoading } = useTreeContext();
   const [isEditing, setEditing] = useState(false);
   const [isOpen, setIsOpen] = useState(node.isOpen);
   const [childs, setChilds] = useState([]);
@@ -85,9 +64,18 @@ const Folder = ({ id, name, children, node, root}) => {
 
   const setNodeOpen = async (open) => {
     try {
+      if (open) {
+        setIsLoading(true);
+      }
+
       const newData = await fetchAPIDATA("setOpen/nodeId=" + node.id + "&isOpen=" + open);
       dispatch({ type: "SET_DATA", payload: newData });
       setIsOpen(open);
+      
+      if (open) {
+        setIsLoading(false);
+      }
+
     } catch (error) {
       console.error(error);
     }
@@ -113,7 +101,7 @@ const Folder = ({ id, name, children, node, root}) => {
         name = "New Topic";
       }
       console.log("commitFolderCreation");
-      const newData = await fetchAPIDATA("addNode/parentID=" + node.id + "&nodeName=" + name + "&nodeTag=RelatedTo");
+      const newData = await fetchAPIDATA("addNode/parentID=" + node.id + "&nodeName=" + name + "&nodeTag=RELATEDTO");
       dispatch({ type: "SET_DATA", payload: newData });
       setEditing(false);
     } catch (error) {
@@ -122,7 +110,7 @@ const Folder = ({ id, name, children, node, root}) => {
   };
   const commitDeleteFolder = async () => {
     try {
-      const newData = await fetchAPIDATA("delete/nodeId=" + node.id);
+      const newData = await fetchAPIDATA("deleteNode/nodeId=" + node.id);
       dispatch({ type: "SET_DATA", payload: newData });
       setEditing(false);
     } catch (error) {
@@ -135,6 +123,19 @@ const Folder = ({ id, name, children, node, root}) => {
       const newData = await fetchAPIDATA("editFolderName/nodeId=" + id + "&newName=" + name);
       dispatch({ type: "SET_DATA", payload: newData });
       setEditing(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const commitSuggestions = async () => {
+    try {
+
+      setIsLoading(true);
+      const newData = await fetchAPIDATA("getSuggestions/nodeId=" + id);
+      dispatch({ type: "SET_DATA", payload: newData });
+      setEditing(false);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -205,7 +206,7 @@ const Folder = ({ id, name, children, node, root}) => {
               {node.isHighlighted ?
                 <AiOutlineMinus onClick={() => setNodeHighlighted(false)} /> :
                 <AiOutlinePlus onClick={() => setNodeHighlighted(true)} /> }
-              <BiRefresh onClick={() => setNodeOpen(!isOpen)} />
+              <BiRefresh onClick={commitSuggestions} />
               <AiFillEdit onClick={handleFolderRename} />
               <FaFolderPlus onClick={handleFolderCreation} />
               {root ? null : <MdDeleteForever onClick={commitDeleteFolder} />}

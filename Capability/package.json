@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "BUILD_PATH='./CapabilityTesting/build' react-scripts build",
+    "build": "BUILD_PATH='../CapabilityClient/Build' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

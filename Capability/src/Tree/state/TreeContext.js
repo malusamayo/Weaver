@@ -4,6 +4,7 @@ const defaultValue = {
   dispatch: null,
   state: null,
   isImparative: null,
+  setIsLoading: () => {},
   onNodeClick: () => {}
 };
 const TreeContext = React.createContext(defaultValue);

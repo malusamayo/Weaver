@@ -1,5 +1,16 @@
 from typing import Union
 import uuid
+import os
+import sys
+import openai
+
+openai.api_key = "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"
+
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
+
+from knowledge.knbase import KnowledgeBase
 
 class Node:
     def __init__(self, name: str, parent_id: str, node_id: Union[str, None]=None, tags: list[str]=[], isOpen: bool=False, isHighlighted: bool=False):
@@ -57,11 +68,12 @@ class Node:
         return ", ".join(self.tags)
 
 class Tree:
-    def __init__(self, topic: str="root", filename: str=None):
+    def __init__(self, topic: str="root", filename: str=None, KGOutput: str="./output"):
 
         self.tag_filters = []
         self.number_of_topics = 0
         self.nodes = {}
+        self.kg = KnowledgeBase(KGOutput)
 
         if filename:
             self.read_csv(filename)
@@ -152,6 +164,8 @@ class Tree:
         #         self.nodes[node_id].isOpen = isOpen
         if node_id in self.nodes:
             self.nodes[node_id].isOpen = isOpen
+            if isOpen and len(self.nodes[node_id].children) == 0:
+                self.refresh_suggestions(node_id)
     
     def set_highlight(self, node_id: str, isHighlighted: bool):
         # print("Node ID: {}({}), isHighlighted: {}({})".format(node_id, type(node_id), isHighlighted, type(isHighlighted)))
@@ -187,13 +201,31 @@ class Tree:
 
     def refresh_suggestions(self, node_id: str):
         if node_id in self.nodes:
-            self.remove_non_highlighted_nodes(node_id)
-            path = self.get_path(node_id)
-            suggestions = [("topicSuggestion1", "relationSuggestion1"), ("topicSuggestion1", "relationSuggestion1")] # TODO: get suggestions from server
+
+            # Get all siblings of the selected node
+            existing_children = []
+            for child_id in self.nodes[node_id].children:
+                existing_children.append({
+                    "topic": self.nodes[child_id].name,
+                    "relation": self.nodes[child_id].tags[0],
+                    "is_highlighted": self.nodes[child_id].isHighlighted
+                })
             
-            for (suggestion, relation) in suggestions:
-                new_node = Node(suggestion, node_id, tags=[relation])
-                self.add_node(new_node)
+            path = self.get_path(node_id)
+            path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
+            
+            print("Refresh suggestion path: ", path)
+            print("Refresh suggestion existing_children: ", existing_children)
+            
+            self.remove_non_highlighted_nodes(node_id)
+            
+            suggestions = self.kg.expand_node(topic=self.nodes[node_id].name.lower(), path=path, existing_children=existing_children)
+
+            for dic in suggestions:
+                (suggestion, relation) = dic["to"], dic["relation"]
+                new_node = Node(name=suggestion, parent_id=node_id, tags=[relation])
+                if not self.add_node(new_node):
+                    print("Unable to add node: ", new_node)
         
     def rename_node(self, node_id: str, new_name: str):
         if node_id in self.nodes:
@@ -212,7 +244,7 @@ class Tree:
     def set_node_tag(self, node_id: str, tag: str):
         tag = tag.replace("\n", "")
         if node_id in self.nodes:
-            self.nodes[node_id].tags = [tag] if tag != "" else ["Typeof"]
+            self.nodes[node_id].tags = [tag.upper()] if tag != "" else ["TYPEOF"]
 
     def add_tag_to_filter(self, tag: str):
         if tag not in self.tag_filters:

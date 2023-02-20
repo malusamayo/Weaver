@@ -19,7 +19,8 @@ class Cache(object):
     def cache_queries(self, topic, relation, topic_list):
         topic_dir = os.path.join(self.cache_dir, topic)
         if not os.path.exists(topic_dir):
-            os.mkdir(topic_dir)
+            print("Creating cache directory: " + topic_dir)
+            os.makedirs(topic_dir)
         saved_path = os.path.join(topic_dir, relation + ".txt")
 
         with open(saved_path, "w") as f:

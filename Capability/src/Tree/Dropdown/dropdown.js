@@ -41,6 +41,7 @@ const Dropdown = ({node}) => {
 
     const commitTagSelection = async (node, selectedTag) => {
         console.log("node: ", node, "selectedTag: ", selectedTag)
+        selectedTag = selectedTag.toUpperCase()
         try {
             const newData = await fetchAPIDATA("setNodeTag/nodeId=" + node.id + "&tag=" + selectedTag);
             dispatch({type: "SET_DATA", payload: newData})
@@ -77,15 +78,15 @@ const Dropdown = ({node}) => {
     
 
     return (
-        <div className="dropdown">
+        <div className="ddown">
             <div className="dropbtn" onClick={handleDropdownClick}>({selectedTag})</div>
             {isActive &&
             (<div className="dropdown-content">
                 {
                     tagsChoice.map((relationship) => {
                         return (
-                            <div onClick={handleTagSelection} className="dropdown-item" value={relationship.name} key={relationship.id}>
-                                {relationship.name}
+                            <div onClick={handleTagSelection} className="dropdown-item" value={relationship.name.toUpperCase()} key={relationship.id}>
+                                {relationship.name.toUpperCase()}
                             </div>
                         )
                     })
