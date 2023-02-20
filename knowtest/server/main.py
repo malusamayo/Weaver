@@ -77,7 +77,7 @@ def select_topic(topic: str):
 @app.get("/getSuggestions/nodeId={node_id}")
 def get_suggestion(node_id: str):
     print("Getting suggestion for: ", node_id)
-    t.set_open(node_id, bool)
+    t.set_open(node_id, True)
     t.refresh_suggestions(node_id)
     t.write_csv(filename)
     return t.generate_json()
