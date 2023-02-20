@@ -6,6 +6,12 @@ import os
 import openai
 import tiktoken
 
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_random_exponential,
+)  # for exponential backoff
+
 class LanguageModel(object):
     def __init__(self):
         pass
@@ -63,6 +69,7 @@ class GPT3Model(LanguageModel):
             stream=stream,
         )
 
+    @retry(wait=wait_random_exponential(min=2, max=60), stop=stop_after_attempt(6))
     def __call__(self, prompt):
         response = self._get_completion(prompt)
         return response["choices"][0]["text"]
