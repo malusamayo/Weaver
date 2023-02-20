@@ -10,7 +10,7 @@ if module_path not in sys.path:
 from knowledge.knbase import KnowledgeBase
 
 class Node:
-    def __init__(self, name: str, parent_id: str, node_id: Union[str, None]=None, tags: list[str]=[], isOpen: bool=False, isHighlighted: bool=False):
+    def __init__(self, name: str, parent_id: str, node_id: Union[str, None]=None, tags=[], isOpen: bool=False, isHighlighted: bool=False):
         self.name = name
 
         if node_id is None:
@@ -65,7 +65,7 @@ class Node:
         return ", ".join(self.tags)
 
 class Tree:
-    def __init__(self, topic: str="root", filename: str=None, KGOutput: str="./output"):
+    def __init__(self, topic: str="root", filename: str=None, KGOutput: str="../../output"):
 
         self.tag_filters = []
         self.number_of_topics = 0
@@ -114,7 +114,7 @@ class Tree:
         for child_id in node.children:
             self.print_tree_helper(self.nodes[child_id], depth+1)
     
-    def generate_json(self, sorting: bool=True) -> list[dict]:
+    def generate_json(self, sorting: bool=True):
         tree = self.generate_tree_helper(self.root, sorting)
         tree["isOpen"] = True
         tree["isHighlighted"] = True
