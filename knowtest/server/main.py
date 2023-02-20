@@ -9,7 +9,7 @@ import os
 # if not os.path.exists("Data"):
 #     os.mkdir("Data")
 
-filename = "data.csv"
+filename = "../../output/data.csv"
 t = Tree(filename=filename)
 app = FastAPI()
 
