@@ -1,5 +1,6 @@
 import json
 import os
+import threading
 import pandas as pd
 from .prompt import Prompter
 from .relations import RELATIONS
@@ -10,6 +11,7 @@ class KnowledgeBase(object):
         self.dir = path
         self.nodes = pd.read_csv(path + "/nodes.csv")
         self.edges = pd.read_csv(path + "/edges.csv")
+        self.lock = threading.Lock() # for multi-threading
 
         if uid == None:
             uid = 0
@@ -68,9 +70,11 @@ class KnowledgeBase(object):
         new_edges = [{"from": topic, "to": new_topic, "relation": relation} for new_topic in new_topics]
         new_user_history = [{"from": topic, "to": new_topic, "relation": relation, "recommended": False, "selected": False} for new_topic in new_topics]
 
+        self.lock.acquire()
         self.nodes = self.nodes.append(new_nodes, ignore_index=True)
         self.edges = self.edges.append(new_edges, ignore_index=True)
         self.user_history = self.user_history.append(new_user_history, ignore_index=True)
+        self.lock.release()
 
     def extend_node_all_relation(self, topic):
         for relation in RELATIONS.relations:
@@ -81,7 +85,15 @@ class KnowledgeBase(object):
             n_selected = u_history['selected'].map(lambda x: x == True).sum()
             if n_topics > 0 and n_recommended / n_topics > 0.5 and n_selected / n_recommended == 0 and RELATIONS.translate(relation) != RELATIONS.RELATEDTO:
                 continue
-            self.extend_node(topic, relation)
+
+            # synchronous call for RELATEDTO
+            if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:            
+                self.extend_node(topic, relation)
+            else:
+                t = threading.Thread(target=self.extend_node, args=(topic,relation,))
+                t.start()
+
+        # [TODO] save after all threads are done??
         self.save()
 
     def compute_weight(self, topic, rows):
@@ -112,6 +124,10 @@ class KnowledgeBase(object):
             The existing children of the current node.
         n_expand : int
             The number of children returned.
+        Returns
+        -------
+        children : list of dict {to, relation}
+            The expanded children of the current node.
         '''
 
         # initialize children nodes
