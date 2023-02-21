@@ -40,7 +40,8 @@ class Node:
         elif string in ["false", "f", "no", "n", "0"]:
             return False
         else:
-            raise ValueError("Unable to convert \"{}\" to bool".format(string))
+            # raise ValueError("Unable to convert \"{}\" to bool".format(string))
+            return True
 
     def generate_new_id(self) -> None:
         self.id = str(uuid.uuid4())
@@ -241,7 +242,7 @@ class Tree:
     def set_node_tag(self, node_id: str, tag: str):
         tag = tag.replace("\n", "")
         if node_id in self.nodes:
-            self.nodes[node_id].tags = [tag.upper()] if tag != "" else ["TYPEOF"]
+            self.nodes[node_id].tags = [tag.upper()] if tag != "" else ["RELATEDTO"]
 
     def add_tag_to_filter(self, tag: str):
         if tag not in self.tag_filters:
@@ -250,6 +251,9 @@ class Tree:
     def remove_tag_from_filter(self, tag: str):
         if tag in self.tag_filters:
             self.tag_filters.remove(tag)
+    
+    def set_tag_filter(self, tags: list):
+        self.tag_filters = tags
 
     def get_node_path(self, node_id: str):
 
