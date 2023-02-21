@@ -69,14 +69,15 @@ const AnimatedMultiTagging = () => {
   return (
     <div className="custom-select">
         <Select
-        closeMenuOnSelect={false}
-        components={animatedComponents}
-        value={selectedOptions}
-        onChange={handleSelectChange}
-        isMulti
-        options={relationships}
-        closeMenuOnScroll={true}
-        styles={styles}
+            placeholder="Filter by tag..."
+            closeMenuOnSelect={false}
+            components={animatedComponents}
+            value={selectedOptions}
+            onChange={handleSelectChange}
+            isMulti
+            options={relationships}
+            closeMenuOnScroll={true}
+            styles={styles}
         />
     </div>
   );
