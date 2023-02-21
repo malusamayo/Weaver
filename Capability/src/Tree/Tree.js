@@ -9,7 +9,7 @@ import {fetchAPIDATA} from "../utils";
 import { StyledTree } from "./Tree.style";
 import { Folder } from "./Folder/TreeFolder";
 import { loading } from "./Tree.css";
-import { AnimatedMultiTagging } from "./Tag/tag"
+import { AnimatedMultiTagging } from "./Tag/tag";
 
 const Tree = ({ children, data, onNodeClick, onUpdate }) => {
 
@@ -60,7 +60,8 @@ const Tree = ({ children, data, onNodeClick, onUpdate }) => {
             }}
             >
           <p>Selection: {selection}</p>
-          <AnimatedMultiTagging/>
+          {/* <br /> */}
+          <AnimatedMultiTagging />
           <StyledTree>
             {isImparative ? (
               <TreeRecusive data={state} parentNode={state} root={true}/>

@@ -29,7 +29,11 @@ class Capability(object):
             <script>{}</script>
             <style>{}</style>
             <div id="root" style="min-height: 300px;"></div>
+<<<<<<< HEAD
         <div>       
+=======
+        <div>
+>>>>>>> backup
         """
 
         return content.format(self.get_js_file(), self.get_css_file())
