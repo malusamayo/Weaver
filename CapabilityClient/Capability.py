@@ -25,12 +25,11 @@ class Capability(object):
     
     def get_html_file(self):
         content = """
-
         <div>
             <script>{}</script>
             <style>{}</style>
-            <div id="root"></div>
-        <div>
+            <div id="root" style="min-height: 300px;"></div>
+        <div>       
         """
 
         return content.format(self.get_js_file(), self.get_css_file())
