@@ -74,10 +74,23 @@ def select_topic(topic: str):
 
     return t.generate_json()
 
+@app.get("/setTagFilter/tags={tags}")
+def set_tag_filter(tags: str):
+    tags = tags.split(",")
+    print("Setting tag filter: ", tags)
+    t.set_tag_filter(tags)
+    return t.generate_json()
+
+@app.get("/resetTagFilter")
+def reset_tag_filter():
+    print("Resetting tag filter")
+    t.set_tag_filter([])
+    return t.generate_json()
+
 @app.get("/getSuggestions/nodeId={node_id}")
 def get_suggestion(node_id: str):
     print("Getting suggestion for: ", node_id)
-    t.set_open(node_id, True)
+    t.set_open(node_id, bool)
     t.refresh_suggestions(node_id)
     t.write_csv(filename)
     return t.generate_json()
