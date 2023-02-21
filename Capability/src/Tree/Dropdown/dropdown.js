@@ -4,23 +4,7 @@ import {fetchAPIDATA} from "../../utils";
 import { dropdown } from "./dropdown.css";
 
 // create a const array of relationships and map through it to create a dropdown item for each relationship
-<<<<<<< HEAD
 const relationships = [
-    {id: 1, value: "RELATEDTO", label: "RELATEDTO", acronym: "RT"},
-    {id: 2, value: "TYPEOF", label: "TYPEOF", acronym: "TO"},
-    {id: 3, value: "INSTANCEOF", label: "INSTANCEOF", acronym: "IO"},
-    {id: 4, value: "PARTOF", label: "PARTOF", acronym: "PO"},
-    {id: 5, value: "HASPROPERTY", label: "HASPROPERTY", acronym: "HP"},
-    {id: 6, value: "USEDFOR", label: "USEDFOR", acronym: "UF"},
-    {id: 7, value: "HASA", label: "HASA", acronym: "HA"},
-    {id: 8, value: "ATLOCATION", label: "ATLOCATION", acronym: "AL"},
-    {id: 9, value: "CAUSES", label: "CAUSES", acronym: "Ca"},
-    {id: 10, value: "MOTIVATEDBYGOAL", label: "MOTIVATEDBYGOAL", acronym: "MBG"},
-    {id: 11, value: "OBSTRUCTEDBY", label: "OBSTRUCTEDBY", acronym: "OB"},
-    {id: 12, value: "MANNEROF", label: "MANNEROF", acronym: "MO"},
-    {id: 13, value: "LOCATEDNEAR", label: "LOCATEDNEAR", acronym: "LN"}
-=======
-export const relationships = [
     {id: 1, value: "RELATEDTO", label:"RELATEDTO", acronym: "RT"},
     {id: 2, value: "TYPEOF", label:"TYPEOF", acronym: "TO"},
     {id: 3, value: "INSTANCEOF", label:"INSTANCEOF", acronym: "IO"},
@@ -34,7 +18,6 @@ export const relationships = [
     {id: 11, value: "OBSTRUCTEDBY", label:"OBSTRUCTEDBY", acronym: "OB"},
     {id: 12, value: "MANNEROF", label:"MANNEROF", acronym: "MO"},
     {id: 13, value: "LOCATEDNEAR", label:"LOCATEDNEAR", acronym: "LN"},
->>>>>>> backup
 ]
 
 const Dropdown = ({node}) => {
