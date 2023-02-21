@@ -4,7 +4,6 @@ import { useTreeContext } from "../state/TreeContext";
 import makeAnimated from "react-select/animated";
 import { relationships } from '../Dropdown/dropdown';
 import {fetchAPIDATA} from "../../utils";
-import { tag } from "./tag.css"
 
 const animatedComponents = makeAnimated();
 
