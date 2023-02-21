@@ -79,13 +79,33 @@ export const StyledTag = styled.div`
   align-items: center;
   cursor: pointer;
   margin-left: 4px;
-  font-size: 8px;
+  font-size: 10px;
   font-weight: bold;
   border-radius: 4px;
   border: 2px solid;
   border-color: rgb(89, 89, 89);
   padding: 0px 4px 0px 4px;
   background-color: rgb(195, 195, 195);
+
+  .actionbutton {
+    display: none;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    visibility: hidden;
+    pointer-events: none;
+    font-stretch: 0%;
+    margin-left: 4px;
+  }
+
+  &:hover .actionbutton {
+    visibility: visible;
+    pointer-events: all;
+    transition: 0.2s;
+    display: flex;
+    transition: 5s;
+  }
+
 `;
 
 export const Collapse = styled.div`

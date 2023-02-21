@@ -27,7 +27,7 @@ class Node:
     
     def process_node(self) -> None:
         self.name = self.name.capitalize()
-        self.tags = [tag.replace("\n", "") for tag in self.tags if tag not in ["", "\n", " "]]
+        self.tags = [tag.replace('\n', "") for tag in self.tags if tag not in ["", "\n", " "]]
         self.isHighlighted = self.strToBool(self.isHighlighted)
         self.isOpen = self.strToBool(self.isOpen)
 
@@ -47,7 +47,7 @@ class Node:
         self.id = str(uuid.uuid4())
 
     def __repr__(self) -> str:
-        return "Node({}, isOpen({}), isHighlighted({}))".format(self.name, self.isOpen, self.isHighlighted)
+        return "Node({}, {})".format(self.name, self.tags)
 
     def get_Json_object(self) -> dict:
         return {
@@ -115,7 +115,7 @@ class Tree:
         for child_id in node.children:
             self.print_tree_helper(self.nodes[child_id], depth+1)
     
-    def generate_json(self, sorting: bool=True):
+    def generate_json(self, sorting: bool=False):
         tree = self.generate_tree_helper(self.root, sorting)
         tree["isOpen"] = True
         tree["isHighlighted"] = True
@@ -138,7 +138,7 @@ class Tree:
                 node["children"].append(child_node)
         
         if sorting:
-            node["children"] = sorted(node["children"], key=lambda x: x["isHighlighted"])
+            node["children"] = sorted(node["children"], key=lambda x: (x["isHighlighted"]))
 
         return node
     
@@ -270,6 +270,20 @@ class Tree:
 
     def remove_all_tags_from_filter(self):
         self.tag_filters = []
+
+    def remove_same_relation_sibling(self, node_id: str, tag: str):
+        if node_id in self.nodes:
+            parent_id = self.nodes[node_id].parent_id
+            # print("\nAll Nodes: {}\n".format(self.nodes))
+            # print("Parent: {}, Children: {}".format(self.nodes[parent_id].name, self.nodes[parent_id].children))
+            nodes_to_remove = []
+            for child_id in self.nodes[parent_id].children:
+                print(self.nodes[child_id])
+                if tag in self.nodes[child_id].tags and not self.nodes[child_id].isHighlighted:
+                    # print("     Removing node: ", self.nodes[child_id])
+                    nodes_to_remove.append(child_id)
+            for node_id in nodes_to_remove:
+                self.remove_node_with_id(node_id)
 
     def read_csv(self, filename: str):
         try:

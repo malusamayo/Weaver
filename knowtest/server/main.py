@@ -95,6 +95,13 @@ def get_suggestion(node_id: str):
     t.write_csv(filename)
     return t.generate_json()
 
+@app.get("/removeSimilarRelationSiblings/nodeId={node_id}&tag={relation}")
+def remove_similar_relation_siblings(node_id: str, relation: str):
+    # print("Removing similar relation children for {} with tag {}".format(t.nodes[t.nodes[node_id].parent_id], relation))
+    t.remove_same_relation_sibling(node_id, relation)
+    t.write_csv(filename)
+    return t.generate_json()
+
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:5001"

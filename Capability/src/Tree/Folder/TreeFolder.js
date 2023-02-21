@@ -27,10 +27,47 @@ import { PlaceholderInput } from "../TreePlaceholderInput";
 import {fetchAPIDATA} from "../../utils";
 import { Dropdown } from "../Dropdown/dropdown";
 
+const StyledRelation = ({node, nodeTag}) => {
+
+  const { dispatch } = useTreeContext();
+
+  const commitRemoveSimilarRelationSiblings = async (node, nodeTag) => {
+    try {
+      const newData = await fetchAPIDATA("removeSimilarRelationSiblings/nodeId=" + node.id + "&tag=" + nodeTag);
+      dispatch({ type: "SET_DATA", payload: newData });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleActionPlusClick = (event) => {
+    event.stopPropagation();
+    console.log("handleActionPlusClick", event)
+
+  }
+
+  const handleActionCrossClick = (event) => {
+    event.stopPropagation();
+    console.log("handleActionCrossClick", event)
+    commitRemoveSimilarRelationSiblings(node, nodeTag)
+  }
+
+  return (
+    <StyledTag>
+      {nodeTag}
+        <div className="actionbutton">
+          <i class="fa fa-plus" aria-hidden="true" onClick={handleActionPlusClick}></i>
+          &nbsp;&nbsp;
+          <i class="fa fa-times" aria-hidden="true" onClick={handleActionCrossClick}></i>
+        </div>
+    </StyledTag>
+  )
+}
+
 const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing, type}) => {
 
   let parentName = node.parentNode.name
-  let nodeTag = node.tag
+  let nodeTag = node.tag[0]
 
   if (type === "folderCreation") {
     console.log("FolderName", node, type, isEditing, node.tag.length)
@@ -45,7 +82,7 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
           isOpen ? <AiOutlineFolderOpen /> : <AiOutlineFolder />
       }
       {!isEditing ? 
-        node.tag.length > 0 ? <StyledTag>{nodeTag}</StyledTag> : null : 
+        node.tag.length > 0 ? node.tag.map((tag) => <StyledRelation node={node} nodeTag={tag}/>) : null :
         node.tag.length ? (<Dropdown node={node}/>): null
       }
       &nbsp;&nbsp;{name}
@@ -203,7 +240,7 @@ const Folder = ({ id, name, children, node, root}) => {
             )}
 
             <div className="actions">
-              {node.isHighlighted ?
+              {root ? null : node.isHighlighted ?
                 <AiOutlineMinus onClick={() => setNodeHighlighted(false)} /> :
                 <AiOutlinePlus onClick={() => setNodeHighlighted(true)} /> }
               <BiRefresh onClick={commitSuggestions} />
