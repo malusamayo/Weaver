@@ -10,7 +10,7 @@ if module_path not in sys.path:
 from knowledge.knbase import KnowledgeBase
 
 class Node:
-    def __init__(self, name: str, parent_id: str, node_id: Union[str, None]=None, tags: list[str]=[], isOpen: bool=False, isHighlighted: bool=False):
+    def __init__(self, name: str, parent_id: str, node_id: Union[str, None]=None, tags=[], isOpen: bool=False, isHighlighted: bool=False):
         self.name = name
 
         if node_id is None:
@@ -40,7 +40,8 @@ class Node:
         elif string in ["false", "f", "no", "n", "0"]:
             return False
         else:
-            raise ValueError("Unable to convert \"{}\" to bool".format(string))
+            # raise ValueError("Unable to convert \"{}\" to bool".format(string))
+            return True
 
     def generate_new_id(self) -> None:
         self.id = str(uuid.uuid4())
@@ -65,7 +66,7 @@ class Node:
         return ", ".join(self.tags)
 
 class Tree:
-    def __init__(self, topic: str="root", filename: str=None, KGOutput: str="./output"):
+    def __init__(self, topic: str="root", filename: str=None, KGOutput: str="../../output"):
 
         self.tag_filters = []
         self.number_of_topics = 0
@@ -114,7 +115,7 @@ class Tree:
         for child_id in node.children:
             self.print_tree_helper(self.nodes[child_id], depth+1)
     
-    def generate_json(self, sorting: bool=True) -> list[dict]:
+    def generate_json(self, sorting: bool=True):
         tree = self.generate_tree_helper(self.root, sorting)
         tree["isOpen"] = True
         tree["isHighlighted"] = True
@@ -241,7 +242,7 @@ class Tree:
     def set_node_tag(self, node_id: str, tag: str):
         tag = tag.replace("\n", "")
         if node_id in self.nodes:
-            self.nodes[node_id].tags = [tag.upper()] if tag != "" else ["TYPEOF"]
+            self.nodes[node_id].tags = [tag.upper()] if tag != "" else ["RELATEDTO"]
 
     def add_tag_to_filter(self, tag: str):
         if tag not in self.tag_filters:
@@ -250,6 +251,9 @@ class Tree:
     def remove_tag_from_filter(self, tag: str):
         if tag in self.tag_filters:
             self.tag_filters.remove(tag)
+    
+    def set_tag_filter(self, tags: list):
+        self.tag_filters = tags
 
     def get_node_path(self, node_id: str):
 

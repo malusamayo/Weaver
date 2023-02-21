@@ -9,7 +9,7 @@ import os
 # if not os.path.exists("Data"):
 #     os.mkdir("Data")
 
-filename = "data.csv"
+filename = "../../output/data.csv"
 t = Tree(filename=filename)
 app = FastAPI()
 
@@ -72,6 +72,19 @@ def select_topic(topic: str):
     else:
         t = Tree(filename=filename)
 
+    return t.generate_json()
+
+@app.get("/setTagFilter/tags={tags}")
+def set_tag_filter(tags: str):
+    tags = tags.split(",")
+    print("Setting tag filter: ", tags)
+    t.set_tag_filter(tags)
+    return t.generate_json()
+
+@app.get("/resetTagFilter")
+def reset_tag_filter():
+    print("Resetting tag filter")
+    t.set_tag_filter([])
     return t.generate_json()
 
 @app.get("/getSuggestions/nodeId={node_id}")

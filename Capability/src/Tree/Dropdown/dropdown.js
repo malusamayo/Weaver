@@ -4,33 +4,25 @@ import {fetchAPIDATA} from "../../utils";
 import { dropdown } from "./dropdown.css";
 
 // create a const array of relationships and map through it to create a dropdown item for each relationship
-const relationships = [
-    {id: 1, name: "RelatedTo", acronym: "RT"},
-    {id: 2, name: "TypeOf", acronym: "TO"},
-    {id: 3, name: "InstanceOf", acronym: "IO"},
-    {id: 4, name: "PartOf", acronym: "PO"},
-    {id: 5, name: "HasProperty", acronym: "HP"},
-    {id: 6, name: "UsedFor", acronym: "UF"},
-    {id: 7, name: "HasA", acronym: "HA"},
-    {id: 8, name: "AtLocation", acronym: "AL"},
-    {id: 9, name: "Causes", acronym: "Ca"},
-    {id: 10, name: "MotivatedByGoal", acronym: "MBG"},
-    {id: 11, name: "ObstructedBy", acronym: "OB"},
-    {id: 12, name: "MannerOf", acronym: "MO"},
-    {id: 13, name: "LocatedNear", acronym: "LN"},
+export const relationships = [
+    {id: 1, value: "RELATEDTO", label:"RELATEDTO", acronym: "RT"},
+    {id: 2, value: "TYPEOF", label:"TYPEOF", acronym: "TO"},
+    {id: 3, value: "INSTANCEOF", label:"INSTANCEOF", acronym: "IO"},
+    {id: 4, value: "PARTOF", label:"PARTOF", acronym: "PO"},
+    {id: 5, value: "HASPROPERTY", label:"HASPROPERTY", acronym: "HP"},
+    {id: 6, value: "USEDFOR", label:"USEDFOR", acronym: "UF"},
+    {id: 7, value: "HASA", label:"HASA", acronym: "HA"},
+    {id: 8, value: "ATLOCATION", label:"ATLOCATION", acronym: "AL"},
+    {id: 9, value: "CAUSES", label:"CAUSES", acronym: "Ca"},
+    {id: 10, value: "MOTIVATEDBYGOAL", label:"MOTIVATEDBYGOAL", acronym: "MBG"},
+    {id: 11, value: "OBSTRUCTEDBY", label:"OBSTRUCTEDBY", acronym: "OB"},
+    {id: 12, value: "MANNEROF", label:"MANNEROF", acronym: "MO"},
+    {id: 13, value: "LOCATEDNEAR", label:"LOCATEDNEAR", acronym: "LN"},
 ]
 
 const Dropdown = ({node}) => {
 
-    // console.log("tag node: ", node)
 
-    // let sampleTagAcronym = ""
-    // for (let i = 0; i < relationships.length; i++) {
-    //     if (relationships[i].name === node.tag[0]) {
-    //         sampleTagAcronym = relationships[i].acronym
-    //         break
-    //     }
-    // }
     const [selectedTag, setSelectedTag] = useState(node.tag[0])
     const [isActive, setIsActive] = useState(true)
 
@@ -85,8 +77,8 @@ const Dropdown = ({node}) => {
                 {
                     tagsChoice.map((relationship) => {
                         return (
-                            <div onClick={handleTagSelection} className="dropdown-item" value={relationship.name.toUpperCase()} key={relationship.id}>
-                                {relationship.name.toUpperCase()}
+                            <div onClick={handleTagSelection} className="dropdown-item" value={relationship.value.toUpperCase()} key={relationship.id}>
+                                {relationship.value.toUpperCase()}
                             </div>
                         )
                     })
