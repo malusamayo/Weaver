@@ -1,4 +1,4 @@
-import React, { useReducer, useLayoutEffect, useState } from "react";
+import React, { useReducer, useLayoutEffect, useState, useEffect } from "react";
 import { v4 } from "uuid";
 import { ThemeProvider } from "styled-components";
 import { AiFillHome } from "react-icons/ai";
@@ -16,10 +16,10 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
   const [state, dispatch] = useReducer(reducer, data);
   const [selection, setSelection] = useState("/");
   const [isLoading, setIsLoading] = useState(false);
+  const [isBackButtonActive, setIsBackButtonActive] = useState(true);
 
   const commitBackState = async() => {
     try {
-
       setIsLoading(true);
 
       const newData = await fetchAPIDATA("previousState");
@@ -42,6 +42,21 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
       console.error(error);
     }
   };
+
+  const commitBackAvailability = async () => {
+    try {
+      const isBackAvailable = await fetchAPIDATA("isBackAvailable");
+      setIsBackButtonActive(isBackAvailable);
+      console.log("isBackAvailable: ", isBackAvailable);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    commitBackAvailability();
+  });
+
 
   useLayoutEffect(() => {
     dispatch({ type: "SET_DATA", payload: data });
@@ -71,6 +86,7 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
               setIsLoading: setIsLoading,
               onNodeClick: (node) => {
                 commitSelection(node.node.id);
+                commitBackAvailability();
                 onNodeClick && onNodeClick(node);
               },
             }}
@@ -79,7 +95,12 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
           {/* <br /> */}
           <AnimatedMultiTagging />
           <div style={{display: "flex", alignItems: "center", padding: "0 10px", marginBottom: "10px"}}>
-            <GoArrowLeft size={30} onClick={commitBackState} />
+            
+            {isBackButtonActive ?
+              (<GoArrowLeft size={30} onClick={commitBackState} />) :
+              (<GoArrowLeft size={30} style={{color: "grey"}} />)
+            }
+            
             <AiFillHome size={20} />
           </div>
           <StyledTree>

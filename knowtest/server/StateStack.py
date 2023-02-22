@@ -7,30 +7,43 @@ class StateStack:
         print("stateSaveDirectory: {}".format(self.stateSaveDirectory))
         self.maxStates = max(10, maxStates)
         print("maxStates: {}".format(self.maxStates))
-        self.stack = self.readStateSaveDirectory()
+        self.stack = self.readStateSaveDirectory(readOlderStates=False)
 
-    def readStateSaveDirectory(self):
+    def readStateSaveDirectory(self, readOlderStates=True):
         if not os.path.exists(self.stateSaveDirectory):
             os.makedirs(self.stateSaveDirectory)
             return []
 
-        files = []
+        if readOlderStates:
+            files = []
 
-        for filename in os.listdir(self.stateSaveDirectory):
-            if filename.startswith("state_"):
-                files.append((filename, datetime.strptime(filename.replace("state_", "").replace(".csv", ""), "%Y-%m-%d_%H-%M-%S-%f")))
-        files.sort(key=lambda x: x[1])
+            for filename in os.listdir(self.stateSaveDirectory):
+                if filename.startswith("state_"):
+                    files.append((filename, datetime.strptime(filename.replace("state_", "").replace(".csv", ""), "%Y-%m-%d_%H-%M-%S-%f")))
+            files.sort(key=lambda x: x[1])
 
-        filesToBeDeleted = []
-        if len(files) > self.maxStates:
-            for filename, _ in files[:len(files) - self.maxStates]:
-                filesToBeDeleted.append(filename)
-        
-        for filename in filesToBeDeleted:
-            os.remove(self.stateSaveDirectory + filename)
-            print("1. removing {}".format(filename))
-        
-        return [filename for filename, _ in files]
+            filesToBeDeleted = []
+            if len(files) > self.maxStates:
+                for filename, _ in files[:len(files) - self.maxStates]:
+                    filesToBeDeleted.append(filename)
+            
+            for filename in filesToBeDeleted:
+                os.remove(self.stateSaveDirectory + filename)
+                print("1. removing {}".format(filename))
+            
+            return [filename for filename, _ in files]
+        else:
+            filesToBeDeleted = []
+            for filename in os.listdir(self.stateSaveDirectory):
+                if filename.startswith("state_"):
+                    filesToBeDeleted.append(filename)
+            
+            for filename in filesToBeDeleted:
+                os.remove(self.stateSaveDirectory + filename)
+                print("1. removing {}".format(filename))
+            
+            return []
+
         
     def addState(self, stateFileName):
         newStateFileName = "state_{}.csv".format(datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")) 

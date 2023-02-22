@@ -24,7 +24,7 @@
 // }
 
 
-import React, { useState, useLayoutEffect, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles.css";
 
 import Tree from "./Tree/Tree";

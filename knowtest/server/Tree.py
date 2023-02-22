@@ -73,7 +73,8 @@ class Tree:
         self.number_of_topics = 0
         self.nodes = {}
         self.kg = KnowledgeBase(KGOutput)
-        self.state = StateStack(stateDirectory)
+        self.stateDirectory = stateDirectory
+        self.state = StateStack(self.stateDirectory)
 
         if filename:
             self.read_csv(filename)
@@ -82,7 +83,10 @@ class Tree:
                         parent_id=None)
             self.add_node(node)
 
-    def add_node(self, node: Node) -> bool:
+    def reset_state(self):
+        self.state = StateStack(self.stateDirectory)
+
+    def add_node(self, node: Node, addAfter: str=None) -> bool:
         if self.number_of_topics == 0:
 
             self.number_of_topics += 1
@@ -103,8 +107,14 @@ class Tree:
             node.generate_new_id()
         
         if node.parent_id in self.nodes:
-            self.nodes[node.parent_id].children.append(node.id)
             self.nodes[node.id] = node
+
+            if addAfter is None:
+                self.nodes[node.parent_id].children.append(node.id)
+            else:
+                self.nodes[node.parent_id].children.insert(
+                    self.nodes[node.parent_id].children.index(addAfter)+1, node.id)
+
             return True
         else:
             return False
@@ -226,6 +236,30 @@ class Tree:
                 new_node = Node(name=suggestion, parent_id=node_id, tags=[relation])
                 if not self.add_node(new_node):
                     print("Unable to add node: ", new_node)
+
+    def add_relation_based_suggestions_sibling(self, node_id: str, relation: str):
+        if node_id in self.nodes:
+            # Get all siblings of the selected node
+            existing_siblings = []
+            parent_id = self.nodes[node_id].parent_id
+            for sibling_id in self.nodes[parent_id].children:
+                existing_siblings.append({
+                    "topic": self.nodes[sibling_id].name,
+                    "relation": self.nodes[sibling_id].tags[0],
+                    "is_highlighted": self.nodes[sibling_id].isHighlighted
+                })
+            
+            path = self.get_path(node_id)
+            path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
+
+            suggestions = self.kg.suggest_siblings(topic=self.nodes[node_id].name.lower(), relation=relation, path=path, existing_siblings=existing_siblings)
+
+            for dic in suggestions:
+                (suggestion, suggested_relation) = dic["to"], dic["relation"]
+                new_node = Node(name=suggestion, parent_id=parent_id, tags=[suggested_relation])
+                if not self.add_node(new_node, addAfter=node_id):
+                    print("Unable to add node: ", new_node)
+
         
     def rename_node(self, node_id: str, new_name: str):
         if node_id in self.nodes:
@@ -333,4 +367,7 @@ class Tree:
         self.read_csv(path + fname)
         self.write_csv(filename, updateState=False)
         self.state.deleteLatestState()
+    
+    def is_back_available(self):
+        return len(self.state.stack) > 0
     

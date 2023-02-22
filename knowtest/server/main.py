@@ -102,11 +102,27 @@ def remove_similar_relation_siblings(node_id: str, relation: str):
     t.write_csv(filename)
     return t.generate_json()
 
+@app.get("/addSimilarRelationSiblings/nodeId={node_id}&tag={relation}")
+def add_similar_relation_siblings(node_id: str, relation: str):
+    print("Adding siblings with relation: ", relation)
+    t.add_relation_based_suggestions_sibling(node_id, relation)
+    t.write_csv(filename)
+    return t.generate_json()
+
 @app.get("/previousState")
 def previous_state():
     print("Going to previous state")
     t.load_last_state(filename)
     return t.generate_json()
+
+@app.get("/isBackAvailable")
+def is_back_available():
+    return t.is_back_available()
+
+@app.get("/resetState")
+def reset_state():
+    print("Resetting state")
+    t.reset_state()
 
 origins = [
     "http://localhost:3000",

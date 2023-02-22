@@ -29,7 +29,7 @@ import { Dropdown } from "../Dropdown/dropdown";
 
 const StyledRelation = ({node, nodeTag}) => {
 
-  const { dispatch } = useTreeContext();
+  const { dispatch, setIsLoading } = useTreeContext();
 
   const commitRemoveSimilarRelationSiblings = async (node, nodeTag) => {
     try {
@@ -40,10 +40,21 @@ const StyledRelation = ({node, nodeTag}) => {
     }
   }
 
+  const commitAddSimilarRelationSiblings = async (node, nodeTag) => {
+    try {
+      setIsLoading(true);
+      const newData = await fetchAPIDATA("addSimilarRelationSiblings/nodeId=" + node.id + "&tag=" + nodeTag);
+      dispatch({ type: "SET_DATA", payload: newData });
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const handleActionPlusClick = (event) => {
     event.stopPropagation();
     console.log("handleActionPlusClick", event)
-
+    commitAddSimilarRelationSiblings(node, nodeTag)
   }
 
   const handleActionCrossClick = (event) => {
