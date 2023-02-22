@@ -12,6 +12,7 @@ import {
 import { MdDeleteForever } from "react-icons/md";
 import {FaFolderPlus} from "react-icons/fa";
 import { BiRefresh } from "react-icons/bi";
+import { ImPlus, ImCross } from "react-icons/im";
 
 import {
   ActionsWrapper,
@@ -67,9 +68,9 @@ const StyledRelation = ({node, nodeTag}) => {
     <StyledTag>
       {nodeTag}
         <div className="actionbutton">
-          <i class="fa fa-plus" aria-hidden="true" onClick={handleActionPlusClick}></i>
+          <ImPlus onClick={handleActionPlusClick} />
           &nbsp;&nbsp;
-          <i class="fa fa-times" aria-hidden="true" onClick={handleActionCrossClick}></i>
+          <ImCross onClick={handleActionCrossClick} />
         </div>
     </StyledTag>
   )
