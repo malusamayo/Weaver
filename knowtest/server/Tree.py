@@ -328,9 +328,9 @@ class Tree:
         (path, fname) = self.state.getLatestState()
         if fname == None:
             return
-        self.write_csv(filename, updateState=False)
         self.number_of_topics = 0
         self.nodes = {}
         self.read_csv(path + fname)
+        self.write_csv(filename, updateState=False)
         self.state.deleteLatestState()
     

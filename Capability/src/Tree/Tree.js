@@ -19,10 +19,15 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
 
   const commitBackState = async() => {
     try {
+
+      setIsLoading(true);
+
       const newData = await fetchAPIDATA("previousState");
       dispatch({ type: "SET_DATA", payload: newData });
       setData(newData);
       console.log("going back to: ", newData);
+
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
