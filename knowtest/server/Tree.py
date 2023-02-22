@@ -112,6 +112,7 @@ class Tree:
             if addAfter is None:
                 self.nodes[node.parent_id].children.append(node.id)
             else:
+                position_to_add = self.nodes[node.parent_id].children.index(addAfter)
                 self.nodes[node.parent_id].children.insert(
                     self.nodes[node.parent_id].children.index(addAfter)+1, node.id)
 
@@ -142,9 +143,11 @@ class Tree:
                 return None
             
         children = [self.nodes[child_id] for child_id in self.nodes[node["id"]].children]
-        lexigraphically_sorted_children = sorted(children, key=lambda x: x.name)
+        
+        if sorting:
+            children = sorted(children, key=lambda x: x.name)
         # print(lexigraphically_sorted_children, children)
-        for child in lexigraphically_sorted_children:
+        for child in children:
             child_node = self.generate_tree_helper(child, sorting)
             if child_node is not None:
                 node["children"].append(child_node)
