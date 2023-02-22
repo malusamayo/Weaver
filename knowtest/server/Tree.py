@@ -8,6 +8,7 @@ if module_path not in sys.path:
     sys.path.append(module_path)
 
 from knowledge.knbase import KnowledgeBase
+from server.StateStack import StateStack
 
 class Node:
     def __init__(self, name: str, parent_id: str, node_id: Union[str, None]=None, tags=[], isOpen: bool=False, isHighlighted: bool=False):
@@ -66,12 +67,13 @@ class Node:
         return ", ".join(self.tags)
 
 class Tree:
-    def __init__(self, topic: str="root", filename: str=None, KGOutput: str="../../output"):
+    def __init__(self, topic: str="root", filename: str=None, KGOutput: str="../../output", stateDirectory: str="../../output/"):
 
         self.tag_filters = []
         self.number_of_topics = 0
         self.nodes = {}
         self.kg = KnowledgeBase(KGOutput)
+        self.state = StateStack(stateDirectory)
 
         if filename:
             self.read_csv(filename)
@@ -88,7 +90,7 @@ class Tree:
             # Set the root node to be open and highlighted with no parent and tags
             print("Setting root node: ", node.name)
             node.parent_id = None
-            node.isOpen = True
+            node.isOpen = False
             node.isHighlighted = True
             node.tags = []
 
@@ -117,8 +119,8 @@ class Tree:
     
     def generate_json(self, sorting: bool=False):
         tree = self.generate_tree_helper(self.root, sorting)
-        tree["isOpen"] = True
         tree["isHighlighted"] = True
+        tree["isOpen"] = True
         tree = [tree]
         return tree
 
@@ -307,6 +309,7 @@ class Tree:
             return False
 
     def write_csv(self, filename: str):
+        self.state.addState(filename)
         file = open(filename, 'w')
         stack_id = [self.root.id]
         while len(stack_id) > 0:
@@ -319,4 +322,14 @@ class Tree:
                                                     ",".join(self.nodes[node_id].tags)))
             stack_id.extend(self.nodes[node_id].children)
         file.close()
+    
+    def load_last_state(self):
+        (path, filename) = self.state.getLatestState()
+        if filename == None:
+            return
+
+        self.number_of_topics = 0
+        self.nodes = {}
+        self.read_csv(path + filename)
+        self.state.deleteLatestState()
     

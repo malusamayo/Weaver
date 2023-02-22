@@ -52,7 +52,7 @@ export default function App() {
 
   return (
     <main>
-      <Tree data={data} onUpdate={handleUpdate} onNodeClick={handleClick} />
+      <Tree data={data} onUpdate={handleUpdate} onNodeClick={handleClick} setData={setData}/>
     </main>
   );
 }

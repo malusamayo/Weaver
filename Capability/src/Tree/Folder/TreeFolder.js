@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
   AiOutlineFolder,
   AiOutlineFolderOpen,
@@ -128,6 +128,14 @@ const Folder = ({ id, name, children, node, root}) => {
     }
   };
 
+  useLayoutEffect(() => {
+    setIsOpen(node.isOpen);
+  }, [node.isOpen]);
+
+  useEffect(() => {
+    setTags(node.tags);
+  }, [node.tags]);
+
   useEffect(() => {
     setChilds([children]);
   }, [children]);
@@ -249,7 +257,7 @@ const Folder = ({ id, name, children, node, root}) => {
               {root ? null : <MdDeleteForever onClick={commitDeleteFolder} />}
             </div>
           </ActionsWrapper>
-          {isOpen && (
+          {(node.isOpen || isOpen) && (
             <Collapse className="tree__folder--collapsible" isOpen={isOpen}>
             {childs}
           </Collapse>

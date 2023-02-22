@@ -1,8 +1,8 @@
 import React, { useReducer, useLayoutEffect, useState } from "react";
 import { v4 } from "uuid";
 import { ThemeProvider } from "styled-components";
-import { BiRefresh } from "react-icons/bi";
-
+import { AiFillHome } from "react-icons/ai";
+import { GoArrowLeft } from "react-icons/go";
 import { useDidMountEffect } from "../utils";
 import { TreeContext, reducer } from "./state";
 import {fetchAPIDATA} from "../utils";
@@ -11,11 +11,22 @@ import { Folder } from "./Folder/TreeFolder";
 import { loading } from "./Tree.css";
 import { AnimatedMultiTagging } from "./Tag/tag";
 
-const Tree = ({ children, data, onNodeClick, onUpdate }) => {
+const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
 
   const [state, dispatch] = useReducer(reducer, data);
   const [selection, setSelection] = useState("/");
   const [isLoading, setIsLoading] = useState(false);
+
+  const commitBackState = async() => {
+    try {
+      const newData = await fetchAPIDATA("previousState");
+      dispatch({ type: "SET_DATA", payload: newData });
+      setData(newData);
+      console.log("going back to: ", newData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const commitSelection = async (id) => {
     try {
@@ -62,6 +73,10 @@ const Tree = ({ children, data, onNodeClick, onUpdate }) => {
           <p>Selection: {selection}</p>
           {/* <br /> */}
           <AnimatedMultiTagging />
+          <div style={{display: "flex", alignItems: "center", padding: "0 10px", marginBottom: "10px"}}>
+            <GoArrowLeft size={30} onClick={commitBackState} />
+            <AiFillHome size={20} />
+          </div>
           <StyledTree>
             {isImparative ? (
               <TreeRecusive data={state} parentNode={state} root={true}/>

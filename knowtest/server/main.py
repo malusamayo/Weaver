@@ -15,7 +15,7 @@ app = FastAPI()
 
 @app.get("/")
 def get_tree():
-    return t.generate_json(sorting=True)
+    return t.generate_json()
 
 @app.get("/addNode/parentID={parent_id}&nodeName={name}&nodeTag={tag}")
 def add_node(parent_id: str, name: str, tag: str):
@@ -100,6 +100,12 @@ def remove_similar_relation_siblings(node_id: str, relation: str):
     # print("Removing similar relation children for {} with tag {}".format(t.nodes[t.nodes[node_id].parent_id], relation))
     t.remove_same_relation_sibling(node_id, relation)
     t.write_csv(filename)
+    return t.generate_json()
+
+@app.get("/previousState")
+def previous_state():
+    print("Going to previous state")
+    t.load_last_state()
     return t.generate_json()
 
 origins = [
