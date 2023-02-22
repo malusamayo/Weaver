@@ -105,7 +105,7 @@ def remove_similar_relation_siblings(node_id: str, relation: str):
 @app.get("/previousState")
 def previous_state():
     print("Going to previous state")
-    t.load_last_state()
+    t.load_last_state(filename)
     return t.generate_json()
 
 origins = [

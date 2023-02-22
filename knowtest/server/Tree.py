@@ -308,8 +308,9 @@ class Tree:
             raise Exception("[Unable to read file: {}] Error: {}".format(filename, e))
             return False
 
-    def write_csv(self, filename: str):
-        self.state.addState(filename)
+    def write_csv(self, filename: str, updateState: bool = True):
+        if updateState:
+            self.state.addState(filename)
         file = open(filename, 'w')
         stack_id = [self.root.id]
         while len(stack_id) > 0:
@@ -323,13 +324,13 @@ class Tree:
             stack_id.extend(self.nodes[node_id].children)
         file.close()
     
-    def load_last_state(self):
-        (path, filename) = self.state.getLatestState()
-        if filename == None:
+    def load_last_state(self, filename: str):
+        (path, fname) = self.state.getLatestState()
+        if fname == None:
             return
-
+        self.write_csv(filename, updateState=False)
         self.number_of_topics = 0
         self.nodes = {}
-        self.read_csv(path + filename)
+        self.read_csv(path + fname)
         self.state.deleteLatestState()
     

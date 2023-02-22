@@ -56,6 +56,7 @@ class StateStack:
     def getLatestState(self):
         if len(self.stack) == 0:
             return (None, None)
+
         print("self.stack: {}".format(self.stack))
         latestState = self.stack[-1]
         return (self.stateSaveDirectory, latestState)
