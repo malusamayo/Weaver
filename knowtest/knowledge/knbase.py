@@ -169,7 +169,46 @@ class KnowledgeBase(object):
         children = children.sample(n=n_expand, weights='final_weight')
         self.update_user_history(recommended=children)
         return children[['to', 'relation']].to_dict('records')
-    
+
+    def suggest_siblings(self, topic, relation, path=[], existing_siblings=[], n_expand=3):
+        ''' Suggest siblings of a node.
+        Parameters
+        ----------
+        topic : str
+        relation : str
+            The relation used to find siblings.
+        path : list of dict {topic, relation}
+            The path from the root to the current node.
+        existing_siblings : list of dict {topic, relation, is_highlighted}
+            The existing siblings of the current node, including the current node.
+        n_expand : int
+            The number of siblings returned.
+        Returns
+        -------
+        siblings : list of dict {to, relation}
+            The expanded siblings of the current node.
+        '''
+
+        parent = path[-1]['topic']
+        children = self.find_children_per_relation(parent, relation)
+        
+        assert len(existing_siblings) > 0
+        existing_siblings = pd.DataFrame(existing_siblings)
+        existing_siblings['from'] = parent
+        existing_siblings['to'] = existing_siblings['topic']
+
+        known_topics = existing_siblings[existing_siblings['relation'] == relation]['topic'].to_list()
+        new_topics = children[~children['to'].isin(known_topics)]
+
+        if len(new_topics) <= n_expand:
+            self.extend_node(parent, relation)
+            children = self.find_children_per_relation(parent, relation)
+            new_topics = children[~children['to'].isin(known_topics)]
+
+        # [TODO] compute final weights based on topic, path and user history
+
+        new_topics = new_topics.sample(n=n_expand)
+        return new_topics[['to', 'relation']].to_dict('records')
 
     def add_node(self, topic, parent_topic, relation):
         self.nodes = self.nodes.append({"id": topic}, ignore_index=True)
