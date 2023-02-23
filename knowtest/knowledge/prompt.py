@@ -5,17 +5,9 @@ from .relations import RELATIONS, PROMPT_TEMPLATES
 
 class Prompter(object):
     
-    def __init__(self, domain=None):
+    def __init__(self):
         self.model = GPT3Model()
         self.cache = Cache()
-        # if domain != None:
-        #     self.initialize_prompt(domain)
-
-    
-    # def initialize_prompt(self, domain):
-    #     prompt = ""
-    #     prompt += f"From now on, all your response should be around {domain}."
-    #     self.model(prompt, rollback=False)
 
     # [TODO] Use external models to evaluate prompt likelihood
     def select_prompts(self, prompts):
@@ -116,12 +108,36 @@ class Prompter(object):
         return topic_list
 
     # [TODO] more engineering needed
-    def query_examples(self, domain, label, topic):
+    def suggest_examples(self, domain, topic, context="", examples=[], N=5):
+        ''' Query the model of examples.
+        Parameters
+        ----------
+        domain : str
+            The domain of the examples.
+        topic : str
+            The topic of the examples.
+        context : str
+            The context of the examples.
+        examples : list of str
+            The examples that are already curated by the user.
+        N : int
+            The desired number of examples.
+        '''
         prompt = ""
-        prompt += f"Imagine you are writing a {domain}. You are {label}.\n"
-        prompt += f"Write some comments on {topic}."
-        text = self.model(prompt)
-        return text
+        prompt += context
+        prompt += "\n"
+        prompt += f"Write {N + len(examples)} comments on the topic '{topic}' in {domain}.\n"
+        for i, example in enumerate(examples):
+            prompt += f"{i+1}. {example}\n"
+        prompt += f"{len(examples) + 1}. "
+        
+        response = self.model(prompt)
+        new_examples = response.split("\n")
+        for i in range(len(new_examples)):
+            idx = i + 1 + len(examples)
+            new_examples[i] = new_examples[i].strip().replace(f"{idx}. ", "")
+
+        return new_examples
 
     # [TODO] more engineering needed
     def query_relations(self, topic, related_topic):

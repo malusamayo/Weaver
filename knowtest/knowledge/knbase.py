@@ -7,8 +7,9 @@ from .relations import RELATIONS
 
 class KnowledgeBase(object):
 
-    def __init__(self, path, uid=None) -> None:
+    def __init__(self, path, domain="", uid=None) -> None:
         self.dir = path
+        self.domain = "online platform" if domain == "" else domain # setting domain to "online platform" by default
         self.nodes = pd.read_csv(path + "/nodes.csv")
         self.edges = pd.read_csv(path + "/edges.csv")
         self.lock = threading.Lock() # for multi-threading
@@ -56,8 +57,8 @@ class KnowledgeBase(object):
         return children
 
     def find_children_per_relation(self, topic, relation):
-        children = self.find_children(topic)
-        children = children[children['relation'] == relation]
+        children = self.edges[(self.edges["from"] == topic) & (self.edges["relation"] == relation)]
+        children = children.merge(self.nodes, left_on='to', right_on='id')
         return children
 
     def extend_node(self, topic, relation):
@@ -71,9 +72,9 @@ class KnowledgeBase(object):
         new_user_history = [{"from": topic, "to": new_topic, "relation": relation, "recommended": False, "selected": False} for new_topic in new_topics]
 
         self.lock.acquire()
-        self.nodes = self.nodes.append(new_nodes, ignore_index=True)
-        self.edges = self.edges.append(new_edges, ignore_index=True)
-        self.user_history = self.user_history.append(new_user_history, ignore_index=True)
+        self.nodes = pd.concat([self.nodes, pd.DataFrame(new_nodes)], ignore_index=True)
+        self.edges = pd.concat([self.edges, pd.DataFrame(new_edges)], ignore_index=True)
+        self.user_history = pd.concat([self.user_history, pd.DataFrame(new_user_history)], ignore_index=True)
         self.lock.release()
 
     def extend_node_all_relation(self, topic):
@@ -209,6 +210,29 @@ class KnowledgeBase(object):
 
         new_topics = new_topics.sample(n=n_expand)
         return new_topics[['to', 'relation']].to_dict('records')
+
+    def suggest_examples(self, topic, path=[], examples=[], N=5):
+        ''' Suggest examples of a node.
+        Parameters
+        ----------
+        topic : str
+            The topic of the examples.
+        path : list of dict {topic, relation}
+            The path from the root to the current node.
+        examples : list of str
+            The examples that are already curated by the user.
+        N : int
+            The desired number of examples.
+        Returns
+        -------
+        new_examples : list of str
+            The suggested examples.
+        '''
+
+        # [TODO] translate path to context
+        context = ""
+        new_examples = self.prompter.suggest_examples(self.domain, topic, context=context, examples=examples, N=N)
+        return new_examples
 
     def add_node(self, topic, parent_topic, relation):
         self.nodes = self.nodes.append({"id": topic}, ignore_index=True)
