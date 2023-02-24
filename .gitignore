@@ -1,5 +1,6 @@
 # dependencies
 /Capability/node_modules
+/CapabilityClient/Build
 /.pnp
 .pnp.js
 
