@@ -15,6 +15,7 @@ app = FastAPI()
 
 @app.get("/")
 def get_tree():
+    # t.reset_state()
     return t.generate_json()
 
 @app.get("/addNode/parentID={parent_id}&nodeName={name}&nodeTag={tag}")

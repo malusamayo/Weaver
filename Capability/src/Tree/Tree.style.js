@@ -79,14 +79,12 @@ export const StyledTag = styled.div`
   align-items: center;
   cursor: pointer;
   margin-left: 4px;
-  font-size: 10px;
-  font-weight: bold;
+  font-size: 11px;
+  color: rgb(54, 54, 54);
   border-radius: 4px;
-  border: 2px solid;
-  border-color: rgb(89, 89, 89);
+  border: 2px solid rgb(170, 170, 170);
   padding: 0px 4px 0px 4px;
-  background-color: rgb(195, 195, 195);
-
+  background-color: rgb(231, 231, 231);
   .actionbutton {
     display: none;
     align-items: center;
@@ -106,6 +104,16 @@ export const StyledTag = styled.div`
     transition: 5s;
   }
 
+  .actionbutton > svg {
+    cursor: pointer;
+    margin-left: 3px;
+    transform: scale(1);
+    transition: 0.2s;
+  }
+
+  .actionbutton > svg:hover {
+    transform: scale(1.2);
+  }
 `;
 
 export const Collapse = styled.div`

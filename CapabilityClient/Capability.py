@@ -43,8 +43,9 @@ class Capability(object):
             <div id="root" style="min-height: 300px;"></div>
         <div>
         """
-
-        return content.format(self.get_js_file(), self.get_css_file())
+        js_file = self.get_js_file()
+        css_file = self.get_css_file()
+        return content.format(js_file, css_file)
 
     def check_if_server_is_running(self):
         try:
@@ -57,4 +58,5 @@ class Capability(object):
         requests.get(self.server_link + "/resetState")
 
     def display(self):
-        display(HTML(self.get_html_file()))
+        html_content = self.get_html_file()
+        display(HTML(html_content))

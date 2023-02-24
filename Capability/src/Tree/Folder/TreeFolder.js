@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
+import { Tooltip } from 'react-tooltip';
 import {
   AiOutlineFolder,
   AiOutlineFolderOpen,
@@ -27,6 +28,7 @@ import { useTreeContext } from "../state/TreeContext";
 import { PlaceholderInput } from "../TreePlaceholderInput";
 import {fetchAPIDATA} from "../../utils";
 import { Dropdown } from "../Dropdown/dropdown";
+import { AlertDelete } from "./AlertDelete";
 
 const StyledRelation = ({node, nodeTag}) => {
 
@@ -107,6 +109,7 @@ const Folder = ({ id, name, children, node, root}) => {
   const [isEditing, setEditing] = useState(false);
   const [isOpen, setIsOpen] = useState(node.isOpen);
   const [childs, setChilds] = useState([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Setting new const here
   const [tags, setTags] = useState(node.tags);
@@ -175,6 +178,20 @@ const Folder = ({ id, name, children, node, root}) => {
     }
   };
 
+  const handleDeleteConfirm = () => {
+    console.log("Handle Delete Confirm");
+    setIsDeleting(true);
+  };
+
+  const handleDeleteFolder = () => {
+    console.log("Handle Delete Folder")
+    if (!node.isHighlighted) {
+      commitDeleteFolder();
+    } else {
+      handleDeleteConfirm();
+    }
+  };
+
   const commitFolderEdit = async (name) => {
     try {
       const newData = await fetchAPIDATA("editFolderName/nodeId=" + id + "&newName=" + name);
@@ -233,8 +250,31 @@ const Folder = ({ id, name, children, node, root}) => {
     setEditing(true);
   };
 
+  // handle hover over className="AddFolder"
+  useEffect(() => {
+    const handleMouseOverForAddFolder = (event) => {
+      if (event.target.className === "AddFolder") {
+        // Show a box with the text "Add Topic" in it
+        console.log("Mouse Over Add Folder");
+      }
+    };
+    document.addEventListener("mouseover", handleMouseOverForAddFolder);
+    return () => {
+      document.removeEventListener("mouseover", handleMouseOverForAddFolder);
+    };
+  }, []);
+
+  const tooltip_style= {
+      zIndex: 9999, 
+      position: "absolute", 
+      backgroundColor: "rgba(54, 54, 54, 1)",
+      padding : "5px",
+      fontSize: "80%",
+    };
+
   return (
     <StyledFolder id={id} onClick={handleNodeClick} className="tree__folder">
+        <AlertDelete node={node} onConfirm={commitDeleteFolder} isDeleting={isDeleting} setIsDeleting={setIsDeleting}/>
         <VerticalLine root={false}>
           <ActionsWrapper>
             {/* {root ? (<div style={{marginRight: "15px"}} >></div>) : null} */}
@@ -261,12 +301,18 @@ const Folder = ({ id, name, children, node, root}) => {
 
             <div className="actions">
               {root ? null : node.isHighlighted ?
-                <AiOutlineMinus onClick={() => setNodeHighlighted(false)} /> :
-                <AiOutlinePlus onClick={() => setNodeHighlighted(true)} /> }
-              <BiRefresh onClick={commitSuggestions} />
-              <AiFillEdit onClick={handleFolderRename} />
-              <FaFolderPlus onClick={handleFolderCreation} />
-              {root ? null : <MdDeleteForever onClick={commitDeleteFolder} />}
+                <AiOutlineMinus onClick={() => setNodeHighlighted(false)} id="unhighlight-topic"/> :
+                <AiOutlinePlus onClick={() => setNodeHighlighted(true)} id="highlight-topic"/> }
+              <BiRefresh onClick={commitSuggestions} id="refresh-suggestion"/>
+              <AiFillEdit onClick={handleFolderRename} id="edit-topic"/>
+              <FaFolderPlus onClick={handleFolderCreation} id="add-topic"/>
+              {root ? null : <MdDeleteForever onClick={handleDeleteFolder} id="delete-topic"/>}
+              <Tooltip place="bottom" anchorSelect="#highlight-topic" content="Highlight the Topic" style={tooltip_style}/>
+              <Tooltip place="bottom" anchorSelect="#unhighlight-topic" content="Unhighlight the Topic" style={tooltip_style}/>
+              <Tooltip place="bottom" anchorSelect="#refresh-suggestion" content="Refresh Suggestions" style={tooltip_style}/>
+              <Tooltip place="bottom" anchorSelect="#edit-topic" content="Edit Topic" style={tooltip_style}/>
+              <Tooltip place="bottom" anchorSelect="#add-topic" content="Add Topic" style={tooltip_style}/>
+              <Tooltip place="bottom" anchorSelect="#delete-topic" content="Delete Topic" style={tooltip_style}/>
             </div>
           </ActionsWrapper>
           {(node.isOpen || isOpen) && (
