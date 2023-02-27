@@ -37,6 +37,7 @@ export default function App() {
     return fetch("http://localhost:3001/")
       .then((response) => response.json())
       .then((data) => setData(data))
+      .then(() => console.log("fetch data from base"))
   }
 
   useEffect(() => {

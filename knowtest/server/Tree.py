@@ -131,7 +131,7 @@ class Tree:
     def generate_json(self, sorting: bool=False):
         tree = self.generate_tree_helper(self.root, sorting)
         tree["isHighlighted"] = True
-        tree["isOpen"] = True
+        # tree["isOpen"] = True
         tree = [tree]
         return tree
 

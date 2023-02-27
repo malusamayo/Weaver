@@ -1,0 +1,93 @@
+.alert-delete-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9998;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.alert-delete {
+    width: auto;
+    padding: 18px;
+    height: auto;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 2px;
+    border-color: rgb(102, 102, 102);
+    border-width: 0px;
+    border-style: solid;
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.6);
+}
+
+.alert-delete__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.alert-delete__content p {
+    font-size: 13px;
+    color: rgb(0, 0, 0);
+}
+
+.alert-delete__actions {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    width: 100%;
+}
+
+.alert-delete__content button {
+    width: auto;
+    padding: 6px 14px;
+    height: auto;
+    border-radius: 1px;
+    border: none;
+    font-size: 12px;
+    /* font-weight: bold; */
+    cursor: pointer;
+    color: rgb(102, 102, 255);
+    margin: 0px 0px 0px 5px;
+}
+
+.alert-delete__content button:last-child {
+    background-color: rgba(244, 44, 31, 1);
+    color: #fff;
+}
+
+.alert-delete__content button:last-child:hover {
+    background-color: rgba(214, 41, 31, 1);
+    color: #fff;
+}
+
+.alert-delete__content button:last-child:active {
+    background-color: rgba(184, 39, 25, 1);
+    color: #fff;
+}
+
+.alert-delete__content button:first-child {
+    background-color: rgb(255, 255, 255);
+    color: rgba(0, 0, 0, 1);
+    border-radius: 1px;
+    border: 1px solid rgb(204, 204, 204);
+}
+
+.alert-delete__content button:first-child:hover {
+    background-color: rgb(220, 220, 220);
+} 
+
+.alert-delete__content button:first-child:active {
+    background-color: rgb(170, 170, 170);
+} 
+

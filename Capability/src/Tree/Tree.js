@@ -1,5 +1,4 @@
 import React, { useReducer, useLayoutEffect, useState, useEffect } from "react";
-import { v4 } from "uuid";
 import { ThemeProvider } from "styled-components";
 import { AiFillHome } from "react-icons/ai";
 import { GoArrowLeft } from "react-icons/go";
@@ -8,7 +7,7 @@ import { TreeContext, reducer } from "./state";
 import {fetchAPIDATA} from "../utils";
 import { StyledTree } from "./Tree.style";
 import { Folder } from "./Folder/TreeFolder";
-import { loading } from "./Tree.css";
+import { loading } from "./Loading.css";
 import { AnimatedMultiTagging } from "./Tag/tag";
 
 const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
@@ -65,6 +64,20 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
   useDidMountEffect(() => {
     onUpdate && onUpdate(state);
   }, [state]);
+
+  // handle cmd + z ctrl + z to go back
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "z") {
+        commitBackState();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+  
 
   const isImparative = data && !children;
 
