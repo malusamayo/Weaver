@@ -4,10 +4,11 @@ import threading
 import pandas as pd
 from .prompt import Prompter
 from .relations import RELATIONS
+from .utils import normalize
 
 class KnowledgeBase(object):
 
-    def __init__(self, path, domain="", uid=None) -> None:
+    def __init__(self, path, taskid, domain="", uid=None) -> None:
         self.dir = path
         self.domain = "online platform" if domain == "" else domain # setting domain to "online platform" by default
         self.nodes = pd.read_csv(path + "/nodes.csv")
@@ -26,7 +27,7 @@ class KnowledgeBase(object):
             self.user_history['recommended'] = False
             self.user_history['selected'] = None
 
-        self.prompter = Prompter()
+        self.prompter = Prompter(taskid=taskid)
 
     def save(self):
         self.nodes.to_csv(self.dir + "/nodes.csv", index=False)
@@ -130,6 +131,8 @@ class KnowledgeBase(object):
         children : list of dict {to, relation}
             The expanded children of the current node.
         '''
+
+        topic = topic.lower() # temporary fix
 
         # initialize children nodes
         if len(existing_children) == 0:
@@ -254,11 +257,15 @@ def store_kb(knbase, path):
     nodes["weight"] = 1
     edges = pd.DataFrame(knbase['edges'])
 
+    # normalize words
+    nodes['id'] = nodes['id'].map(normalize)
+    edges['to'] = edges['to'].map(normalize)
+
     # deduplicate nodes
     nodes = nodes.drop_duplicates(subset=['id'])
+    edges = edges.drop_duplicates(subset=['to']) # drop duplicated topics in different paths
 
-    # merge semantically similar nodes
-
+    # [TODO] merge semantically similar nodes??
 
     nodes.to_csv(path + "/nodes.csv", index=False)
     edges.to_csv(path + "/edges.csv", index=False)
