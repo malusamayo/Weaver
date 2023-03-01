@@ -70,18 +70,10 @@ class Prompter(object):
                 new_topics = [topic for topic in cached_topics if topic not in known_topics]
                 return new_topics
             else:
-                if self.cache.exists_prompt(topic, relation):
-                    prompt += self.cache.get_prompt(topic, relation)
-                else:
-                    prompt += self.generate_prompt(topic, relation)
-                    self.cache.save_prompt(topic, relation, prompt)
+                prompt += self.generate_prompt(topic, relation, N)
                 prompt = prompt.replace("List", "List extra")
         else:
-            if self.cache.exists_prompt(topic, relation):
-                prompt += self.cache.get_prompt(topic, relation)
-            else:
-                prompt += self.generate_prompt(topic, relation)
-                self.cache.save_prompt(topic, relation, prompt)
+            prompt += self.generate_prompt(topic, relation, N)
         
         # adding format instructions
         prompt += "\n"

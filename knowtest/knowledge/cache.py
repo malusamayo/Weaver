@@ -3,18 +3,18 @@ from pathlib import Path
 from .relations import RELATIONS
 
 class Cache(object):
-    def __init__(self) -> None:
-        self.saved_prompts = dict()
-        self.cache_dir = os.path.join(Path(__file__).parent.parent.parent, "query_cache")
+    def __init__(self, taskid) -> None:
+        # self.saved_prompts = dict()
+        self.cache_dir = os.path.join(Path(__file__).parent.parent.parent, "query_cache", taskid)
 
-    def save_prompt(self, topic, relation, prompt):
-        self.saved_prompts[(topic, relation)] = prompt
+    # def save_prompt(self, topic, relation, prompt):
+    #     self.saved_prompts[(topic, relation)] = prompt
 
-    def exists_prompt(self, topic, relation):
-        return (topic, relation) in self.saved_prompts 
+    # def exists_prompt(self, topic, relation):
+    #     return (topic, relation) in self.saved_prompts 
         
-    def get_prompt(self, topic, relation):
-        return self.saved_prompts[(topic, relation)]
+    # def get_prompt(self, topic, relation):
+    #     return self.saved_prompts[(topic, relation)]
 
     def cache_queries(self, topic, relation, topic_list):
         topic_dir = os.path.join(self.cache_dir, topic)
