@@ -2,12 +2,15 @@ import os
 from .knmodel import GPT3Model
 from .cache import Cache
 from .relations import RELATIONS, PROMPT_TEMPLATES
+from .utils import normalize
 
 class Prompter(object):
     
-    def __init__(self):
+    def __init__(self, taskid):
+        self.taskid = taskid
         self.model = GPT3Model()
-        self.cache = Cache()
+        self.cache = Cache(taskid)
+        self.sep = "#"
 
     # [TODO] Use external models to evaluate prompt likelihood
     def select_prompts(self, prompts):
@@ -38,11 +41,12 @@ class Prompter(object):
         return prompt
 
     def postprocess_to_list(self, text):
-        text = text.strip().rstrip('.').lower()
-        words = text.split(", ")
+        text = text.strip().strip(self.sep).rstrip(self.sep).lower()
+        words = text.split(self.sep)
+        words = [normalize(word) for word in words]
         return words
 
-    def query_topics(self, topic, relation, known_topics=[], N=10):
+    def query_topics(self, topic, relation, known_topics=[], N=20):
         """ Query the model of related topics.
         Parameters
         ----------
@@ -77,12 +81,12 @@ class Prompter(object):
         
         # adding format instructions
         prompt += "\n"
-        prompt += "Summarize in a list of words. Separate the list by commas. Keep only the list."
+        prompt += f"Summarize in a list of words. Separate the list by '{self.sep}' only. Keep only the list."
         extend = len(cached_topics) > 0 # if there are cached topics, we are extending the list
         if extend:
             prompt += "\n"
             prompt += "Known examples: "
-            prompt += ', '.join(cached_topics) + ".\n"
+            prompt += self.sep.join(cached_topics) + "\n"
             prompt += "Extra examples: "
         response = self.model(prompt)
         topic_list = self.postprocess_to_list(response)
@@ -156,4 +160,4 @@ class Prompter(object):
 
 if __name__ == "__main__":
     prompter = Prompter()
-    print(prompter.query_topics("hate speech", "MANNEROF"))
+    print(prompter.query_topics("smartphone", "downsides of"))
