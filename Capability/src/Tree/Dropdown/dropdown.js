@@ -50,7 +50,6 @@ const Dropdown = ({node}) => {
 
         setSelectedTag(selectedTagName)
         commitTagSelection(node, selectedTagName)
-        // setIsActive(false)
     }
 
     const handleDropdownClick = () => {

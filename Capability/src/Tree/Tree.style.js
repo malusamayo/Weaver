@@ -66,6 +66,35 @@ export const ActionsWrapper = styled.div`
 
 `;
 
+export const TreeActionsWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+
+  .treeactions {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    pointer-events: none;
+    font-stretch: 100%;
+    padding: 0px 10px 0px 0px;
+    color: rgb(55, 55, 55);
+
+    > svg {
+      cursor: pointer;
+      margin-left: 10px;
+      transform: scale(1);
+      transition: 0.2s;
+
+      :hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+`;
+
 export const StyledName = styled.div`
   background-color: white;
   display: flex;

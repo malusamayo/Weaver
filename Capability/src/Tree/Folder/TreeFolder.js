@@ -11,7 +11,7 @@ import {
 } from "react-icons/ai";
 
 import { MdDeleteForever } from "react-icons/md";
-import {FaFolderPlus} from "react-icons/fa";
+import { FaFolderPlus } from "react-icons/fa";
 import { BiRefresh } from "react-icons/bi";
 import { ImPlus, ImCross } from "react-icons/im";
 
@@ -88,6 +88,18 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
     parentName = node.name
     nodeTag = "RELATEDTO"
   }
+
+  const tooltip_style= {
+    zIndex: 9999, 
+    position: "absolute", 
+    backgroundColor: "rgba(54, 54, 54, 1)",
+    padding : "5px",
+    fontSize: "80%",
+  };
+  
+  // make const anchor_id = "node-info-" + node.id and all spaces in node.id to be replaced by "-"
+  const anchor_id = "node-info-" + node.id;
+
   return (
     <StyledName onClick={handleClick}>
       {
@@ -99,7 +111,11 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
         node.tag.length > 0 ? node.tag.map((tag) => <StyledRelation node={node} nodeTag={tag}/>) : null :
         node.tag.length ? (<Dropdown node={node}/>): null
       }
-      &nbsp;&nbsp;{name}
+      &nbsp;&nbsp;
+      <div id={anchor_id}>
+        {name}
+      </div>
+      <Tooltip place="top" anchorSelect={"#" + anchor_id} content={node.naturalLanguagePath} style={tooltip_style}/>
     </StyledName>
   )
 };
@@ -265,12 +281,12 @@ const Folder = ({ id, name, children, node, root}) => {
   }, []);
 
   const tooltip_style= {
-      zIndex: 9999, 
-      position: "absolute", 
-      backgroundColor: "rgba(54, 54, 54, 1)",
-      padding : "5px",
-      fontSize: "80%",
-    };
+    zIndex: 9999, 
+    position: "absolute", 
+    backgroundColor: "rgba(54, 54, 54, 1)",
+    padding : "5px",
+    fontSize: "80%",
+  };
 
   return (
     <StyledFolder id={id} onClick={handleNodeClick} className="tree__folder">

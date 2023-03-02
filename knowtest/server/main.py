@@ -125,6 +125,15 @@ def reset_state():
     print("Resetting state")
     t.reset_state()
 
+@app.get("/getTopics/isHighlighted={highlighted}")
+def get_topics(highlighted: bool):
+    t.set_only_highlighted(highlighted)
+    return t.generate_json()
+
+@app.get("/toggleIsHighlightedSelection")
+def toggle_is_highlighted_selection():
+    return t.only_highlighted
+
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:5001"
