@@ -159,7 +159,7 @@ NL_DESCRIPTIONS = {
         ["made of"],
 
     RELATIONS.MANNEROF:
-        ["can be done in a way"],
+        ["done via"],
     RELATIONS.MOTIVATEDBY:
         ["motivated by"],
     RELATIONS.OBSTRUCTEDBY:

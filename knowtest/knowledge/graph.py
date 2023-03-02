@@ -1,10 +1,10 @@
 from .prompt import Prompter
-from .relations import RELATIONS
+from .relations import RELATIONS, NL_DESCRIPTIONS
 from collections import defaultdict
+import os
 import queue
 import json
 import time, openai
-
 
 def build_graph(init_topic, prompter, max_depth = 3):
     graph = defaultdict(dict)
@@ -77,21 +77,29 @@ def build_tree(init_topic, graph):
     return tree_pre_order
 
 
-def print_tree(tree_pre_order):
+def print_tree(tree_pre_order, taskid):
     tree_string = ''
     for node in tree_pre_order:
         (topic, level, relation, parent) = node
-        tree_string += '-' + "---"*level + ' ' + topic + '\t' + relation + '\t' + parent +'\n'
+        if RELATIONS.has_relation(relation):
+            relation = NL_DESCRIPTIONS[RELATIONS.translate(relation)][0]
+        tree_string += '-' + "---"*level + ' ' + parent + '\t' + relation + '\t' + topic +'\n'
     
-    with open("output/tree.txt", "w") as file:
+    with open(os.path.join("output", taskid, "tree.txt"), "w") as file:
         file.write(tree_string)
 
 if __name__ == "__main__":
-    prompter = Prompter("notebooks/config.json")
-    graph = build_graph("hate speech", prompter)
+    taskid = "hate-speech-001"
+    if not os.path.exists(os.path.join("output", taskid)):
+        os.makedirs(os.path.join("output", taskid))
+
+    prompter = Prompter(taskid=taskid)
+    graph = build_graph("hate speech", prompter, max_depth = 1)
+    # with open(os.path.join("output", taskid, "graph.txt"), "r") as file:
+    #     graph = json.load(file)
     tree = build_tree("hate speech", graph)
 
     # output
-    print_tree(tree)
-    with open("output/graph.json", "w") as file:
+    print_tree(tree, taskid)
+    with open(os.path.join("output", taskid, "graph.txt"), "w") as file:
         json.dump(graph, file)
