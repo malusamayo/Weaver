@@ -205,25 +205,23 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
           handleDivRefFloat();
         }, 10);
       });
+    } else if (document.getElementsByClassName("jp-NotebookPanel-notebook")[0]) {
+      let parentContainer = document.getElementsByClassName("jp-NotebookPanel-notebook")[0];
+      parentContainer.addEventListener("scroll", () => {
+        setTimeout(() => {
+          handleDivRefFloat();
+        }, 10);
+      });
     }
-    // } else if (document.getElementsByClassName("jp-NotebookPanel-notebook")[0]) {
-    //   let parentContainer = document.getElementsByClassName("jp-NotebookPanel-notebook")[0];
-    //   parentContainer.addEventListener("scroll", () => {
-    //     setTimeout(() => {
-    //       handleDivRefFloat();
-    //     }, 10);
-    //   });
-    // }
 
     return () => {
       if (document.getElementById("site")) {
         let parentContainer = document.getElementById("site");
         parentContainer.removeEventListener("scroll", handleDivRefFloat);
+      } else if (document.getElementsByClassName("jp-Notebook")[0]) {
+        let parentContainer = document.getElementsByClassName("jp-Notebook")[0];
+        parentContainer.removeEventListener("scroll", handleDivRefFloat);
       }
-      // } else if (document.getElementsByClassName("jp-Notebook")[0]) {
-      //   let parentContainer = document.getElementsByClassName("jp-Notebook")[0];
-      //   parentContainer.removeEventListener("scroll", handleDivRefFloat);
-      // }
     };
   });
 
