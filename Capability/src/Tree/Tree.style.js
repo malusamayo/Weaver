@@ -71,6 +71,7 @@ export const TreeActionsWrapper = styled.div`
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
+  justify-content: space-between;
 
   .treeactions {
     display: flex;

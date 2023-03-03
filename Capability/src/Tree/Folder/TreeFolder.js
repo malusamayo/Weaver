@@ -68,12 +68,14 @@ const StyledRelation = ({node, nodeTag}) => {
 
   return (
     <StyledTag>
-      {nodeTag}
-        <div className="actionbutton">
-          <ImPlus onClick={handleActionPlusClick} />
-          &nbsp;&nbsp;
-          <ImCross onClick={handleActionCrossClick} />
-        </div>
+      <div style={{alignItems:"top"}}>
+        {nodeTag}
+      </div>
+      <div className="actionbutton">
+        <ImPlus onClick={handleActionPlusClick} />
+        &nbsp;&nbsp;
+        <ImCross onClick={handleActionCrossClick} />
+      </div>
     </StyledTag>
   )
 }

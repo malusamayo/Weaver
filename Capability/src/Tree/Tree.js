@@ -11,9 +11,11 @@ import { StyledTree, TreeActionsWrapper } from "./Tree.style";
 import { Folder } from "./Folder/TreeFolder";
 import { loading } from "./Loading.css";
 import { AnimatedMultiTagging } from "./Tag/tag";
+import { ExamplePanel } from "./ExamplePanel/ExamplePanel";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // import react bootstrap components for row, column and container
-import { Row, Col, Container } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 
 const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
 
@@ -22,6 +24,9 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBackButtonActive, setIsBackButtonActive] = useState(true);
   const [toggleIsHighlighted, setToggleIsHighlighted] = useState(false);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [toggleExamplePanel, setToggleExamplePanel] = useState(true);
+
 
   const commitBackState = async() => {
     try {
@@ -83,6 +88,10 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
     }
   };
 
+  const commitToggleExamplePanel = async (value) => {
+    setToggleExamplePanel(!toggleExamplePanel);
+  };
+
   useEffect(() => {
     commitBackAvailability();
   });
@@ -90,7 +99,6 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
   useEffect(() => {
     commitToggleIsHighlightedSelection();
   });
-
 
   useLayoutEffect(() => {
     dispatch({ type: "SET_DATA", payload: data });
@@ -245,35 +253,51 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
                     commitSelection(node.node.id);
                     commitBackAvailability();
                     onNodeClick && onNodeClick(node);
+                    setSelectedNode(node);
                   },
+                  selectedNode: selectedNode,
                 }}
                 >
-              <div style={{position: "sticky", top: "0", zIndex: "9999", backgroundColor: "rgb(245, 245, 245)", padding: "10px", 
-                border: "1px solid rgb(235, 235, 235)", borderRadius: "2px", margin: "0px", transition: "top 1s ease-in-out, position 1s ease-in-out"}} ref={divRef}>
+              <div style={{position: "sticky", top: "0", zIndex: "9998", backgroundColor: "rgb(245, 245, 245)", padding: "10px", 
+                border: "1px solid rgb(204, 204, 204)", borderRadius: "2px", margin: "10px", transition: "top 1s ease-in-out, position 1s ease-in-out"}} ref={divRef} 
+                id="menu_top_tree_toolbar">
               {/* <div ref={divRef}> */}
                 <p>Selection: {selection}</p>
                 <AnimatedMultiTagging />
                 <TreeActionsWrapper>
+                  <div>
                     {isBackButtonActive ?
                       (<GoArrowLeft size={30} onClick={commitBackState} id="go-back-state"/>) :
                       (<GoArrowLeft size={30} style={{color: "grey"}} id="go-back-state"/>)
                     }
                     <AiFillHome size={20} id="go-home"/>
-                    
-                    <div style={{margin: "5px 0 0 5px"}}>
-                    {toggleIsHighlighted ?
-                      (<BsToggleOn size={25} onClick={() => commitToggleIsHighlighted(false)} id="toggle-highlighted-off"/>) :
-                      (<BsToggleOff size={25} onClick={() => commitToggleIsHighlighted(true)} id="toggle-highlighted-on"/>)
-                    }
-                    </div>
+                  </div>
+                  <div>
+                    Suggestion
+                    {/* <div style={{margin: "5px 0 0 50px"}}> */}
+                      {toggleIsHighlighted ?
+                        (<BsToggleOn size={25} onClick={() => commitToggleIsHighlighted(false)} id="toggle-highlighted-off"  style={{margin: "0px 15px 0 5px"}}/>) :
+                        (<BsToggleOff size={25} onClick={() => commitToggleIsHighlighted(true)} id="toggle-highlighted-on"  style={{margin: "0px 15px 0 5px"}}/>)
+                      }
+                    {/* </div> */}
+                    Example Panel
+                    {/* <div style={{margin: "5px 0 0 50px", justifyContent: "auto"}}> */}
+                      {toggleExamplePanel ?
+                        (<BsToggleOn size={25} onClick={() => commitToggleExamplePanel(false)} id="toggle-example-panel-off"  style={{margin: "0px 0 0 5px"}}/>) :
+                        (<BsToggleOff size={25} onClick={() => commitToggleExamplePanel(true)} id="toggle-example-panel-on" style={{margin: "0px 0 0 5px"}}/>)
+                      }
+                    {/* </div> */}
+                  </div>
                     <Tooltip place="bottom" anchorSelect="#go-back-state" content="Back" style={tooltip_style}/>
                     <Tooltip place="bottom" anchorSelect="#go-home" content="Home" style={tooltip_style}/>
-                    <Tooltip place="bottom" anchorSelect="#toggle-highlighted-off" content="Show all Topics" style={tooltip_style}/>
-                    <Tooltip place="bottom" anchorSelect="#toggle-highlighted-on" content="Show highlighted topics only" style={tooltip_style}/>
+                    <Tooltip place="bottom" anchorSelect="#toggle-highlighted-off" content="Show Suggestions" style={tooltip_style}/>
+                    <Tooltip place="bottom" anchorSelect="#toggle-highlighted-on" content="Hide Suggestions" style={tooltip_style}/>
+                    <Tooltip place="bottom" anchorSelect="#toggle-example-panel-off" content="Hide example panel" style={tooltip_style}/>
+                    <Tooltip place="bottom" anchorSelect="#toggle-example-panel-on" content="Show example panel" style={tooltip_style}/>
                 </TreeActionsWrapper>  
               </div>
             <Row>
-              <Col xs={6}> 
+              <Col xs="auto">
                 <StyledTree>
                   {isImparative ? (
                     <TreeRecusive data={state} parentNode={state} root={true}/>
@@ -283,7 +307,7 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
                 </StyledTree>
               </Col>
               <Col>
-                <p>Selection: {selection}</p>
+                {toggleExamplePanel && <ExamplePanel node={selectedNode}/>}
               </Col>
             </Row>
             </TreeContext.Provider>

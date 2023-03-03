@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 
 class StateStack:
-    def __init__(self, directory="../../output/", stateSaveDirectory="savedStates/", maxStates=100):
+    def __init__(self, directory="../output/", stateSaveDirectory="savedStates/", maxStates=100):
         self.stateSaveDirectory = directory + stateSaveDirectory
         print("stateSaveDirectory: {}".format(self.stateSaveDirectory))
         self.maxStates = max(10, maxStates)
@@ -61,10 +61,13 @@ class StateStack:
             print("2. removing {}".format(filename))
 
     def copyFile(self, src, dst):
-        with open(src, "r") as f:
-            content = f.read()
-        with open(dst, "w") as f:
-            f.write(content)
+        try:
+            with open(src, "r") as f:
+                content = f.read()
+            with open(dst, "w") as f:
+                f.write(content)
+        except:
+            return
 
     def getLatestState(self):
         if len(self.stack) == 0:

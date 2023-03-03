@@ -3,12 +3,12 @@ import uuid
 import os
 import sys
 
-module_path = os.path.abspath(os.path.join('..'))
-if module_path not in sys.path:
-    sys.path.append(module_path)
+# module_path = os.path.abspath(os.path.join('..'))
+# if module_path not in sys.path:
+#     sys.path.append(module_path)
 
-from knowledge.knbase import KnowledgeBase
-from server.StateStack import StateStack
+from ..knowledge.knbase import KnowledgeBase
+from .StateStack import StateStack
 
 class Node:
     def __init__(self, name: str, parent_id: str, node_id: Union[str, None]=None, tags=[], isOpen: bool=False, isHighlighted: bool=False):
@@ -69,13 +69,13 @@ class Node:
         return ", ".join(self.tags)
 
 class Tree:
-    def __init__(self, topic: str="root", filename: str=None, KGOutput: str="../../output", stateDirectory: str="../../output/"):
+    def __init__(self, topic: str="root", filename: str=None, KGOutput: str="../output", stateDirectory: str="../output"):
 
         self.tag_filters = []
         self.number_of_topics = 0
         self.nodes = {}
-        self.kg = KnowledgeBase(KGOutput)
-        self.stateDirectory = stateDirectory
+        self.kg = KnowledgeBase(KGOutput, "_".join(topic.split(" ")))
+        self.stateDirectory = stateDirectory + "/"
         self.state = StateStack(self.stateDirectory)
         self.only_highlighted = False
 
@@ -389,7 +389,7 @@ class Tree:
                     isOpen = row[3]
                     isHighlighted = row[4]
                     tags = row[5:]
-                    print("id: {}, name: {}, parent_id: {}, isOpen: {}, isHighlighted: {}, tags: {}".format(id, name, parent_id, isOpen, isHighlighted, tags))
+                    # print("id: {}, name: {}, parent_id: {}, isOpen: {}, isHighlighted: {}, tags: {}".format(id, name, parent_id, isOpen, isHighlighted, tags))
                     node = Node(name, parent_id, id, tags, isOpen, isHighlighted)
                     if not self.add_node(node):
                         raise Exception("could not add node: {}".format(node))
