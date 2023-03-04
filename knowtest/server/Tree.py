@@ -1,72 +1,11 @@
 from typing import Union
 import uuid
 import os
+import json
 import sys
-
-# module_path = os.path.abspath(os.path.join('..'))
-# if module_path not in sys.path:
-#     sys.path.append(module_path)
-
 from ..knowledge.knbase import KnowledgeBase
 from .StateStack import StateStack
-
-class Node:
-    def __init__(self, name: str, parent_id: str, node_id: Union[str, None]=None, tags=[], isOpen: bool=False, isHighlighted: bool=False):
-        self.name = name
-
-        if node_id is None:
-            self.id = str(uuid.uuid4())
-        else:
-            self.id = node_id
-
-        self.parent_id = parent_id
-        self.tags = tags
-        self.isOpen = isOpen
-        self.isHighlighted = isHighlighted
-        self.children = []
-        self.process_node()
-        self.natural_language_path = None
-    
-    def process_node(self) -> None:
-        self.name = self.name.capitalize()
-        self.tags = [tag.replace('\n', "") for tag in self.tags if tag not in ["", "\n", " "]]
-        self.isHighlighted = self.strToBool(self.isHighlighted)
-        self.isOpen = self.strToBool(self.isOpen)
-
-    def strToBool(self, string: str) -> bool:
-        if type(string) == bool:
-            return string
-        string = string.lower()
-        if string in ["true", "t", "yes", "y", "1"]:
-            return True
-        elif string in ["false", "f", "no", "n", "0"]:
-            return False
-        else:
-            # raise ValueError("Unable to convert \"{}\" to bool".format(string))
-            return True
-
-    def generate_new_id(self) -> None:
-        self.id = str(uuid.uuid4())
-
-    def __repr__(self) -> str:
-        return "Node({}, {})".format(self.name, self.tags)
-
-    def get_Json_object(self) -> dict:
-        return {
-            "name": self.name,
-            "id": self.id,
-            "parent_id": self.parent_id,
-            "tag": self.tags,
-            "isOpen": self.isOpen,
-            "isHighlighted": self.isHighlighted,
-            "naturalLanguagePath": self.natural_language_path,
-            "children": []
-        }
-
-    def get_joined_tags(self) -> str:
-        if len(self.tags) == 0:
-            return ""
-        return ", ".join(self.tags)
+from .Node import Node
 
 class Tree:
     def __init__(self, topic: str="root", filename: str=None, KGOutput: str="../output", stateDirectory: str="../output"):
@@ -80,7 +19,7 @@ class Tree:
         self.only_highlighted = False
 
         if filename:
-            self.read_csv(filename)
+            self.read_json(filename)
         elif topic:
             node = Node(name=topic, 
                         parent_id=None)
@@ -377,42 +316,36 @@ class Tree:
             for node_id in nodes_to_remove:
                 self.remove_node_with_id(node_id)
 
-    def read_csv(self, filename: str):
+    def read_json(self, filename: str):
         try:
             with open(filename, 'r') as f:
-                reader = f.readlines()
-                for row in reader:
-                    row = row.split(',')
-                    id = row[0]
-                    name = row[1]
-                    parent_id = row[2]
-                    isOpen = row[3]
-                    isHighlighted = row[4]
-                    tags = row[5:]
-                    # print("id: {}, name: {}, parent_id: {}, isOpen: {}, isHighlighted: {}, tags: {}".format(id, name, parent_id, isOpen, isHighlighted, tags))
-                    node = Node(name, parent_id, id, tags, isOpen, isHighlighted)
+                master_JSON = json.load(f)
+                for node in master_JSON:
+                    node = Node(name=node["name"], 
+                                parent_id=node["parent_id"], 
+                                node_id=node["id"], 
+                                tags=node["tag"], 
+                                isOpen=node["isOpen"], 
+                                isHighlighted=node["isHighlighted"],
+                                examples=node["examples"])
+
                     if not self.add_node(node):
                         raise Exception("could not add node: {}".format(node))
-            return True
         except Exception as e:
             raise Exception("[Unable to read file: {}] Error: {}".format(filename, e))
             return False
 
-    def write_csv(self, filename: str, updateState: bool = True):
+    def write_json(self, filename: str, updateState: bool = True):
         if updateState:
             self.state.addState(filename)
-        file = open(filename, 'w')
         stack_id = [self.root.id]
+        master_JSON = []
         while len(stack_id) > 0:
             node_id = stack_id.pop()
-            file.write("{},{},{},{},{},{}\n".format(self.nodes[node_id].id,
-                                                    self.nodes[node_id].name,   
-                                                    self.nodes[node_id].parent_id,
-                                                    self.nodes[node_id].isOpen,
-                                                    self.nodes[node_id].isHighlighted,
-                                                    ",".join(self.nodes[node_id].tags)))
-            stack_id.extend(self.nodes[node_id].children)
-        file.close()
+            master_JSON.append(self.nodes[node_id].get_Json_object())
+            stack_id.extend(self.nodes[node_id].children[::-1])
+        with open(filename, 'w') as f:
+            json.dump(master_JSON, f, indent=4)
     
     def load_last_state(self, filename: str):
         (path, fname) = self.state.getLatestState()
@@ -420,8 +353,8 @@ class Tree:
             return
         self.number_of_topics = 0
         self.nodes = {}
-        self.read_csv(path + fname)
-        self.write_csv(filename, updateState=False)
+        self.read_json(path + fname)
+        self.write_json(filename, updateState=False)
         self.state.deleteLatestState()
     
     def is_back_available(self):

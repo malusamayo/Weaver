@@ -22,7 +22,7 @@ class CapabilityApp:
         self.filename = filename
         self.topic = topic
         self.topic = "_".join(topic.split(" "))
-        self.filepath = self.filename + self.topic + ".csv"
+        self.filepath = self.filename + self.topic + ".json"
         self.change_topic(topic)
 
         self.serverHost = serverHost
@@ -41,31 +41,31 @@ class CapabilityApp:
             node = Node(name=name, parent_id=parent_id, tags=[tag])
             self.t.add_node(node)
             self.t.set_highlight(node.id, True)
-            self.t.write_csv(self.filepath)
+            self.t.write_json(self.filepath)
             return self.t.generate_json()
 
         @self.app.get("/editFolderName/nodeId={node_id}&newName={new_name}")
         def edit_folder_name(node_id: str, new_name: str):
             self.t.rename_node(node_id, new_name)
-            self.t.write_csv(self.filepath)
+            self.t.write_json(self.filepath)
             return self.t.generate_json()
 
         @self.app.get("/deleteNode/nodeId={node_id}")
         def delete_node(node_id: str):
             self.t.remove_node_with_id(node_id)
-            self.t.write_csv(self.filepath)
+            self.t.write_json(self.filepath)
             return self.t.generate_json()
 
         @self.app.get("/setOpen/nodeId={node_id}&isOpen={bool}")
         def set_open(node_id: str, bool: bool):
             self.t.set_open(node_id, bool)
-            self.t.write_csv(self.filepath)
+            self.t.write_json(self.filepath)
             return self.t.generate_json()
 
         @self.app.get("/setHighlighted/nodeId={node_id}&isHighlighted={bool}")
         def set_highlight(node_id: str, bool: bool):
             self.t.set_highlight(node_id, bool)
-            self.t.write_csv(self.filepath)
+            self.t.write_json(self.filepath)
             return self.t.generate_json()
 
         @self.app.get("/getNodePath/nodeId={node_id}")
@@ -77,21 +77,8 @@ class CapabilityApp:
         def set_node_tag(node_id: str, tag: str):
             print("Setting node tag ({}) for: {}".format(tag, node_id))
             self.t.set_node_tag(node_id, tag)
-            self.t.write_csv(self.filepath)
+            self.t.write_json(self.filepath)
             return self.t.generate_json()
-
-        # @self.app.get("/selectTopic/topic={topic}")
-        # def select_topic(topic: str):
-        #     print("Selecting topic: ", topic)
-
-        #     filename = "Data/{}.csv".format(topic)
-        #     if not os.path.exists(filename):
-        #         t = Tree(topic=topic)
-        #         t.write_csv(filename)
-        #     else:
-        #         t = Tree(filename=filename)
-
-        #     return self.t.generate_json()
 
         @self.app.get("/setTagFilter/tags={tags}")
         def set_tag_filter(tags: str):
@@ -111,21 +98,21 @@ class CapabilityApp:
             print("Getting suggestion for: ", node_id)
             self.t.set_open(node_id, True)
             self.t.refresh_suggestions(node_id)
-            self.t.write_csv(self.filepath)
+            self.t.write_json(self.filepath)
             return self.t.generate_json()
 
         @self.app.get("/removeSimilarRelationSiblings/nodeId={node_id}&tag={relation}")
         def remove_similar_relation_siblings(node_id: str, relation: str):
             # print("Removing similar relation children for {} with tag {}".format(t.nodes[t.nodes[node_id].parent_id], relation))
             self.t.remove_same_relation_sibling(node_id, relation)
-            self.t.write_csv(self.filepath)
+            self.t.write_json(self.filepath)
             return self.t.generate_json()
 
         @self.app.get("/addSimilarRelationSiblings/nodeId={node_id}&tag={relation}")
         def add_similar_relation_siblings(node_id: str, relation: str):
             print("Adding siblings with relation: ", relation)
             self.t.add_relation_based_suggestions_sibling(node_id, relation)
-            self.t.write_csv(self.filepath)
+            self.t.write_json(self.filepath)
             return self.t.generate_json()
 
         @self.app.get("/previousState")
@@ -162,11 +149,11 @@ class CapabilityApp:
 
     def change_topic(self, topic: str):
         self.topic = "_".join(topic.split(" "))
-        self.filepath = self.filename + self.topic + ".csv"
+        self.filepath = self.filename + self.topic + ".json"
 
         if not os.path.exists(self.filepath):
             self.t = Tree(topic=topic)
-            self.t.write_csv(self.filepath)
+            self.t.write_json(self.filepath)
         else:
             self.t = Tree(filename=self.filepath)
 
@@ -190,6 +177,9 @@ class CapabilityApp:
         self.running = False
 
         
+if __name__ == "__main__":
+    server = CapabilityApp(topic="hate speech")
+    uvicorn.run(server.app, host="0.0.0.0", port=3001, log_level="info")
         
 
 
@@ -205,31 +195,31 @@ class CapabilityApp:
 #     node = Node(name=name, parent_id=parent_id, tags=[tag])
 #     t.add_node(node)
 #     t.set_highlight(node.id, True)
-#     t.write_csv(filename)
+#     t.write_json(filename)
 #     return t.generate_json()
 
 # @app.get("/editFolderName/nodeId={node_id}&newName={new_name}")
 # def edit_folder_name(node_id: str, new_name: str):
 #     t.rename_node(node_id, new_name)
-#     t.write_csv(filename)
+#     t.write_json(filename)
 #     return t.generate_json()
 
 # @app.get("/deleteNode/nodeId={node_id}")
 # def delete_node(node_id: str):
 #     t.remove_node_with_id(node_id)
-#     t.write_csv(filename)
+#     t.write_json(filename)
 #     return t.generate_json()
 
 # @app.get("/setOpen/nodeId={node_id}&isOpen={bool}")
 # def set_open(node_id: str, bool: bool):
 #     t.set_open(node_id, bool)
-#     t.write_csv(filename)
+#     t.write_json(filename)
 #     return t.generate_json()
 
 # @app.get("/setHighlighted/nodeId={node_id}&isHighlighted={bool}")
 # def set_highlight(node_id: str, bool: bool):
 #     t.set_highlight(node_id, bool)
-#     t.write_csv(filename)
+#     t.write_json(filename)
 #     return t.generate_json()
 
 # @app.get("/getNodePath/nodeId={node_id}")
@@ -241,17 +231,17 @@ class CapabilityApp:
 # def set_node_tag(node_id: str, tag: str):
 #     print("Setting node tag ({}) for: {}".format(tag, node_id))
 #     t.set_node_tag(node_id, tag)
-#     t.write_csv(filename)
+#     t.write_json(filename)
 #     return t.generate_json()
 
 # @app.get("/selectTopic/topic={topic}")
 # def select_topic(topic: str):
 #     print("Selecting topic: ", topic)
 
-#     filename = "Data/{}.csv".format(topic)
+#     filename = "Data/{}.json".format(topic)
 #     if not os.path.exists(filename):
 #         t = Tree(topic=topic)
-#         t.write_csv(filename)
+#         t.write_json(filename)
 #     else:
 #         t = Tree(filename=filename)
 
@@ -275,21 +265,21 @@ class CapabilityApp:
 #     print("Getting suggestion for: ", node_id)
 #     t.set_open(node_id, True)
 #     t.refresh_suggestions(node_id)
-#     t.write_csv(filename)
+#     t.write_json(filename)
 #     return t.generate_json()
 
 # @app.get("/removeSimilarRelationSiblings/nodeId={node_id}&tag={relation}")
 # def remove_similar_relation_siblings(node_id: str, relation: str):
 #     # print("Removing similar relation children for {} with tag {}".format(t.nodes[t.nodes[node_id].parent_id], relation))
 #     t.remove_same_relation_sibling(node_id, relation)
-#     t.write_csv(filename)
+#     t.write_json(filename)
 #     return t.generate_json()
 
 # @app.get("/addSimilarRelationSiblings/nodeId={node_id}&tag={relation}")
 # def add_similar_relation_siblings(node_id: str, relation: str):
 #     print("Adding siblings with relation: ", relation)
 #     t.add_relation_based_suggestions_sibling(node_id, relation)
-#     t.write_csv(filename)
+#     t.write_json(filename)
 #     return t.generate_json()
 
 # @app.get("/previousState")
