@@ -118,7 +118,7 @@ PROMPT_TEMPLATES = {
     RELATIONS.HASSUBEVENT:
         ["List {N} subevents of {topic}."],
     RELATIONS.HASPREREQUISITE:
-        ["List {N} prerequisites of {topic}."],
+        ["List {N} things that happen before {topic}."],
     RELATIONS.CAUSESDESIRE:
         ["List {N} desires caused by {topic}."],
     RELATIONS.DESIRECAUSEDBY:
@@ -133,6 +133,64 @@ PROMPT_TEMPLATES = {
 }
 
 NL_DESCRIPTIONS = {
+    RELATIONS.TYPEOF:
+        ("is a type of", 0),
+    RELATIONS.PARTOF:
+        ("is a part of", 0),
+    RELATIONS.LOCATEDNEAR:
+        ("locates near", 0),
+    RELATIONS.ATLOCATION:
+        ("locates at", 1),
+    RELATIONS.USEDFOR:
+        ("is used for", 0),
+    RELATIONS.HASPROPERTY:
+        ("is described as", 1),
+    RELATIONS.DESIRES:
+        ("desires", 1),
+    RELATIONS.DESIREDBY:
+        ("desires", 0),
+    RELATIONS.CREATES:
+        ("creates", 1),
+    RELATIONS.CREATEDBY:
+        ("creates", 0),
+    RELATIONS.SYMBOLOF:
+        ("is a symbol of", 0),
+    RELATIONS.MADEOF:
+        ("is made of", 1),
+
+    RELATIONS.MANNEROF:
+        ("is a way to do", 0),
+    RELATIONS.MOTIVATEDBY:
+        ("is motivated by", 1),
+    RELATIONS.OBSTRUCTEDBY:
+        ("is obstructed by", 1),
+    RELATIONS.CAUSES:
+        ("causes", 1),
+    RELATIONS.CAUSEDBY:
+        ("causes", 0),
+    
+    RELATIONS.CAPABLEOF:
+        ("is capable of", 1),
+    RELATIONS.DONEBY:
+        ("does", 0),
+    RELATIONS.HASSUBEVENT:
+        ("happens during", 0),
+    RELATIONS.HASPREREQUISITE:
+        ("happens before", 0),
+    RELATIONS.CAUSESDESIRE:
+        ("causes desire of", 1),
+    RELATIONS.DESIRECAUSEDBY:
+        ("causes desire of", 0),
+    RELATIONS.RECEIVESACTION:
+        ("receives action of", 1),
+    RELATIONS.DONETO:
+        ("is done to", 1),
+
+    RELATIONS.RELATEDTO:
+        ("is related to", 0)
+}
+
+RELATION_NL = {
     RELATIONS.TYPEOF:
         ["has subtype"],
     RELATIONS.PARTOF:
@@ -154,7 +212,7 @@ NL_DESCRIPTIONS = {
     RELATIONS.CREATEDBY:
         ["created by"],
     RELATIONS.SYMBOLOF:
-        ["symbol of"],
+        ["has symbol"],
     RELATIONS.MADEOF:
         ["made of"],
 
