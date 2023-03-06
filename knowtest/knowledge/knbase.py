@@ -4,7 +4,7 @@ import threading
 import pandas as pd
 from .prompt import Prompter
 from .relations import RELATIONS
-from .utils import normalize
+from .utils import normalize, recommend_topics
 
 class KnowledgeBase(object):
 
@@ -14,9 +14,8 @@ class KnowledgeBase(object):
         self.nodes = pd.read_csv(self.dir + "/nodes.csv")
         self.edges = pd.read_csv(self.dir + "/edges.csv")
         print("Path: ", path, "OS Path: ", os.getcwd())
-        self.nodes = pd.read_csv(path + "/nodes.csv")
-        self.edges = pd.read_csv(path + "/edges.csv")
         self.lock = threading.Lock() # for multi-threading
+        print(normalize("Initializing wordnet"))
 
         if uid == None:
             uid = 0
@@ -37,23 +36,23 @@ class KnowledgeBase(object):
         self.edges.to_csv(self.dir + "/edges.csv", index=False)
         self.user_history.to_csv(self.upath, index=False)
 
-    def update_user_history(self, recommended=None, existing_children=None):
-        if recommended is not None:
-            merged = self.user_history.merge(recommended, on = ['from', 'to', 'relation'], how='left', indicator=True)['_merge']
-            merged = merged.map(lambda x: x=='both')
-            self.user_history.loc[merged, 'recommended'] = True
+    # def update_user_history(self, recommended=None, existing_children=None):
+    #     if recommended is not None:
+    #         merged = self.user_history.merge(recommended, on = ['from', 'to', 'relation'], how='left', indicator=True)['_merge']
+    #         merged = merged.map(lambda x: x=='both')
+    #         self.user_history.loc[merged, 'recommended'] = True
 
-        if existing_children is not None:
-            selected = existing_children[existing_children['is_highlighted']]
-            merged = self.user_history.merge(selected, on = ['from', 'to', 'relation'], how='left', indicator=True)['_merge']
-            merged = merged.map(lambda x: x=='both')
-            self.user_history.loc[merged, 'selected'] = True
+    #     if existing_children is not None:
+    #         selected = existing_children[existing_children['is_highlighted']]
+    #         merged = self.user_history.merge(selected, on = ['from', 'to', 'relation'], how='left', indicator=True)['_merge']
+    #         merged = merged.map(lambda x: x=='both')
+    #         self.user_history.loc[merged, 'selected'] = True
 
-            unselected = existing_children[~existing_children['is_highlighted']]
-            merged = self.user_history.merge(unselected, on = ['from', 'to', 'relation'], how='left', indicator=True)['_merge']
-            merged = merged.map(lambda x: x=='both')
-            self.user_history.loc[merged, 'selected'] = False
-        self.save()
+    #         unselected = existing_children[~existing_children['is_highlighted']]
+    #         merged = self.user_history.merge(unselected, on = ['from', 'to', 'relation'], how='left', indicator=True)['_merge']
+    #         merged = merged.map(lambda x: x=='both')
+    #         self.user_history.loc[merged, 'selected'] = False
+    #     self.save()
 
     def find_children(self, topic, relation=None):
         if relation is None:
@@ -215,8 +214,12 @@ class KnowledgeBase(object):
             The expanded siblings of the current node.
         '''
 
-        parent = path[-1]['topic']
+        assert len(path) >= 2
+        assert path[-1]['topic'] == topic
+        parent = path[-2]['topic']
+        print('parent', parent, 'relation', relation, 'topic', topic)
         children = self.find_children(parent, relation)
+        print('children', children)
         
         assert len(existing_siblings) > 0
         existing_siblings = pd.DataFrame(existing_siblings)
@@ -228,6 +231,7 @@ class KnowledgeBase(object):
 
         if len(new_topics) <= n_expand:
             self.extend_node(parent, relation)
+            self.save()
             children = self.find_children(parent, relation)
             new_topics = children[~children['to'].isin(known_topics)]
 
