@@ -6,7 +6,7 @@ from transformers import AutoTokenizer, AutoModel
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-from .relations import RELATIONS, NL_DESCRIPTIONS
+from .relations import to_nl_description
 from .model import MyGPT2LMHeadModel
 
 class PerplexityScorer:
@@ -125,15 +125,7 @@ class SimilarityScorer:
     def score(self, items, parent_topic):
         def to_sentence(item):
             (topic, relation) = item['to'], item['relation']
-            if RELATIONS.has_relation(relation):
-                relation = RELATIONS.translate(relation)
-                (descrp, pos) = NL_DESCRIPTIONS[relation]
-                if pos == 0:
-                    sentence = f"{topic} {descrp} {parent_topic}."
-                else:
-                    sentence = f"{parent_topic} {descrp} {topic}."
-            else:
-                assert True, "Relation not found"
+            sentence = to_nl_description(topic, relation, parent_topic)
             return sentence
 
         sentences = [to_sentence(item) for item in items]

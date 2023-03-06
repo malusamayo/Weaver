@@ -70,6 +70,37 @@ class Relations(object):
     def translate(self, relation):
         return self.translate_dict[relation.upper()]
 
+def to_nl_tags(relation):
+    if RELATIONS.has_relation(relation):
+        relation = RELATIONS.translate(relation)
+        return RELATION_NL_TAGS[relation]
+    return relation
+
+def to_nl_description(topic, relation, parent_topic):
+    if RELATIONS.has_relation(relation):
+        relation = RELATIONS.translate(relation)
+        (descrp, pos) = NL_DESCRIPTIONS[relation]
+        if pos == 0:
+            sentence = f"{topic} {descrp} {parent_topic}."
+        else:
+            sentence = f"{parent_topic} {descrp} {topic}."
+        return sentence
+    sentence = f"{topic} is {descrp} {parent_topic}." # all custom relations should be in this form
+    return sentence
+
+def path_to_nl_description(path):
+    parents = [item['topic'] for item in path][:-1]
+    children = path[1:]
+    sentences = []
+    for parent, child in zip(parents, children):
+        relation = child['relation']
+        topic = child['topic']
+        sentence = to_nl_description(topic, relation, parent)
+        sentences.append(sentence)
+    
+    descrps = ' '.join(sentences)
+    return descrps
+
 RELATIONS = Relations()
 PROMPT_TEMPLATES = {
     RELATIONS.TYPEOF: 
@@ -190,7 +221,7 @@ NL_DESCRIPTIONS = {
         ("is related to", 0)
 }
 
-RELATION_NL = {
+RELATION_NL_TAGS = {
     RELATIONS.TYPEOF:
         ["has subtype"],
     RELATIONS.PARTOF:
