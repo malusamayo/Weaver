@@ -9,10 +9,10 @@ from .utils import normalize
 class KnowledgeBase(object):
 
     def __init__(self, path, taskid, domain="", uid=None) -> None:
-        self.dir = path
+        self.dir = os.path.join(path, taskid)
         self.domain = "online platform" if domain == "" else domain # setting domain to "online platform" by default
-        self.nodes = pd.read_csv(path + "/nodes.csv")
-        self.edges = pd.read_csv(path + "/edges.csv")
+        self.nodes = pd.read_csv(self.dir + "/nodes.csv")
+        self.edges = pd.read_csv(self.dir + "/edges.csv")
         self.lock = threading.Lock() # for multi-threading
 
         if uid == None:
@@ -52,18 +52,16 @@ class KnowledgeBase(object):
             self.user_history.loc[merged, 'selected'] = False
         self.save()
 
-    def find_children(self, topic):
-        children = self.edges[self.edges["from"] == topic]
-        children = children.merge(self.nodes, left_on='to', right_on='id')
-        return children
-
-    def find_children_per_relation(self, topic, relation):
-        children = self.edges[(self.edges["from"] == topic) & (self.edges["relation"] == relation)]
+    def find_children(self, topic, relation=None):
+        if relation is None:
+            children = self.edges[self.edges["from"] == topic]
+        else:
+            children = self.edges[(self.edges["from"] == topic) & (self.edges["relation"] == relation)]
         children = children.merge(self.nodes, left_on='to', right_on='id')
         return children
 
     def extend_node(self, topic, relation):
-        children = self.find_children_per_relation(topic, relation)
+        children = self.find_children(topic, relation)
         known_topics = children['to'].to_list()
         new_topics = self.prompter.query_topics(topic, relation, known_topics=known_topics)
 
@@ -194,7 +192,7 @@ class KnowledgeBase(object):
         '''
 
         parent = path[-1]['topic']
-        children = self.find_children_per_relation(parent, relation)
+        children = self.find_children(parent, relation)
         
         assert len(existing_siblings) > 0
         existing_siblings = pd.DataFrame(existing_siblings)
@@ -206,7 +204,7 @@ class KnowledgeBase(object):
 
         if len(new_topics) <= n_expand:
             self.extend_node(parent, relation)
-            children = self.find_children_per_relation(parent, relation)
+            children = self.find_children(parent, relation)
             new_topics = children[~children['to'].isin(known_topics)]
 
         # [TODO] compute final weights based on topic, path and user history
@@ -273,7 +271,7 @@ def store_kb(knbase, path):
 
 if __name__ == "__main__":
     # constructing kb
-    with open("output/graph.json", "r") as file:
+    with open("output/hate-speech-001/graph.json", "r") as file:
         graph = json.load(file)
     knbase = graph_to_knbase(graph)
-    store_kb(knbase, "output")
+    store_kb(knbase, "output/hate-speech-001")
