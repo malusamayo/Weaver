@@ -6,6 +6,7 @@ class Cache(object):
     def __init__(self, taskid) -> None:
         # self.saved_prompts = dict()
         self.cache_dir = os.path.join(Path(__file__).parent.parent.parent, "query_cache", taskid)
+        print("Cache directory: " + self.cache_dir)
 
     # def save_prompt(self, topic, relation, prompt):
     #     self.saved_prompts[(topic, relation)] = prompt

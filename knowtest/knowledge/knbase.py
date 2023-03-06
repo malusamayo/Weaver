@@ -13,6 +13,9 @@ class KnowledgeBase(object):
         self.domain = "online platform" if domain == "" else domain # setting domain to "online platform" by default
         self.nodes = pd.read_csv(self.dir + "/nodes.csv")
         self.edges = pd.read_csv(self.dir + "/edges.csv")
+        print("Path: ", path, "OS Path: ", os.getcwd())
+        self.nodes = pd.read_csv(path + "/nodes.csv")
+        self.edges = pd.read_csv(path + "/edges.csv")
         self.lock = threading.Lock() # for multi-threading
 
         if uid == None:

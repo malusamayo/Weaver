@@ -5,7 +5,8 @@ const defaultValue = {
   state: null,
   isImparative: null,
   setIsLoading: () => {},
-  onNodeClick: () => {}
+  onNodeClick: () => {},
+  selectedNode: null,
 };
 const TreeContext = React.createContext(defaultValue);
 

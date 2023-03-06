@@ -7,7 +7,6 @@
     position: relative;
     overflow: visible;
     visibility: visible;
-    /* z-index: 999; */
 }
 
 .ddown .dropbtn {
@@ -48,8 +47,7 @@
     /* font-weight: 500; */
     cursor: pointer;
     transition: height 1s ease;
-    /* opacity: 1; */
-    z-index: 999;
+    z-index: 500;
     margin-top: 5px;
 }
 
@@ -64,8 +62,4 @@
 
 .ddown .dropdown-content .dropdown-item:hover {
     background: #ececec;
-    /* color: #000; */
-    /* z-index: 999; */
 }
-
-/* Make the dropdown-content */

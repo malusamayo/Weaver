@@ -7,11 +7,9 @@ import { dropdown } from "./dropdown.css";
 const relationships = [
     {id: 1, value: "RELATEDTO", label:"RELATEDTO", acronym: "RT"},
     {id: 2, value: "TYPESOF", label:"TYPESOF", acronym: "TO"},
-    // {id: 3, value: "INSTANCEOF", label:"INSTANCEOF", acronym: "IO"},
     {id: 3, value: "PARTOF", label:"PARTOF", acronym: "PO"},
     {id: 4, value: "HASPROPERTY", label:"HASPROPERTY", acronym: "HP"},
     {id: 5, value: "USEDFOR", label:"USEDFOR", acronym: "UF"},
-    // {id: 7, value: "HASA", label:"HASA", acronym: "HA"},
     {id: 6, value: "ATLOCATION", label:"ATLOCATION", acronym: "AL"},
     {id: 7, value: "CAUSES", label:"CAUSES", acronym: "Ca"},
     {id: 8, value: "MOTIVATEDBY", label:"MOTIVATEDBY", acronym: "MBG"},
@@ -50,7 +48,6 @@ const Dropdown = ({node}) => {
 
         setSelectedTag(selectedTagName)
         commitTagSelection(node, selectedTagName)
-        // setIsActive(false)
     }
 
     const handleDropdownClick = () => {

@@ -1,8 +1,9 @@
 from datetime import datetime
 import os
+import shutil
 
 class StateStack:
-    def __init__(self, directory="../../output/", stateSaveDirectory="savedStates/", maxStates=100):
+    def __init__(self, directory="../output/", stateSaveDirectory="savedStates/", maxStates=100):
         self.stateSaveDirectory = directory + stateSaveDirectory
         print("stateSaveDirectory: {}".format(self.stateSaveDirectory))
         self.maxStates = max(10, maxStates)
@@ -19,7 +20,7 @@ class StateStack:
 
             for filename in os.listdir(self.stateSaveDirectory):
                 if filename.startswith("state_"):
-                    files.append((filename, datetime.strptime(filename.replace("state_", "").replace(".csv", ""), "%Y-%m-%d_%H-%M-%S-%f")))
+                    files.append((filename, datetime.strptime(filename.replace("state_", "").replace(".json", ""), "%Y-%m-%d_%H-%M-%S-%f")))
             files.sort(key=lambda x: x[1])
 
             filesToBeDeleted = []
@@ -46,7 +47,7 @@ class StateStack:
 
         
     def addState(self, stateFileName):
-        newStateFileName = "state_{}.csv".format(datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")) 
+        newStateFileName = "state_{}.json".format(datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")) 
         print("making copy of {} to {}".format(stateFileName, self.stateSaveDirectory + newStateFileName))
         self.copyFile(stateFileName, self.stateSaveDirectory + newStateFileName)
         self.stack.append(newStateFileName)
@@ -61,10 +62,15 @@ class StateStack:
             print("2. removing {}".format(filename))
 
     def copyFile(self, src, dst):
-        with open(src, "r") as f:
-            content = f.read()
-        with open(dst, "w") as f:
-            f.write(content)
+        try:
+            # Copy the JSON file content from src to dst
+            shutil.copyfile(src, dst)
+            # with open(src, "r") as f:
+            #     content = f.read()
+            # with open(dst, "w") as f:
+            #     f.write(content)
+        except:
+            return
 
     def getLatestState(self):
         if len(self.stack) == 0:
