@@ -95,11 +95,11 @@ if __name__ == "__main__":
 
     prompter = Prompter(taskid=taskid)
     graph = build_graph("hate speech", prompter, max_depth = 1)
-    # with open(os.path.join("output", taskid, "graph.txt"), "r") as file:
+    # with open(os.path.join("output", taskid, "graph.json"), "r") as file:
     #     graph = json.load(file)
     tree = build_tree("hate speech", graph)
 
     # output
     print_tree(tree, taskid)
-    with open(os.path.join("output", taskid, "graph.txt"), "w") as file:
+    with open(os.path.join("output", taskid, "graph.json"), "w") as file:
         json.dump(graph, file)
