@@ -155,7 +155,7 @@ class CapabilityApp:
             self.t = Tree(topic=topic)
             self.t.write_json(self.filepath)
         else:
-            self.t = Tree(filename=self.filepath)
+            self.t = Tree(topic=topic, filename=self.filepath)
 
     def initializeServer(self):
 

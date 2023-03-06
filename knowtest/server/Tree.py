@@ -222,7 +222,7 @@ class Tree:
             print("Refresh suggestion path: ", path)
             print("Refresh suggestion existing_children: ", existing_children)
             
-            self.remove_non_highlighted_nodes(node_id)
+            # self.remove_non_highlighted_nodes(node_id) # DISABLED
             
             suggestions = self.kg.expand_node(topic=self.nodes[node_id].name.lower(), path=path, existing_children=existing_children)
 

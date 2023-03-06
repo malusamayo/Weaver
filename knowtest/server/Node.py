@@ -62,7 +62,7 @@ class Node:
 
     
     def process_node(self) -> None:
-        self.name = self.name.capitalize()
+        # self.name = self.name.capitalize()
         self.tags = [tag.replace('\n', "") for tag in self.tags if tag not in ["", "\n", " "]]
         self.isHighlighted = self.strToBool(self.isHighlighted)
         self.isOpen = self.strToBool(self.isOpen)
