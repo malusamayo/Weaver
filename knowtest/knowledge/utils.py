@@ -124,7 +124,7 @@ class SimilarityScorer:
 
     def score(self, items, parent_topic):
         def to_sentence(item):
-            (topic, relation) = item
+            (topic, relation) = item['to'], item['relation']
             if RELATIONS.has_relation(relation):
                 relation = RELATIONS.translate(relation)
                 (descrp, pos) = NL_DESCRIPTIONS[relation]
@@ -147,59 +147,72 @@ def compute_weights(node, nodes, w_E, w_V, alpha=1):
     scale = max(1, len(nodes)) * alpha
     return w_E[node][nodes].sum() + w_V[node] * scale
 
-def add_nodes(cur_nodes, nodes, w_E, w_V, alpha=1):
-    w_ls = []
-    for node in nodes:
-        w = compute_weights(node, cur_nodes, w_E, w_V, alpha=alpha)
-        w_ls.append(w)
-    idx_m = np.array(w_ls).argmin() # select node with minimum weight: minimize both perplexity and similarity
-    return cur_nodes + [nodes[idx_m]], nodes[:idx_m] + nodes[idx_m+1:] 
-
-def add_nodes_sampling(cur_nodes, nodes, w_E, w_V, K, alpha=1):
+def add_nodes(cur_nodes, nodes, w_E, w_V, K, alpha=1, sampling=False):
     w_ls = []
     for node in nodes:
         w = compute_weights(node, cur_nodes, w_E, w_V, alpha=alpha)
         w_ls.append(w)
     
-    prob = F.softmax(-torch.tensor(w_ls), dim=0)
+    if sampling:
+        prob = F.softmax(-torch.tensor(w_ls), dim=0)
 
-    prob_topk, idx_topk = torch.topk(prob, K)
-    prob_topk = prob_topk.numpy()
-    prob_topk /= prob_topk.sum()
+        prob_topk, idx_topk = torch.topk(prob, K)
+        prob_topk = prob_topk.numpy()
+        prob_topk /= prob_topk.sum()
+        
+        idx_m = np.random.choice(idx_topk, p=prob_topk)
+    else:
+        idx_m = np.array(w_ls).argmin() # select node with minimum weight: minimize both perplexity and similarity
     
-    idx_m = np.random.choice(idx_topk, p=prob_topk)
     return cur_nodes + [nodes[idx_m]], nodes[:idx_m] + nodes[idx_m+1:] 
 
-def greedy_collect(nodes, w_E, w_V, K, alpha=1):
-    cur_nodes = []
+def greedy_collect(nodes, known_nodes, w_E, w_V, K, alpha=1, sampling=False):
+    cur_nodes = known_nodes
     remaining_nodes = nodes
     while len(cur_nodes) < K:
-        cur_nodes, remaining_nodes = add_nodes(cur_nodes, remaining_nodes, w_E, w_V, alpha=alpha)
+        cur_nodes, remaining_nodes = add_nodes(cur_nodes, remaining_nodes, w_E, w_V, K=K, alpha=alpha, sampling=sampling)
+    cur_nodes = [node for node in cur_nodes if node not in known_nodes]
     return cur_nodes
 
-def greedy_collect_sampling(nodes, w_E, w_V, K, alpha=1):
-    cur_nodes = []
-    remaining_nodes = nodes
-    while len(cur_nodes) < K:
-        cur_nodes, remaining_nodes = add_nodes_sampling(cur_nodes, remaining_nodes, w_E, w_V, K, alpha=alpha)
-    return cur_nodes
-
-def recommend_topics(items, parent_topic, K=10, alpha=1, sampling=False):
-    topics = [item[0] for item in items]
+def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, sampling=False):
+    ''' Select K topics from the pool of topics.
+    Parameters:
+    ----------
+    items: list of dict {to, relation}    
+        The pool of topics to be selected from.
+    parent_topic: str
+        The parent topic.
+    known_items: list of dict {to, relation}
+        The topics that are already known (selected).
+    K: int
+        The number of topics to be selected.
+    alpha: float
+        The weight of the perplexity score, used to control the trade-off between relevance and diversity.
+    sampling: bool
+        Whether to use sampling to select the nodes.
+    Returns:
+    -------
+    selected_items: list of dict {to, relation}
+        The selected topics.
+    '''
+    topics = [item['to'] for item in items]
 
     nodes = list(range(len(topics)))
+    known_nodes = [topics.index(item['to']) for item in known_items]
+    filtered_nodes = [node for node in nodes if node not in known_nodes]
+    K += len(known_nodes)
 
+    # [TODO] cache matrix computation
     w_V = PScorer.score_topics(topics, parent_topic) # higher perplexity -> lower relevance
     w_V = np.array(w_V)
     w_V = (w_V - w_V.min()) / (w_V.max() - w_V.min()) # scale to [0,1]
 
     w_E = SScorer.score(items, parent_topic) # [0, 1]
 
-    if sampling:
-        selected_ids = greedy_collect_sampling(nodes, w_E, w_V, K, alpha=alpha)
-    else:
-        selected_ids = greedy_collect(nodes, w_E, w_V, K, alpha=alpha)
-    return [items[i] for i in selected_ids]
+    selected_ids = greedy_collect(filtered_nodes, known_nodes, w_E, w_V, K, alpha=alpha, sampling=sampling)
+
+    selected_items = [items[i] for i in selected_ids]
+    return selected_items
 
 stemmer = PorterStemmer()
 lemmatizer = WordNetLemmatizer()

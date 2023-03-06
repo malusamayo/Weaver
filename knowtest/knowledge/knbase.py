@@ -142,11 +142,32 @@ class KnowledgeBase(object):
             if len(children) == 0:
                 self.extend_node_all_relation(topic)
                 children = self.find_children(topic)
-            # stratified sampling for each relation
-            children = children.groupby('relation').apply(lambda x: x.sample(min(len(x), 3))).reset_index(drop=True)
-            self.update_user_history(recommended=children)
-            return children[['to', 'relation']].to_dict('records')
+            
+            # # stratified sampling for each relation
+            # children = children.groupby('relation').apply(lambda x: x.sample(min(len(x), 3))).reset_index(drop=True)
+            # self.update_user_history(recommended=children)
+            
+            items = children[['to', 'relation']].to_dict('records')
+            recommended_items = recommend_topics(items, topic, sampling=False)
+            return recommended_items
 
+        # suggest more children nodes
+        existing_children = pd.DataFrame(existing_children)
+        existing_children['from'] = topic
+        existing_children['to'] = existing_children['topic']
+        known_items = existing_children[['to', 'relation']].to_dict('records')
+        known_topics = existing_children['topic'].to_list()
+
+        children = self.find_children(topic) 
+        if len(children) <= n_expand:
+            self.extend_node_all_relation(topic)
+            children = self.find_children(topic)
+        
+        items = children[['to', 'relation']].to_dict('records')
+        recommended_items = recommend_topics(items, topic, known_items, sampling=False)
+        return recommended_items
+
+        ### old version of expand_node, deprecated
         # update user history based on existing children
         existing_children = pd.DataFrame(existing_children)
         existing_children['from'] = topic
