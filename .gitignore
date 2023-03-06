@@ -1,6 +1,7 @@
 # dependencies
 /Capability/node_modules
 /CapabilityClient/Build
+/knowtest/server/Build
 /.pnp
 .pnp.js
 
