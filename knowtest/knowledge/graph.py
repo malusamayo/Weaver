@@ -20,21 +20,18 @@ def build_graph(init_topic, prompter, max_depth = 3):
         
         for relation in RELATIONS.relations:
             
-            # print(topic, relation)
             topic_list = prompter.query_topics(topic, relation)
-            # print(topic_list)
-            
-            # filter known topics
-            topic_list = [topic for topic in topic_list if topic not in known_topics]
-
-            # [TODO] filter semantically similar topics
-            
-
+            # remove self-loop edge
+            if topic in topic_list:
+                topic_list.remove(topic) 
             known_topics |= set(topic_list)
             if topic_list != []:
                 print(topic, relation, topic_list)
 
             graph[topic][relation] = topic_list
+
+            # filter known topics 
+            topic_list = [topic for topic in topic_list if topic not in known_topics]   
             for new_topic in topic_list:
                 topic_queue.put((new_topic, d + 1))
     
@@ -88,18 +85,17 @@ def print_tree(tree_pre_order, taskid):
     with open(os.path.join("output", taskid, "tree.txt"), "w") as file:
         file.write(tree_string)
 
-if __name__ == "__main__":
-    taskid = "hate-speech-001"
+def run_graph_construction(seed, taskid, max_depth = 3):
+    prompter = Prompter(taskid=taskid)
+    graph = build_graph(seed, prompter, max_depth = max_depth)
+
     if not os.path.exists(os.path.join("output", taskid)):
         os.makedirs(os.path.join("output", taskid))
-
-    prompter = Prompter(taskid=taskid)
-    graph = build_graph("hate speech", prompter, max_depth = 1)
-    # with open(os.path.join("output", taskid, "graph.json"), "r") as file:
-    #     graph = json.load(file)
-    tree = build_tree("hate speech", graph)
-
-    # output
-    print_tree(tree, taskid)
     with open(os.path.join("output", taskid, "graph.json"), "w") as file:
         json.dump(graph, file)
+    return graph
+
+if __name__ == "__main__":
+    seed = "sarcasm"
+    taskid = "_".join(seed.split())
+    run_graph_construction(seed, taskid, max_depth = 1)

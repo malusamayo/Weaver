@@ -4,6 +4,7 @@ import threading
 import pandas as pd
 from .prompt import Prompter
 from .relations import RELATIONS
+from .graph import run_graph_construction
 from .utils import normalize, recommend_topics
 
 class KnowledgeBase(object):
@@ -333,10 +334,13 @@ def store_kb(knbase, path):
     nodes.to_csv(path + "/nodes.csv", index=False)
     edges.to_csv(path + "/edges.csv", index=False)
 
+def run_kb_contruction(seed, max_depth=2):
+    taskid = "_".join(seed.split())
+    graph = run_graph_construction(seed, taskid, max_depth=max_depth)
+    knbase = graph_to_knbase(graph)
+    store_kb(knbase, os.path.join("output", taskid))
 
 if __name__ == "__main__":
     # constructing kb
-    with open("output/hate-speech-001/graph.json", "r") as file:
-        graph = json.load(file)
-    knbase = graph_to_knbase(graph)
-    store_kb(knbase, "output/hate-speech-001")
+    seed = "restaurant"
+    run_kb_contruction(seed, max_depth=1)

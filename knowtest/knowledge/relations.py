@@ -89,6 +89,10 @@ def to_nl_description(topic, relation, parent_topic):
     return sentence
 
 def path_to_nl_description(path):
+    '''
+    path: list of dict {topic, relation}
+        Path from root to leaf.
+    '''
     parents = [item['topic'] for item in path][:-1]
     children = path[1:]
     sentences = []
