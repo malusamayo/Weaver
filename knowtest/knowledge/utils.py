@@ -185,10 +185,22 @@ def remove_nodes(known_nodes, nodes, w_E, w_V, K, alpha=1, sampling=False):
     
     return nodes[:idx_m] + nodes[idx_m+1:] 
 
+def sort_nodes(nodes, w_E, w_V, alpha=1):
+    w_ls = []
+    for node in nodes:
+        remaining_nodes = [n for n in nodes if n != node]
+        w = compute_weights(node, remaining_nodes, w_E, w_V, alpha=alpha)
+        w_ls.append(w)
+    sorted_pairs = sorted(zip(nodes, w_ls), key=lambda x: x[1])
+    sorted_nodes = [node for node, _ in sorted_pairs] 
+    return sorted_nodes
+
 def greedy_peeling(nodes, known_nodes, w_E, w_V, K, alpha=1, sampling=False):
+    K -= len(known_nodes) # adjust K for peeling
     cur_nodes = nodes
     while len(cur_nodes) > K:
         cur_nodes = remove_nodes(known_nodes, cur_nodes, w_E, w_V, K=K, alpha=alpha, sampling=sampling)
+    cur_nodes = sort_nodes(cur_nodes, w_E, w_V, alpha=alpha)
     return cur_nodes
 
 def deduplicate_items(items):
