@@ -136,8 +136,7 @@ PScorer = PerplexityScorer()
 SScorer = SimilarityScorer()
 
 def compute_weights(node, nodes, w_E, w_V, alpha=1):
-    scale = max(1, len(nodes)) * alpha
-    return w_E[node][nodes].sum() + w_V[node] * scale
+    return w_E[node][nodes].mean() * alpha + w_V[node] 
 
 def add_nodes(cur_nodes, nodes, w_E, w_V, K, alpha=1, sampling=False):
     w_ls = []
@@ -166,6 +165,41 @@ def greedy_collect(nodes, known_nodes, w_E, w_V, K, alpha=1, sampling=False):
     cur_nodes = [node for node in cur_nodes if node not in known_nodes]
     return cur_nodes
 
+def remove_nodes(known_nodes, nodes, w_E, w_V, K, alpha=1, sampling=False):
+    w_ls = []
+    for node in nodes:
+        remaining_nodes = [n for n in nodes if n != node]
+        w = compute_weights(node, known_nodes + remaining_nodes, w_E, w_V, alpha=alpha)
+        w_ls.append(w)
+    
+    if sampling:
+        prob = F.softmax(torch.tensor(w_ls), dim=0)
+
+        prob_topk, idx_topk = torch.topk(prob, K)
+        prob_topk = prob_topk.numpy()
+        prob_topk /= prob_topk.sum()
+        
+        idx_m = np.random.choice(idx_topk, p=prob_topk)
+    else:
+        idx_m = np.array(w_ls).argmax() 
+    
+    return nodes[:idx_m] + nodes[idx_m+1:] 
+
+def greedy_peeling(nodes, known_nodes, w_E, w_V, K, alpha=1, sampling=False):
+    cur_nodes = nodes
+    while len(cur_nodes) > K:
+        cur_nodes = remove_nodes(known_nodes, cur_nodes, w_E, w_V, K=K, alpha=alpha, sampling=sampling)
+    return cur_nodes
+
+def deduplicate_items(items):
+    seen = set()
+    new_items = []
+    for item in items:
+        if item['to'] not in seen:
+            seen.add(item['to'])
+            new_items.append(item)
+    return new_items
+
 def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, sampling=False):
     ''' Select K topics from the pool of topics.
     Parameters:
@@ -187,6 +221,7 @@ def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, samplin
     selected_items: list of dict {to, relation}
         The selected topics.
     '''
+    items = deduplicate_items(items) # [TODO] could use multi-tagging to avoid this
     topics = [item['to'] for item in items]
 
     nodes = list(range(len(topics)))
@@ -201,7 +236,7 @@ def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, samplin
 
     w_E = SScorer.score(items, parent_topic) # [0, 1]
 
-    selected_ids = greedy_collect(filtered_nodes, known_nodes, w_E, w_V, K, alpha=alpha, sampling=sampling)
+    selected_ids = greedy_peeling(filtered_nodes, known_nodes, w_E, w_V, K, alpha=alpha, sampling=sampling)
 
     selected_items = [items[i] for i in selected_ids]
     return selected_items

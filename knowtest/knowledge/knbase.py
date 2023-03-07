@@ -29,6 +29,10 @@ class KnowledgeBase(object):
             self.user_history['recommended'] = False
             self.user_history['selected'] = None
 
+        # with open(path + f"/{taskid}.json", 'r') as f:
+        #     master_JSON = json.load(f)
+        #     self.recommended = {node["name"] for node in master_JSON}
+
         self.prompter = Prompter(taskid=taskid)
 
     def save(self):
@@ -80,13 +84,13 @@ class KnowledgeBase(object):
 
     def extend_node_all_relation(self, topic):
         for relation in RELATIONS.relations:
-            # skip the relation if more than half topics under the relation are recommended but not selected
-            u_history = self.user_history.loc[(self.user_history['from'] == topic) & (self.user_history['relation'] == relation)]
-            n_topics = len(u_history)
-            n_recommended = len(u_history[u_history['recommended']])
-            n_selected = u_history['selected'].map(lambda x: x == True).sum()
-            if n_topics > 0 and n_recommended / n_topics > 0.5 and n_selected / n_recommended == 0 and RELATIONS.translate(relation) != RELATIONS.RELATEDTO:
-                continue
+            # # skip the relation if more than half topics under the relation are recommended but not selected
+            # u_history = self.user_history.loc[(self.user_history['from'] == topic) & (self.user_history['relation'] == relation)]
+            # n_topics = len(u_history)
+            # n_recommended = len(u_history[u_history['recommended']])
+            # n_selected = u_history['selected'].map(lambda x: x == True).sum()
+            # if n_topics > 0 and n_recommended / n_topics > 0.5 and n_selected / n_recommended == 0 and RELATIONS.translate(relation) != RELATIONS.RELATEDTO:
+            #     continue
 
             # synchronous call for RELATEDTO
             if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:            
@@ -98,21 +102,21 @@ class KnowledgeBase(object):
         # [TODO] save after all threads are done??
         self.save()
 
-    def compute_weight(self, topic, rows):
-        rows['final_weight'] = rows['weight']
+    # def compute_weight(self, topic, rows):
+    #     rows['final_weight'] = rows['weight']
 
-        # adjust weights based on user history
-        for relation in RELATIONS.relations:
-            # reduce weights if more than half topics under the relation are recommended but not selected
-            u_history = self.user_history.loc[(self.user_history['from'] == topic) & (self.user_history['relation'] == relation)]
-            n_topics = len(u_history)
-            n_recommended = len(u_history[u_history['recommended']])
-            n_selected = u_history['selected'].map(lambda x: x == True).sum()
-            if n_topics > 0 and n_recommended / n_topics > 0.5 and n_selected / n_recommended == 0 and RELATIONS.translate(relation) != RELATIONS.RELATEDTO:
-                rows.loc[rows['relation'] == relation, 'final_weight'] *= 0.5
+    #     # adjust weights based on user history
+    #     for relation in RELATIONS.relations:
+    #         # reduce weights if more than half topics under the relation are recommended but not selected
+    #         u_history = self.user_history.loc[(self.user_history['from'] == topic) & (self.user_history['relation'] == relation)]
+    #         n_topics = len(u_history)
+    #         n_recommended = len(u_history[u_history['recommended']])
+    #         n_selected = u_history['selected'].map(lambda x: x == True).sum()
+    #         if n_topics > 0 and n_recommended / n_topics > 0.5 and n_selected / n_recommended == 0 and RELATIONS.translate(relation) != RELATIONS.RELATEDTO:
+    #             rows.loc[rows['relation'] == relation, 'final_weight'] *= 0.5
         
-        # [TODO] adjust weights based on topic similarity
-        return rows
+    #     # [TODO] adjust weights based on topic similarity
+    #     return rows
 
     def expand_node(self, topic, path=[], existing_children=[], n_expand=10):
         ''' Expand a node to find related topics.
@@ -164,36 +168,67 @@ class KnowledgeBase(object):
         
         items = children[['to', 'relation']].to_dict('records')
         recommended_items = recommend_topics(items, topic, known_items, sampling=False)
+        # self.recommended |= set([item['to'] for item in recommended_items])
         return recommended_items
 
         ### old version of expand_node, deprecated
-        # update user history based on existing children
-        existing_children = pd.DataFrame(existing_children)
-        existing_children['from'] = topic
-        existing_children['to'] = existing_children['topic']
-        self.update_user_history(existing_children=existing_children)
+        # # update user history based on existing children
+        # existing_children = pd.DataFrame(existing_children)
+        # existing_children['from'] = topic
+        # existing_children['to'] = existing_children['topic']
+        # self.update_user_history(existing_children=existing_children)
 
-        # refresh children nodes
-        highlighted_topics = existing_children[existing_children['is_highlighted']]['topic'].to_list()
-        unhighlighted_topics = existing_children[~existing_children['is_highlighted']]['topic'].to_list()
-        self.nodes.loc[self.nodes['id'].isin(highlighted_topics), 'weight'] = 0 # set highlighted children to weight 0
-        self.nodes.loc[self.nodes['id'].isin(unhighlighted_topics), 'weight'] *= 0.2 # lower the weights of unhighlighted children
+        # # refresh children nodes
+        # highlighted_topics = existing_children[existing_children['is_highlighted']]['topic'].to_list()
+        # unhighlighted_topics = existing_children[~existing_children['is_highlighted']]['topic'].to_list()
+        # self.nodes.loc[self.nodes['id'].isin(highlighted_topics), 'weight'] = 0 # set highlighted children to weight 0
+        # self.nodes.loc[self.nodes['id'].isin(unhighlighted_topics), 'weight'] *= 0.2 # lower the weights of unhighlighted children
         
-        children = self.find_children(topic)
-        children = children[~children["to"].isin(highlighted_topics)] # remove highlighted children
-        fresh_children = children[children['weight'] == 1] # get fresh children
+        # children = self.find_children(topic)
+        # children = children[~children["to"].isin(highlighted_topics)] # remove highlighted children
+        # fresh_children = children[children['weight'] == 1] # get fresh children
 
-        # if the node has too few children, extend the node
-        if len(fresh_children) <= n_expand:
-            self.extend_node_all_relation(topic)
-            children = self.find_children(topic)
-            children = children[~children["to"].isin(highlighted_topics)] # remove highlighted children
+        # # if the node has too few children, extend the node
+        # if len(fresh_children) <= n_expand:
+        #     self.extend_node_all_relation(topic)
+        #     children = self.find_children(topic)
+        #     children = children[~children["to"].isin(highlighted_topics)] # remove highlighted children
 
-        # compute final weights based on path and user history
-        children = self.compute_weight(topic, children)
-        children = children.sample(n=n_expand, weights='final_weight')
-        self.update_user_history(recommended=children)
-        return children[['to', 'relation']].to_dict('records')
+        # # compute final weights based on path and user history
+        # children = self.compute_weight(topic, children)
+        # children = children.sample(n=n_expand, weights='final_weight')
+        # self.update_user_history(recommended=children)
+        # return children[['to', 'relation']].to_dict('records')
+
+
+    def initialize_tree(self, topic, n_expand=10):
+        ''' Initialize the tree with the root node.
+        Parameters
+        ----------
+        topic : str
+            The root topic.
+        n_expand : int
+            The number of children of the root node.
+        Returns
+        -------
+        tree : list of dict {topic, relation, parent}
+            The initial tree of depth 2.
+        '''
+
+        tree = [{'topic': topic, 'relation': None, 'parent': None}]
+        children = self.expand_node(topic, n_expand=n_expand)
+        for child in children:
+            tree.append({'topic': child['to'], 'relation': child['relation'], 'parent': topic})
+
+        # expand children of the root node
+        children_n_expand = n_expand // 2 # expand children with half the number of children
+        children = children[:children_n_expand]
+        for child in children:
+            grand_children = self.expand_node(child['to'], n_expand=children_n_expand)
+            for grand_child in grand_children:
+                tree.append({'topic': grand_child['to'], 'relation': grand_child['relation'], 'parent': child['to']})
+
+        return tree
 
     def suggest_siblings(self, topic, relation, path=[], existing_siblings=[], n_expand=3):
         ''' Suggest siblings of a node.
@@ -238,7 +273,9 @@ class KnowledgeBase(object):
         # [TODO] compute final weights based on topic, path and user history
 
         new_topics = new_topics.sample(n=n_expand)
-        return new_topics[['to', 'relation']].to_dict('records')
+        recommended_items = new_topics[['to', 'relation']].to_dict('records')
+        # self.recommended |= set([item['to'] for item in recommended_items])
+        return recommended_items
 
     def suggest_examples(self, topic, path=[], examples=[], N=5):
         ''' Suggest examples of a node.
