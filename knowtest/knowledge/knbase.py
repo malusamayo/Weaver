@@ -12,6 +12,12 @@ class KnowledgeBase(object):
     def __init__(self, path, taskid, domain="", uid=None) -> None:
         self.dir = os.path.join(path, taskid)
         self.domain = "online platform" if domain == "" else domain # setting domain to "online platform" by default
+        
+        if not os.path.exists(self.dir):
+            seed = ' '.join(taskid.split("_")) 
+            print(f"Creating knowledge base for {seed}...")
+            print(f"It may need to take a few minutes...")
+            run_kb_contruction(seed, max_depth=1)
         self.nodes = pd.read_csv(self.dir + "/nodes.csv")
         self.edges = pd.read_csv(self.dir + "/edges.csv")
         print("Path: ", path, "OS Path: ", os.getcwd())
@@ -342,5 +348,5 @@ def run_kb_contruction(seed, max_depth=2):
 
 if __name__ == "__main__":
     # constructing kb
-    seed = "restaurant"
+    seed = "climate change"
     run_kb_contruction(seed, max_depth=1)
