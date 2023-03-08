@@ -186,11 +186,7 @@ def remove_nodes(known_nodes, nodes, w_E, w_V, K, alpha=1, sampling=False):
     return nodes[:idx_m] + nodes[idx_m+1:] 
 
 def sort_nodes(nodes, w_E, w_V, alpha=1):
-    w_ls = []
-    for node in nodes:
-        remaining_nodes = [n for n in nodes if n != node]
-        w = compute_weights(node, remaining_nodes, w_E, w_V, alpha=alpha)
-        w_ls.append(w)
+    w_ls = [w_V[node] for node in nodes]
     sorted_pairs = sorted(zip(nodes, w_ls), key=lambda x: x[1])
     sorted_nodes = [node for node, _ in sorted_pairs] 
     return sorted_nodes
