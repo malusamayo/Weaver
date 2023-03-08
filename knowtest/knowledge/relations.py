@@ -73,7 +73,7 @@ class Relations(object):
 def to_nl_tags(relation):
     if RELATIONS.has_relation(relation):
         relation = RELATIONS.translate(relation)
-        return RELATION_NL_TAGS[relation]
+        return RELATION_NL_TAGS[relation][0]
     return relation
 
 def to_nl_description(topic, relation, parent_topic):
@@ -269,7 +269,7 @@ RELATION_NL_TAGS = {
     RELATIONS.HASSUBEVENT:
         ["has subevent"],
     RELATIONS.HASPREREQUISITE:
-        ["has prerequisite"],
+        ["happens after"],
     RELATIONS.CAUSESDESIRE:
         ["causes desire"],
     RELATIONS.DESIRECAUSEDBY:

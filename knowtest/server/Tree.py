@@ -4,6 +4,7 @@ import os
 import json
 import sys
 from ..knowledge.knbase import KnowledgeBase
+from ..knowledge.relations import to_nl_tags
 from .StateStack import StateStack
 from .Node import Node
 
@@ -227,7 +228,7 @@ class Tree:
             suggestions = self.kg.expand_node(topic=self.nodes[node_id].name.lower(), path=path, existing_children=existing_children)
 
             for dic in suggestions:
-                (suggestion, relation) = dic["to"], dic["relation"]
+                (suggestion, relation) = dic["to"], to_nl_tags(dic["relation"])
                 new_node = Node(name=suggestion, parent_id=node_id, tags=[relation])
                 if not self.add_node(new_node):
                     print("Unable to add node: ", new_node)
@@ -250,7 +251,7 @@ class Tree:
             suggestions = self.kg.suggest_siblings(topic=self.nodes[node_id].name.lower(), relation=relation, path=path, existing_siblings=existing_siblings)
 
             for dic in suggestions:
-                (suggestion, suggested_relation) = dic["to"], dic["relation"]
+                (suggestion, suggested_relation) = dic["to"], to_nl_tags(dic["relation"])
                 new_node = Node(name=suggestion, parent_id=parent_id, tags=[suggested_relation])
                 if not self.add_node(new_node, addAfter=node_id):
                     print("Unable to add node: ", new_node)
