@@ -13,6 +13,7 @@ import {
 import { MdDeleteForever } from "react-icons/md";
 import { FaFolderPlus } from "react-icons/fa";
 import { BiRefresh } from "react-icons/bi";
+import { BsSearch } from "react-icons/bs";
 import { ImPlus, ImCross } from "react-icons/im";
 
 import {
@@ -80,7 +81,7 @@ const StyledRelation = ({node, nodeTag}) => {
   )
 }
 
-const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing, type}) => {
+const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing, type, setNodeHighlighted}) => {
 
   let parentName = node.parentNode.name
   let nodeTag = node.tag[0]
@@ -102,12 +103,17 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
   // make const anchor_id = "node-info-" + node.id and all spaces in node.id to be replaced by "-"
   const anchor_id = "node-info-" + node.id;
 
+  const handleNodeHighlight = (event) => {
+    event.stopPropagation();
+    setNodeHighlighted(!isHighlighted)
+  }
+
   return (
     <StyledName onClick={handleClick}>
       {
         isHighlighted ?
-          isOpen ? <AiFillFolderOpen /> : <AiFillFolder /> :
-          isOpen ? <AiOutlineFolderOpen /> : <AiOutlineFolder />
+          isOpen ? <AiFillFolderOpen onClick={handleNodeHighlight}/> : <AiFillFolder onClick={handleNodeHighlight}/> :
+          isOpen ? <AiOutlineFolderOpen onClick={handleNodeHighlight}/> : <AiOutlineFolder onClick={handleNodeHighlight}/>
       }
       {!isEditing ? 
         node.tag.length > 0 ? node.tag.map((tag) => <StyledRelation node={node} nodeTag={tag}/>) : null :
@@ -312,15 +318,17 @@ const Folder = ({ id, name, children, node, root}) => {
                 name={name}
                 isOpen={isOpen}
                 isHighlighted={node.isHighlighted}
+                setNodeHighlighted={setNodeHighlighted}
                 node={node}
                 handleClick={() => setNodeOpen(!isOpen)}
               />
             )}
 
             <div className="actions">
-              {root ? null : node.isHighlighted ?
+              {/* {root ? null : node.isHighlighted ?
                 <AiOutlineMinus onClick={() => setNodeHighlighted(false)} id="unhighlight-topic"/> :
-                <AiOutlinePlus onClick={() => setNodeHighlighted(true)} id="highlight-topic"/> }
+                <AiOutlinePlus onClick={() => setNodeHighlighted(true)} id="highlight-topic"/> } */}
+              <BsSearch />
               <BiRefresh onClick={commitSuggestions} id="refresh-suggestion"/>
               <AiFillEdit onClick={handleFolderRename} id="edit-topic"/>
               <FaFolderPlus onClick={handleFolderCreation} id="add-topic"/>

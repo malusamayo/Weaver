@@ -11,7 +11,7 @@ import sys
 from .Server import CapabilityApp
 
 class Capability(object):
-    def __init__(self, topic="hate speech", build_directory="Build"):
+    def __init__(self, topic="hate speech", build_directory="Build", model_directory="Model"):
         self.topic = topic
         self.build_directory = os.path.abspath(__file__).replace("Capability.py", build_directory)
         self.server_link = "http://localhost:3001"

@@ -77,7 +77,9 @@ def to_nl_tags(relation):
     return relation
 
 def to_nl_description(topic, relation, parent_topic):
+    print("relation: ", relation)
     if RELATIONS.has_relation(relation):
+        print("relation: ", relation)
         relation = RELATIONS.translate(relation)
         (descrp, pos) = NL_DESCRIPTIONS[relation]
         if pos == 0:
@@ -85,7 +87,7 @@ def to_nl_description(topic, relation, parent_topic):
         else:
             sentence = f"{parent_topic} {descrp} {topic}."
         return sentence
-    sentence = f"{topic} is {descrp} {parent_topic}." # all custom relations should be in this form
+    sentence = f"{topic} is {relation} {parent_topic}." # all custom relations should be in this form
     return sentence
 
 def path_to_nl_description(path):
@@ -220,7 +222,6 @@ NL_DESCRIPTIONS = {
         ("receives action of", 1),
     RELATIONS.DONETO:
         ("is done to", 1),
-
     RELATIONS.RELATEDTO:
         ("is related to", 0)
 }
@@ -250,7 +251,6 @@ RELATION_NL_TAGS = {
         ["has symbol"],
     RELATIONS.MADEOF:
         ["made of"],
-
     RELATIONS.MANNEROF:
         ["done via"],
     RELATIONS.MOTIVATEDBY:
