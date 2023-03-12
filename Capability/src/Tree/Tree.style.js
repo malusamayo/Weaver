@@ -103,6 +103,13 @@ export const StyledName = styled.div`
   cursor: pointer;
 `;
 
+export const StyledAddTopic = styled.div`
+  background-color: white;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+`;
+
 export const StyledTag = styled.div`
   background-color: white;
   display: flex;
@@ -112,7 +119,7 @@ export const StyledTag = styled.div`
   font-size: 11px;
   color: rgb(54, 54, 54);
   border-radius: 4px;
-  border: 2px solid rgb(170, 170, 170);
+  // border: 2px solid rgb(170, 170, 170);
   padding: 0px 4px 0px 4px;
   background-color: rgb(231, 231, 231);
   .actionbutton {

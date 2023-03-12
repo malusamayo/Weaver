@@ -12,7 +12,7 @@ import {
 
 import { MdDeleteForever } from "react-icons/md";
 import { FaFolderPlus } from "react-icons/fa";
-import { BiRefresh } from "react-icons/bi";
+import { BiRefresh, BiPlusMedical } from "react-icons/bi";
 import { BsSearch } from "react-icons/bs";
 import { ImPlus, ImCross } from "react-icons/im";
 
@@ -21,7 +21,8 @@ import {
   Collapse,
   StyledName,
   VerticalLine,
-  StyledTag
+  StyledTag,
+  StyledAddTopic,
 } from "../Tree.style";
 import { StyledFolder } from "./TreeFolder.style";
 
@@ -30,6 +31,7 @@ import { PlaceholderInput } from "../TreePlaceholderInput";
 import {fetchAPIDATA} from "../../utils";
 import { Dropdown } from "../Dropdown/dropdown";
 import { AlertDelete } from "./AlertDelete";
+import { size } from "lodash";
 
 const StyledRelation = ({node, nodeTag}) => {
 
@@ -83,6 +85,14 @@ const StyledRelation = ({node, nodeTag}) => {
 
 const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing, type, setNodeHighlighted}) => {
 
+  if (type === "specialAddSuggestion") {
+    return (
+      <StyledName onClick={handleClick}>
+        <BiRefresh /> &nbsp;&nbsp; {name} 
+      </StyledName>
+    )
+  }
+
   let parentName = node.parentNode.name
   let nodeTag = node.tag[0]
 
@@ -123,10 +133,16 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
       <div id={anchor_id}>
         {name}
       </div>
-      <Tooltip place="top" anchorSelect={"#" + anchor_id} content={node.naturalLanguagePath} style={tooltip_style}/>
+      {/* <Tooltip place="top" anchorSelect={"#" + anchor_id} content={node.naturalLanguagePath} style={tooltip_style}/> */}
     </StyledName>
   )
 };
+
+// const SpecialAddTopicFolder = ({commitSuggestions}) => {
+//   return (
+//     <p onClick={commitSuggestions}>... Add Topics</p>
+//   );
+// }
 
 const Folder = ({ id, name, children, node, root}) => {
   const { dispatch, onNodeClick, setIsLoading } = useTreeContext();
@@ -328,12 +344,13 @@ const Folder = ({ id, name, children, node, root}) => {
               {/* {root ? null : node.isHighlighted ?
                 <AiOutlineMinus onClick={() => setNodeHighlighted(false)} id="unhighlight-topic"/> :
                 <AiOutlinePlus onClick={() => setNodeHighlighted(true)} id="highlight-topic"/> } */}
-              <BsSearch />
-              <BiRefresh onClick={commitSuggestions} id="refresh-suggestion"/>
+              <BsSearch id="example-panel-explore"/>
+              {/* <BiRefresh onClick={commitSuggestions} id="refresh-suggestion"/> */}
               <AiFillEdit onClick={handleFolderRename} id="edit-topic"/>
               <FaFolderPlus onClick={handleFolderCreation} id="add-topic"/>
               {root ? null : <MdDeleteForever onClick={handleDeleteFolder} id="delete-topic"/>}
               <Tooltip place="bottom" anchorSelect="#highlight-topic" content="Highlight the Topic" style={tooltip_style}/>
+              <Tooltip place="bottom" anchorSelect="#example-panel-explore" content="Explore the Topic" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#unhighlight-topic" content="Unhighlight the Topic" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#refresh-suggestion" content="Refresh Suggestions" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#edit-topic" content="Edit Topic" style={tooltip_style}/>
@@ -344,6 +361,20 @@ const Folder = ({ id, name, children, node, root}) => {
           {(node.isOpen || isOpen) && (
             <Collapse className="tree__folder--collapsible" isOpen={isOpen}>
             {childs}
+            <StyledName onClick={commitSuggestions} 
+            style={{
+              paddingLeft: "20px",
+              fontSize: "100%",
+
+            }}>
+              <BiPlusMedical style={{fontSize: "80%"}}/> &nbsp;&nbsp; 
+              <div style={{
+                display: "inline-block",
+                // backgroundColor: "rgba(54, 54, 54, 0.3)",
+                // borderRadius: "2px",
+                padding: "3px"
+              }}>... Add more Suggestions </div>
+            </StyledName>
           </Collapse>
           )}
         </VerticalLine>

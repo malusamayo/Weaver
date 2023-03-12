@@ -58,9 +58,9 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
     }
   };
 
-  const commitSelection = async (id) => {
+  const commitSelection = async (path) => {
     try {
-      const path = await fetchAPIDATA("getNodePath/nodeId=" + id);
+      // const path = await fetchAPIDATA("getNodePath/nodeId=" + id);
       setSelection(path)
       console.log("path: ", path);
     } catch (error) {
@@ -250,7 +250,7 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
                   dispatch,
                   setIsLoading: setIsLoading,
                   onNodeClick: (node) => {
-                    commitSelection(node.node.id);
+                    commitSelection(node.node.naturalLanguagePath);
                     commitBackAvailability();
                     onNodeClick && onNodeClick(node);
                     setSelectedNode(node);
