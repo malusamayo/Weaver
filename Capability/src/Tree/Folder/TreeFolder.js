@@ -367,13 +367,13 @@ const Folder = ({ id, name, children, node, root}) => {
               fontSize: "100%",
 
             }}>
-              <BiPlusMedical style={{fontSize: "80%"}}/> &nbsp;&nbsp; 
+              <BiPlusMedical style={{fontSize: "80%", opacity:"0.8"}}/> &nbsp;&nbsp; 
               <div style={{
                 display: "inline-block",
                 // backgroundColor: "rgba(54, 54, 54, 0.3)",
                 // borderRadius: "2px",
                 padding: "3px"
-              }}>... Add more Suggestions </div>
+              }}>... Show more topics </div>
             </StyledName>
           </Collapse>
           )}
