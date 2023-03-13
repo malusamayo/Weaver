@@ -1,5 +1,6 @@
 from .prompt import Prompter
 from .relations import RELATIONS, NL_DESCRIPTIONS
+from .utils import normalize
 from collections import defaultdict
 import os
 import queue
@@ -10,6 +11,8 @@ def build_graph(init_topic, prompter, max_depth = 3):
     graph = defaultdict(dict)
     known_topics = set()
     topic_queue = queue.Queue()
+
+    init_topic = normalize(init_topic)
     topic_queue.put((init_topic, 0))
     known_topics.add(init_topic)
 
