@@ -77,9 +77,7 @@ def to_nl_tags(relation):
     return relation
 
 def to_nl_description(topic, relation, parent_topic):
-    print("relation: ", relation)
     if RELATIONS.has_relation(relation):
-        print("relation: ", relation)
         relation = RELATIONS.translate(relation)
         (descrp, pos) = NL_DESCRIPTIONS[relation]
         if pos == 0:
