@@ -18,6 +18,7 @@ class KnowledgeBase(object):
             print(f"Creating knowledge base for {seed}...")
             print(f"It may need to take a few minutes...")
             run_kb_contruction(seed, max_depth=1)
+
         self.nodes = pd.read_csv(self.dir + "/nodes.csv")
         self.edges = pd.read_csv(self.dir + "/edges.csv")
         print("Path: ", path, "OS Path: ", os.getcwd())
@@ -349,13 +350,20 @@ def store_kb(knbase, path):
     nodes.to_csv(path + "/nodes.csv", index=False)
     edges.to_csv(path + "/edges.csv", index=False)
 
-def run_kb_contruction(seed, max_depth=2):
+    print("Knowledge base stored at {}".format(path))
+
+def run_kb_contruction(seed, max_depth=2, KGOutput="../output"):
+
     taskid = "_".join(seed.split())
+
+    if not os.path.exists(os.path.join(KGOutput, taskid)):
+        os.makedirs(os.path.join(KGOutput, taskid))
+
     graph = run_graph_construction(seed, taskid, max_depth=max_depth)
     knbase = graph_to_knbase(graph)
-    store_kb(knbase, os.path.join("output", taskid))
+    store_kb(knbase, os.path.join(KGOutput, taskid))
 
 if __name__ == "__main__":
     # constructing kb
-    seed = "climate change"
+    seed = "restaurant"
     run_kb_contruction(seed, max_depth=1)

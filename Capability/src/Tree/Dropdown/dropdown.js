@@ -76,8 +76,8 @@ const Dropdown = ({node}) => {
                 {
                     tagsChoice.map((relationship) => {
                         return (
-                            <div onClick={handleTagSelection} className="dropdown-item" value={relationship.value.toUpperCase()} key={relationship.id}>
-                                {relationship.value.toUpperCase()}
+                            <div onClick={handleTagSelection} className="dropdown-item" value={relationship.value} key={relationship.id}>
+                                {relationship.value}
                             </div>
                         )
                     })
