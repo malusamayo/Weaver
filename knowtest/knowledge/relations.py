@@ -122,7 +122,7 @@ PROMPT_TEMPLATES = {
     RELATIONS.DESIRES:
         ["List {N} things that {topic} desires."],
     RELATIONS.DESIREDBY:
-        ["List {N} entities that desire {topic}."],
+        ["List {N} entities or people that desire {topic}."],
     RELATIONS.CREATES:
         ["List {N} things that {topic} creates."],
     RELATIONS.CREATEDBY:
@@ -141,7 +141,7 @@ PROMPT_TEMPLATES = {
     RELATIONS.MOTIVATEDBY:
         ["List {N} motivations behind {topic}."], 
     RELATIONS.OBSTRUCTEDBY:
-        ["List {N} things or entities against {topic}."], 
+        ["List {N} things, entities, or people against {topic}."], 
     RELATIONS.CAUSES:
         ["List {N} consequences of {topic}."],
     RELATIONS.CAUSEDBY:
@@ -149,7 +149,7 @@ PROMPT_TEMPLATES = {
     RELATIONS.CAPABLEOF:
         ["List {N} things that {topic} is capble of."], 
     RELATIONS.DONEBY:
-        ["List {N} entities that can do {topic}."],
+        ["List {N} entities or people that can do {topic}."],
     RELATIONS.HASSUBEVENT:
         ["List {N} subevents of {topic}."],
     RELATIONS.HASPREREQUISITE:
@@ -161,7 +161,7 @@ PROMPT_TEMPLATES = {
     RELATIONS.RECEIVESACTION:
         ["List {N} actions that can be done to {topic}."],
     RELATIONS.DONETO:
-        ["List {N} entities that {topic} can be done to."],
+        ["List {N} entities or people that {topic} can be done to."],
     # the most generic relation
     RELATIONS.RELATEDTO:
         ["List {N} concepts related to {topic}."], 
