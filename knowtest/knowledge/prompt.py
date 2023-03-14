@@ -1,4 +1,5 @@
 import os
+import threading
 from .knmodel import GPT3Model
 from .cache import Cache
 from .relations import RELATIONS, PROMPT_TEMPLATES
@@ -11,6 +12,7 @@ class Prompter(object):
         self.model = GPT3Model()
         self.cache = Cache(taskid)
         self.sep = "#"
+        self.lock = threading.Lock() # for multi-threading
 
     # [TODO] Use external models to evaluate prompt likelihood
     def select_prompts(self, prompts):
@@ -100,7 +102,9 @@ class Prompter(object):
         topic_list = [topic for topic in topic_list if topic not in cached_topics]
         # [TODO] deduplication based on similarity and normalization
 
+        self.lock.acquire()
         self.cache.cache_queries(topic, relation, cached_topics + topic_list)
+        self.lock.release()
         return topic_list
 
     # [TODO] more engineering needed
