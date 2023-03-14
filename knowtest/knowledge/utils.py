@@ -212,7 +212,7 @@ def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, samplin
     ''' Select K topics from the pool of topics.
     Parameters:
     ----------
-    items: list of dict {to, relation}    
+    items: list of dict {to, relation, score}    
         The pool of topics to be selected from.
     parent_topic: str
         The parent topic.
@@ -231,15 +231,15 @@ def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, samplin
     '''
     items = deduplicate_items(items) # [TODO] could use multi-tagging to avoid this
     topics = [item['to'] for item in items]
+    scores = [item['score'] for item in items] # stored perplexity scores
 
     nodes = list(range(len(topics)))
-    known_nodes = [topics.index(item['to']) for item in known_items]
+    known_topics = [item['to'] for item in known_items]
+    known_nodes = [node for node in nodes if topics[node] in known_topics]
     filtered_nodes = [node for node in nodes if node not in known_nodes]
     K += len(known_nodes)
 
-    # [TODO] cache matrix computation
-    w_V = PScorer.score_topics(topics, parent_topic) # higher perplexity -> lower relevance
-    w_V = np.array(w_V)
+    w_V = np.array(scores)
     w_V = (w_V - w_V.min()) / (w_V.max() - w_V.min()) # scale to [0,1]
 
     w_E = SScorer.score(items, parent_topic) # [0, 1]

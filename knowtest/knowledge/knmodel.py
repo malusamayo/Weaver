@@ -64,7 +64,7 @@ class GPT3Model(LanguageModel):
             engine="text-davinci-003",
             prompt=prompt,
             temperature=temperature,
-            max_tokens=get_max_tokens(prompt),
+            max_tokens=256,
             stop=["\n\n\n"],
             stream=stream,
         )

@@ -5,7 +5,7 @@ import pandas as pd
 from .prompt import Prompter
 from .relations import RELATIONS
 from .graph import run_graph_construction
-from .utils import normalize, recommend_topics
+from .utils import normalize, recommend_topics, PScorer
 
 class KnowledgeBase(object):
 
@@ -77,10 +77,16 @@ class KnowledgeBase(object):
         children = self.find_children(topic, relation)
         known_topics = children['to'].to_list()
         new_topics = self.prompter.query_topics(topic, relation, known_topics=known_topics)
+        if topic in new_topics:
+            new_topics.remove(topic) # remove self-loop
+
+        if len(new_topics) == 0:
+            return
 
         node_ids = self.nodes['id'].to_list()
         new_nodes = [{"id": new_topic, 'weight': 1} for new_topic in new_topics if new_topic not in node_ids]
-        new_edges = [{"from": topic, "to": new_topic, "relation": relation} for new_topic in new_topics]
+        new_scores = PScorer.score_topics(new_topics, topic).tolist()
+        new_edges = [{"from": topic, "to": new_topic, "relation": relation, "score": score} for new_topic, score in zip(new_topics, new_scores)]
         new_user_history = [{"from": topic, "to": new_topic, "relation": relation, "recommended": False, "selected": False} for new_topic in new_topics]
 
         self.lock.acquire()
@@ -90,6 +96,7 @@ class KnowledgeBase(object):
         self.lock.release()
 
     def extend_node_all_relation(self, topic):
+        threads = []
         for relation in RELATIONS.relations:
             # # skip the relation if more than half topics under the relation are recommended but not selected
             # u_history = self.user_history.loc[(self.user_history['from'] == topic) & (self.user_history['relation'] == relation)]
@@ -103,8 +110,13 @@ class KnowledgeBase(object):
             if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:            
                 self.extend_node(topic, relation)
             else:
-                t = threading.Thread(target=self.extend_node, args=(topic,relation,))
+                thread_name = f"{topic}_{relation}"
+                t = threading.Thread(target=self.extend_node, args=(topic,relation,), name=thread_name)
+                threads.append(t)
                 t.start()
+
+        for thread in threads:
+            thread.join()
 
         # [TODO] save after all threads are done??
         self.save()
@@ -125,6 +137,21 @@ class KnowledgeBase(object):
     #     # [TODO] adjust weights based on topic similarity
     #     return rows
 
+    def prefech_init_children(self, topics):
+        for topic in topics:
+            children = self.find_children(topic)
+            if len(children) == 0:
+                self.extend_node_all_relation(topic)
+
+    def prefech_new_children(self, topic, known_topics, threshold):
+        self.extend_node_all_relation(topic)
+        children = self.find_children(topic)
+        
+        # [TODO] disable prefetching when there are too few new topics
+        new_topics = children[~children['to'].isin(known_topics)]['to'].to_list()
+        if len(new_topics) < threshold:
+            return
+
     def expand_node(self, topic, path=[], existing_children=[], n_expand=10):
         ''' Expand a node to find related topics.
         Parameters
@@ -144,68 +171,49 @@ class KnowledgeBase(object):
         '''
 
         topic = topic.lower() # temporary fix
+        known_items = []
+        print(f"Expanding node {topic}...")
 
-        # initialize children nodes
-        if len(existing_children) == 0:
-            children = self.find_children(topic)
-            # if the node has no children, extend the node
-            if len(children) == 0:
-                self.extend_node_all_relation(topic)
-                children = self.find_children(topic)
-            
-            # # stratified sampling for each relation
-            # children = children.groupby('relation').apply(lambda x: x.sample(min(len(x), 3))).reset_index(drop=True)
-            # self.update_user_history(recommended=children)
-            
-            items = children[['to', 'relation']].to_dict('records')
-            recommended_items = recommend_topics(items, topic, sampling=False)
-            return recommended_items
-
-        # suggest more children nodes
-        existing_children = pd.DataFrame(existing_children)
-        existing_children['from'] = topic
-        existing_children['to'] = existing_children['topic']
-        known_items = existing_children[['to', 'relation']].to_dict('records')
-        known_topics = existing_children['topic'].to_list()
-
-        children = self.find_children(topic) 
-        if len(children) <= n_expand:
+        children = self.find_children(topic)
+        # if the node has no children, extend the node
+        if len(children) == 0:
+            print("Initializing children...") # SHOULD NOT BE HERE: ALL children should be prefetched
             self.extend_node_all_relation(topic)
             children = self.find_children(topic)
         
-        items = children[['to', 'relation']].to_dict('records')
-        recommended_items = recommend_topics(items, topic, known_items, sampling=False)
+        # remove the ancesters of the current node
+        ancesters = [item['topic'] for item in path]
+        children = children[~children['to'].isin(ancesters)]
+
+        if len(existing_children) > 0:
+            # remove existing children
+            existing_children = pd.DataFrame(existing_children)
+            existing_children['from'] = topic
+            existing_children['to'] = existing_children['topic']
+            known_items = existing_children[['to', 'relation']].to_dict('records')
+            known_topics = existing_children['topic'].to_list()
+            children = children[~children['to'].isin(known_topics)]
+
+        # prefetch children if there are not enough fresh children
+        threshold = 2*n_expand
+        if len(children) <= threshold:
+            print("Prefetching extra children...")
+            t = threading.Thread(target=self.prefech_new_children, args=(topic, known_topics, threshold), name=f"prefetch_c_{topic}")
+            t.start()
+            
+        print("Recommending children...")
+        items = children[['to', 'relation', 'score']].to_dict('records')
+        recommended_items = recommend_topics(items, topic, known_items, K=n_expand, sampling=False)
         # self.recommended |= set([item['to'] for item in recommended_items])
+
+        # prefetch children of the recommended topics
+        print("Prefetching grandchildren...")
+        recommended_topics = [item['to'] for item in recommended_items]
+        t = threading.Thread(target=self.prefech_init_children, args=(recommended_topics,), name=f"prefetch_gc_{topic}")
+        t.start()
+                
+        print(f"Done with expanding node {topic}.")
         return recommended_items
-
-        ### old version of expand_node, deprecated
-        # # update user history based on existing children
-        # existing_children = pd.DataFrame(existing_children)
-        # existing_children['from'] = topic
-        # existing_children['to'] = existing_children['topic']
-        # self.update_user_history(existing_children=existing_children)
-
-        # # refresh children nodes
-        # highlighted_topics = existing_children[existing_children['is_highlighted']]['topic'].to_list()
-        # unhighlighted_topics = existing_children[~existing_children['is_highlighted']]['topic'].to_list()
-        # self.nodes.loc[self.nodes['id'].isin(highlighted_topics), 'weight'] = 0 # set highlighted children to weight 0
-        # self.nodes.loc[self.nodes['id'].isin(unhighlighted_topics), 'weight'] *= 0.2 # lower the weights of unhighlighted children
-        
-        # children = self.find_children(topic)
-        # children = children[~children["to"].isin(highlighted_topics)] # remove highlighted children
-        # fresh_children = children[children['weight'] == 1] # get fresh children
-
-        # # if the node has too few children, extend the node
-        # if len(fresh_children) <= n_expand:
-        #     self.extend_node_all_relation(topic)
-        #     children = self.find_children(topic)
-        #     children = children[~children["to"].isin(highlighted_topics)] # remove highlighted children
-
-        # # compute final weights based on path and user history
-        # children = self.compute_weight(topic, children)
-        # children = children.sample(n=n_expand, weights='final_weight')
-        # self.update_user_history(recommended=children)
-        # return children[['to', 'relation']].to_dict('records')
 
 
     def initialize_tree(self, topic, n_expand=10):
@@ -318,8 +326,9 @@ def graph_to_knbase(graph):
     for topic, children in graph.items():
         nodes.append({"id": topic})
         for relation, topics in children.items():
-            for topic_r in topics:
-                edges.append({"from": topic, "to": topic_r, "relation": relation})
+            scores = PScorer.score_topics(topics, topic).tolist() # compute relevancy scores
+            for topic_r, score in zip(topics, scores):
+                edges.append({"from": topic, "to": topic_r, "relation": relation, "score": score})
     return {"nodes": nodes, "edges": edges}
 
 def store_kb(knbase, path):
