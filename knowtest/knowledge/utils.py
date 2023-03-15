@@ -255,3 +255,9 @@ def normalize(topic):
     tokens = word_tokenize(topic)
     lemmatized_words = [lemmatizer.lemmatize(token) for token in tokens]
     return ' '.join(lemmatized_words)
+
+def postprocess_to_list(text, sep):
+    text = text.strip().strip(sep).rstrip(sep).lower()
+    words = text.split(sep)
+    words = [normalize(word) for word in words]
+    return words

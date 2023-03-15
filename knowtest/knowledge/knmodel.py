@@ -74,7 +74,21 @@ class GPT3Model(LanguageModel):
         response = self._get_completion(prompt)
         return response["choices"][0]["text"]
 
+class ChatGPTModel(LanguageModel):
+    def __init__(self, sys_msg: str, api_key: str = None) -> None:
+        super().__init__()
+        openai.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        self.sys_msg = {"role": "system", "content": sys_msg}
 
+    @retry(wait=wait_random_exponential(min=2, max=60), stop=stop_after_attempt(6))
+    def __call__(self, messages):
+        messages = [self.sys_msg] + messages
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+        )
+        message = response["choices"][0]["message"]
+        return message
 
 if __name__ == "__main__":
     model = GPT3Model()

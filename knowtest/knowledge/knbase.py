@@ -118,8 +118,7 @@ class KnowledgeBase(object):
 
         for thread in threads:
             thread.join()
-
-        # [TODO] save after all threads are done??
+        # save after all threads are done
         self.save()
 
     # def compute_weight(self, topic, rows):
@@ -352,7 +351,7 @@ def store_kb(knbase, path):
 
     print("Knowledge base stored at {}".format(path))
 
-def run_kb_contruction(seed, max_depth=2, KGOutput="../output"):
+def run_kb_contruction(seed, max_depth=1, KGOutput="../output"):
 
     taskid = "_".join(seed.split())
 
