@@ -29,13 +29,13 @@ class KnowledgeBase(object):
             uid = 0
         self.upath = path + f"/user_{uid}_history.csv"
 
-        if os.path.exists(self.upath):
-            self.user_history = pd.read_csv(self.upath)
-        else:
-            self.user_history = pd.DataFrame(columns=['from', 'to', 'relation', 'recommended', 'selected'])
-            self.user_history[['from', 'to', 'relation']] = self.edges[['from', 'to', 'relation']]
-            self.user_history['recommended'] = False
-            self.user_history['selected'] = None
+        # if os.path.exists(self.upath):
+        #     self.user_history = pd.read_csv(self.upath)
+        # else:
+        #     self.user_history = pd.DataFrame(columns=['from', 'to', 'relation', 'recommended', 'selected'])
+        #     self.user_history[['from', 'to', 'relation']] = self.edges[['from', 'to', 'relation']]
+        #     self.user_history['recommended'] = False
+        #     self.user_history['selected'] = None
 
         # with open(path + f"/{taskid}.json", 'r') as f:
         #     master_JSON = json.load(f)
@@ -46,7 +46,7 @@ class KnowledgeBase(object):
     def save(self):
         self.nodes.to_csv(self.dir + "/nodes.csv", index=False)
         self.edges.to_csv(self.dir + "/edges.csv", index=False)
-        self.user_history.to_csv(self.upath, index=False)
+        # self.user_history.to_csv(self.upath, index=False)
 
     # def update_user_history(self, recommended=None, existing_children=None):
     #     if recommended is not None:
@@ -88,12 +88,12 @@ class KnowledgeBase(object):
         new_nodes = [{"id": new_topic, 'weight': 1} for new_topic in new_topics if new_topic not in node_ids]
         new_scores = PScorer.score_topics(new_topics, topic).tolist()
         new_edges = [{"from": topic, "to": new_topic, "relation": relation, "score": score} for new_topic, score in zip(new_topics, new_scores)]
-        new_user_history = [{"from": topic, "to": new_topic, "relation": relation, "recommended": False, "selected": False} for new_topic in new_topics]
+        # new_user_history = [{"from": topic, "to": new_topic, "relation": relation, "recommended": False, "selected": False} for new_topic in new_topics]
 
         self.lock.acquire()
         self.nodes = pd.concat([self.nodes, pd.DataFrame(new_nodes)], ignore_index=True)
         self.edges = pd.concat([self.edges, pd.DataFrame(new_edges)], ignore_index=True)
-        self.user_history = pd.concat([self.user_history, pd.DataFrame(new_user_history)], ignore_index=True)
+        # self.user_history = pd.concat([self.user_history, pd.DataFrame(new_user_history)], ignore_index=True)
         self.lock.release()
 
     def extend_node_all_relation(self, topic):
