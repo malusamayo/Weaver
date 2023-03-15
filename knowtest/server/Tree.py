@@ -4,7 +4,6 @@ import os
 import json
 import sys
 from ..knowledge.knbase import KnowledgeBase
-from ..knowledge.relations import to_nl_tags
 from ..knowledge.knbase import run_kb_contruction
 from .StateStack import StateStack
 from .Node import Node
@@ -68,6 +67,8 @@ class Tree:
         if node.parent_id in self.nodes:
             self.nodes[node.id] = node
 
+            self.nodes[node.parent_id].isOpen = True
+
             if addAfter is None:
                 self.nodes[node.parent_id].children.append(node.id)
             else:
@@ -94,12 +95,12 @@ class Tree:
         tree["isHighlighted"] = True
         tree = [tree]
 
-        if self.firstLoad > 0:
-            self.firstLoad -= 1
-            for child in tree[0]["children"]:
-                child["isOpen"] = True
-                for grandchild in child["children"]:
-                    grandchild["isOpen"] = True
+        # if self.firstLoad > 0:
+        #     self.firstLoad -= 1
+        #     for child in tree[0]["children"]:
+        #         child["isOpen"] = True
+        #         for grandchild in child["children"]:
+        #             grandchild["isOpen"] = True
 
         return tree
 
@@ -254,7 +255,7 @@ class Tree:
             suggestions = self.kg.expand_node(topic=self.nodes[node_id].name.lower(), path=path, existing_children=existing_children)
 
             for dic in suggestions:
-                (suggestion, relation) = dic["to"], to_nl_tags(dic["relation"])
+                (suggestion, relation) = dic["to"], dic["relation"]
                 new_node = Node(name=suggestion, parent_id=node_id, tags=[relation])
                 if not self.add_node(new_node):
                     print("Unable to add node: ", new_node)
@@ -277,7 +278,7 @@ class Tree:
             suggestions = self.kg.suggest_siblings(topic=self.nodes[node_id].name.lower(), relation=relation, path=path, existing_siblings=existing_siblings)
 
             for dic in suggestions:
-                (suggestion, suggested_relation) = dic["to"], to_nl_tags(dic["relation"])
+                (suggestion, suggested_relation) = dic["to"], dic["relation"]
                 new_node = Node(name=suggestion, parent_id=parent_id, tags=[suggested_relation])
                 if not self.add_node(new_node, addAfter=node_id):
                     print("Unable to add node: ", new_node)

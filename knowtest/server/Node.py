@@ -3,6 +3,7 @@ import uuid
 import os
 import json
 from collections import defaultdict
+from ..knowledge.relations import to_nl_tags
 
 class Example:
     def __init__(self, id: str):
@@ -39,6 +40,7 @@ class Node:
 
         self.parent_id = parent_id
         self.tags = tags
+        self.nl_tags = [to_nl_tags(tag) for tag in self.tags]
         self.isOpen = isOpen
         self.isHighlighted = isHighlighted
         self.children = []
@@ -128,7 +130,7 @@ class Node:
             "name": self.name,
             "id": self.id,
             "parent_id": self.parent_id,
-            "tag": self.tags,
+            "tag": self.nl_tags,
             "isOpen": self.isOpen,
             "isHighlighted": self.isHighlighted,
             "naturalLanguagePath": self.natural_language_path,
