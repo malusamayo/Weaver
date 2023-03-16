@@ -50,6 +50,7 @@ class GPT3Model(LanguageModel):
     def __init__(self, api_key: str = None) -> None:
         super().__init__()
         openai.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        assert openai.api_key is not None, "Please provide an OpenAI API key"
 
     def _get_completion(
         self,
@@ -78,6 +79,7 @@ class ChatGPTModel(LanguageModel):
     def __init__(self, sys_msg: str, api_key: str = None) -> None:
         super().__init__()
         openai.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        assert openai.api_key is not None, "Please provide an OpenAI API key"
         self.sys_msg = {"role": "system", "content": sys_msg}
 
     @retry(wait=wait_random_exponential(min=2, max=60), stop=stop_after_attempt(6))
