@@ -49,7 +49,7 @@ const ExamplePanel = ({node}) => {
             "id": uuidv4(),
             "exampleText": text,
             "exampleTrue": "True",
-            "examplePredicted": "",
+            "examplePredicted": "True",
             "isSuggested": false,
             "exampleOffTopic": false,
         }
@@ -86,6 +86,7 @@ const ExamplePanel = ({node}) => {
                 "&exampleTrue=" + blankRow.exampleTrue + 
                 "&isSuggested=" + blankRow.isSuggested + 
                 "&exampleOffTopic=" + blankRow.exampleOffTopic);
+            setSelectedNodeExamples([]);
             setSelectedNodeExamples(newDataExamples);
             setIsLoading(false);
         } catch (error) {
@@ -125,6 +126,12 @@ const ExamplePanel = ({node}) => {
                 setSelectedNodeExamples([]);
                 setSelectedNodeExamples(newDataExamples);
                 setIsLoading(false);
+
+                if (newDataExamples.length === 0) {
+                    const blankRow = blankRowAdd("Click \"Add\" to add an example");
+                    setSelectedNodeExamples([blankRow]);
+                }
+
             } catch (error) {
                 console.log("Error: ", error);
             }
