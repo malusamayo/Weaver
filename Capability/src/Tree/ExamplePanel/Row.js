@@ -105,7 +105,12 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
     const commitUpdateRow = async (example, text) => {
         try {
             setIsLoading(true);
-            console.log("Updating example: ", exampleText)
+
+            if (text === "") {
+                text = " ";
+            }
+
+            // console.log("Updating example: ", exampleText)
             const newDataExamples = await fetchAPIDATA("updateExample/nodeId=" + nodeId +
                 "&exampleId=" + example.id +
                 "&exampleText=" + text +

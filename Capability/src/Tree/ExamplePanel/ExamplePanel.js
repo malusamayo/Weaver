@@ -60,7 +60,7 @@ const ExamplePanel = ({node}) => {
     const commitGetExample = async () => {
         try {
             setIsLoading(true);
-            console.log("Getting examples for node");
+            // console.log("Getting examples for node");
             const newDataExamples = await fetchAPIDATA("getExampleList/nodeId=" + node.node.id);
 
             // If there are no examples, add a blank row
@@ -120,7 +120,7 @@ const ExamplePanel = ({node}) => {
         if (selectedRow) {
             try {
                 setIsLoading(true);
-                console.log("Deleting example")
+                // console.log("Deleting example")
                 const newDataExamples = await fetchAPIDATA("removeExample/nodeId=" + selectedNode.id +
                     "&exampleId=" + selectedRow);
                 setSelectedNodeExamples([]);
