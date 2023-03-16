@@ -4,11 +4,13 @@ from .utils import postprocess_to_list
 sys_msg = '''
 You are a topic selection algorithm. User will provide the topics separated by ' # '.
 You should select most related yet diverse topics from these topics, using the exact words.
+Do make sure the selected topics are diverse enough.
 Your response should also be separated by ' # '.
 '''
 
 select_msg = '''
 You should select the most related yet diverse topics from these topics, using the exact words.
+Do make sure the selected topics are diverse enough.
 Your response should also be separated by ' # '.
 '''
 
