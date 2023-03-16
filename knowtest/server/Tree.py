@@ -327,14 +327,30 @@ class Tree:
 
         return cwd
     
-    def add_example(self, node_id: str, exampleText: str, exampleTrue: str, examplePredicted, isSuggested: bool):
+    def add_example(self, node_id: str, exampleText: str, exampleTrue: str, examplePredicted, isSuggested: bool, exampleOffTopic: bool):
         if node_id in self.nodes:
             example = Example(id=None)
             example.exampleText = exampleText
             example.exampleTrue = exampleTrue
             example.examplePredicted = examplePredicted
             example.isSuggested = isSuggested
+            example.exampleOffTopic = exampleOffTopic
             self.nodes[node_id].add_example(example)
+        
+    def get_example_list(self, node_id: str):
+        if node_id in self.nodes:
+            example_list = [ex.__JSON__() for ex in self.nodes[node_id].examples.values()]
+            example_list.extend([ex.__JSON__() for ex in self.nodes[node_id].suggested_examples.values()])
+            return example_list
+        return []
+    
+    def update_example(self, node_id: str, exampleID: str, exampleText: str, exampleTrue: str, isSuggested: bool, exampleOffTopic: bool):
+        if node_id in self.nodes and exampleID in self.nodes[node_id].examples:
+            example = self.nodes[node_id].examples[exampleID]
+            example.exampleText = exampleText
+            example.exampleTrue = exampleTrue
+            example.isSuggested = isSuggested
+            example.exampleOffTopic = exampleOffTopic
     
     def remove_example(self, node_id: str, exampleID: str):
         if node_id in self.nodes:
@@ -367,8 +383,6 @@ class Tree:
                                      tags=[node_data['relation']])
                     self.add_node(temp_node)
                     break
-
-                        
 
     def read_json(self, filename: str):
         try:

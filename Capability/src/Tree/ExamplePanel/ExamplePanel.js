@@ -1,36 +1,41 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import {fetchAPIDATA} from "../../utils";
 import { examplePanel } from "./ExamplePanel.css";
 import { HiOutlineBan } from "react-icons/hi";
 import { FaLongArrowAltRight } from "react-icons/fa";
+import { GoDiffAdded } from "react-icons/go";
+import { BiRefresh } from "react-icons/bi";
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
 import { Row } from "./Row";
-
-const ExamplePanelOff = () => {
-    return (
-        <div>
-            <HiOutlineBan style={{fontSize: "20px", opacity: "1", color: "rgb(197, 143, 59)"}}/>
-        </div>
-    )
-}
+import { v4 as uuidv4 } from "uuid";
+import { useTreeContext } from "../state/TreeContext";
 
 const ExamplePanel = ({node}) => {
 
     // uddate the node state when the node prop changes
-    const [selectedNode, setSelectedNode] = useState(null)
-    const [selectedRow, setSelectedRow] = useState(null)
+    const [selectedNodeExamples, setSelectedNodeExamples] = useState([]);
+    const [selectedNode, setSelectedNode] = useState(null);
+    const [selectedRow, setSelectedRow] = useState(null);
+    const { setIsLoading } = useTreeContext();
+
+    // Add blank row when the ExamplePanel is first rendered
+    
 
     useEffect(() => {
         if (node) {
-            setSelectedNode(node.node)
+            setSelectedNodeExamples([]);
+            setSelectedNode(node.node);
+            commitGetExample();
         }
     }, [node]);
 
-    useEffect(() => {
-    }, [selectedRow]);
+    useLayoutEffect(() => {
+        if (selectedNode) {
+            commitGetExample();
+        }
+    }, [selectedNode]);
 
-    // Set example-panel-container top to the bottom of menu_top_tree_toolbar
     useEffect(() => {
         const examplePanelContainer = divRef.current;
         const menuTopTreeToolbar = document.getElementById("menu_top_tree_toolbar");
@@ -38,7 +43,89 @@ const ExamplePanel = ({node}) => {
 
         examplePanelContainer.style.top = menuTopTreeToolbarBox.bottom + 20 + "px";
     }, []);
+
+    const blankRowAdd = (text) => {
+        const blankExample = {
+            "id": uuidv4(),
+            "exampleText": text,
+            "exampleTrue": "True",
+            "examplePredicted": "",
+            "isSuggested": false,
+            "exampleOffTopic": false,
+        }
+
+        return blankExample;
+    };
+
+    const commitGetExample = async () => {
+        try {
+            setIsLoading(true);
+            const newDataExamples = await fetchAPIDATA("getExampleList/nodeId=" + selectedNode.id);
+
+            // If there are no examples, add a blank row
+            if (newDataExamples.length === 0) {
+                const blankRow = blankRowAdd("Add an example");
+                commitAddBlankRow(blankRow);
+            } else {
+                setSelectedNodeExamples(newDataExamples);
+            }
+            setIsLoading(false);
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    };
+
+    const commitAddBlankRow = async (blankRow) => {
+
+        try {
+            setIsLoading(true);
+            const newDataExamples = await fetchAPIDATA("addExample/nodeId=" + selectedNode.id + 
+                "&exampleText=" + blankRow.exampleText + 
+                "&exampleTrue=" + blankRow.exampleTrue + 
+                "&isSuggested=" + blankRow.isSuggested + 
+                "&exampleOffTopic=" + blankRow.exampleOffTopic);
+            setSelectedNodeExamples(newDataExamples);
+            setIsLoading(false);
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    };   
+
+
+    const handleAddBlankRow = () => {
+        const blankRow = blankRowAdd("Add an example");
+        commitAddBlankRow(blankRow);
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {     
+            
+            if ((event.metaKey || event.ctrlKey) && event.key === "Backspace") {
+                commitDeleteRow();
+            }
+        };
         
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    });
+
+    useEffect(() => {
+        setSelectedRow(selectedRow);
+    });
+
+    const commitDeleteRow = async() => {
+        if (selectedRow) {
+            try {
+                setIsLoading(true);
+                const newDataExamples = await fetchAPIDATA("removeExample/nodeId=" + selectedNode.id +
+                    "&exampleId=" + selectedRow);
+                setSelectedNodeExamples(newDataExamples);
+                setIsLoading(false);
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        }
+    };
 
     const divRef = useRef(null);
 
@@ -49,6 +136,13 @@ const ExamplePanel = ({node}) => {
                 {selectedNode &&
                     <div>
                         <p>Topic: {selectedNode.name}</p>   
+                        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                            <p><u>Suggested Examples</u></p>
+                            <div style={{display: "flex", alignItems: "top"}}>
+                                {/* <p style={{marginRight: "5px"}}>Suggest Examples</p> */}
+                                <BiRefresh style={{fontSize: "20px", opacity: "1"}}/>
+                            </div>
+                        </div>
                         <table className="example-panel-selected-table">
                             <thead>
                             <tr>
@@ -62,15 +156,16 @@ const ExamplePanel = ({node}) => {
                             </thead>
                             <tbody>
                             {
-                                selectedNode.examples.map((example, index) => {
-                                    // console.log("example: ", example)
-                                    if (example.isSuggested === false) {
+                                selectedNodeExamples.map((example, index) => {
+                                    if (example.isSuggested === true) {
                                         return (
                                             <Row 
                                                 exampleData={example}
                                                 key={index}
                                                 setSelectedRow={setSelectedRow}
                                                 selectedRow={selectedRow}
+                                                nodeId={selectedNode.id}
+                                                setSelectedNodeExamples={setSelectedNodeExamples}
                                             />
 
                                         )
@@ -79,12 +174,18 @@ const ExamplePanel = ({node}) => {
                             }
                             </tbody>
                         </table>
-                        <br/> <br/>
+                        <br/>
+                        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                            <p><u>Selected Examples</u></p>
+                            <div style={{display: "flex", alignItems: "top"}} onClick={handleAddBlankRow}>
+                                <p style={{marginRight: "5px"}}>Add</p>
+                                <GoDiffAdded style={{fontSize: "20px", opacity: "1"}}/>
+                            </div>
+                        </div>
                         <table className="example-panel-selected-table">
                             <tbody>
                             {
-                                selectedNode.examples.map((example, index) => {
-                                    // console.log("example: ", example)
+                                selectedNodeExamples.map((example, index) => {
                                     if (example.isSuggested === false) {
                                         return (
                                             <Row 
@@ -92,8 +193,9 @@ const ExamplePanel = ({node}) => {
                                                 key={index}
                                                 setSelectedRow={setSelectedRow}
                                                 selectedRow={selectedRow}
+                                                nodeId={selectedNode.id}
+                                                setSelectedNodeExamples={setSelectedNodeExamples}
                                             />
-
                                         )
                                     }
                                 })

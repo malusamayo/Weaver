@@ -319,8 +319,12 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
 const TreeRecusive = ({ data, parentNode, root}) => {
   data = Array.from(data);
   return data.map((item) => {
+      try {
       item.parentNode = parentNode;
       if (!parentNode) item.parentNode = data
+      } catch (e) {
+        console.log(e)
+      }
       return (
         <Folder key={item.id} id={item.id} name={item.name} node={item} root={root}>
           <TreeRecusive parentNode={item} data={item.children} root={false}/>

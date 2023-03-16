@@ -139,21 +139,29 @@ class CapabilityApp:
         def toggle_is_highlighted_selection():
             return self.t.only_highlighted
         
-        @self.app.get("/addExample/nodeId={node_id}&exampleText={example_text}&exampleTrue={example_true}&isSuggested={is_suggested}")
-        def add_example(node_id: str, example_text: str, example_true: str, is_suggested: bool):
+        @self.app.get("/addExample/nodeId={node_id}&exampleText={example_text}&exampleTrue={example_true}&isSuggested={is_suggested}&exampleOffTopic={example_off_topic}")
+        def add_example(node_id: str, example_text: str, example_true: str, is_suggested: bool, example_off_topic: bool):
             # TODO: Predict
             example_predicted = "True"
-
-            self.t.add_example(node_id, example_text, example_true, example_predicted, is_suggested)
+            self.t.add_example(node_id, example_text, example_true, example_predicted, is_suggested, example_off_topic)
             self.t.write_json(self.filepath)
-            return "Done"
+            return self.t.get_example_list(node_id)
         
-        @self.app.get("/removeExample/nodeID={node_id}&exampleID={example_id}")
+        @self.app.get("/removeExample/nodeId={node_id}&exampleId={example_id}")
         def remove_example(node_id: str, example_id: str):
             self.t.remove_example(node_id, example_id)
             self.t.write_json(self.filepath)
-            return self.t.generate_json()
+            return self.t.get_example_list(node_id)
+        
+        @self.app.get("/getExampleList/nodeId={node_id}")
+        def get_example_list(node_id: str):
+            return self.t.get_example_list(node_id)
 
+        @self.app.get("/updateExample/nodeId={node_id}&exampleId={example_id}&exampleText={example_text}&exampleTrue={example_true}&isSuggested={is_suggested}&exampleOffTopic={example_off_topic}")
+        def update_example(node_id: str, example_id: str, example_text: str, example_true: str, is_suggested: bool, example_off_topic: bool):
+            self.t.update_example(node_id, example_id, example_text, example_true, is_suggested, example_off_topic)
+            self.t.write_json(self.filepath)
+            return self.t.get_example_list(node_id)
         
         self.app.add_middleware(
             CORSMiddleware,
