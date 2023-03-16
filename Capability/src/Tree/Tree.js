@@ -35,7 +35,7 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
       const newData = await fetchAPIDATA("previousState");
       dispatch({ type: "SET_DATA", payload: newData });
       setData(newData);
-      console.log("going back to: ", newData);
+      // console.log("going back to: ", newData);
 
       setIsLoading(false);
     } catch (error) {
@@ -62,7 +62,7 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
     try {
       // const path = await fetchAPIDATA("getNodePath/nodeId=" + id);
       setSelection(path)
-      console.log("path: ", path);
+      // console.log("path: ", path);
     } catch (error) {
       console.error(error);
     }
@@ -72,7 +72,7 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
     try {
       const isBackAvailable = await fetchAPIDATA("isBackAvailable");
       setIsBackButtonActive(isBackAvailable);
-      console.log("isBackAvailable: ", isBackAvailable);
+      // console.log("isBackAvailable: ", isBackAvailable);
     } catch (error) {
       console.error(error);
     }
@@ -82,7 +82,7 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
     try {
       const toggleIsHighlighted = await fetchAPIDATA("toggleIsHighlightedSelection");
       setToggleIsHighlighted(toggleIsHighlighted);
-      console.log("toggleIsHighlighted: ", toggleIsHighlighted);
+      // console.log("toggleIsHighlighted: ", toggleIsHighlighted);
     } catch (error) {
       console.error(error);
     }

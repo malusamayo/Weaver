@@ -59,13 +59,13 @@ const StyledRelation = ({node, nodeTag}) => {
 
   const handleActionPlusClick = (event) => {
     event.stopPropagation();
-    console.log("handleActionPlusClick", event)
+    // console.log("handleActionPlusClick", event)
     commitAddSimilarRelationSiblings(node, nodeTag)
   }
 
   const handleActionCrossClick = (event) => {
     event.stopPropagation();
-    console.log("handleActionCrossClick", event)
+    // console.log("handleActionCrossClick", event)
     commitRemoveSimilarRelationSiblings(node, nodeTag)
   }
 
@@ -97,7 +97,7 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
   let nodeTag = node.tag[0]
 
   if (type === "folderCreation") {
-    console.log("FolderName", node, type, isEditing, node.tag.length)
+    // console.log("FolderName", node, type, isEditing, node.tag.length)
     parentName = node.name
     nodeTag = "RELATEDTO"
   }
@@ -200,7 +200,7 @@ const Folder = ({ id, name, children, node, root}) => {
       if (name === "") {
         name = "New Topic";
       }
-      console.log("commitFolderCreation");
+      // console.log("commitFolderCreation");
       const newData = await fetchAPIDATA("addNode/parentID=" + node.id + "&nodeName=" + name + "&nodeTag=RELATEDTO");
       dispatch({ type: "SET_DATA", payload: newData });
       setEditing(false);
@@ -219,12 +219,12 @@ const Folder = ({ id, name, children, node, root}) => {
   };
 
   const handleDeleteConfirm = () => {
-    console.log("Handle Delete Confirm");
+    // console.log("Handle Delete Confirm");
     setIsDeleting(true);
   };
 
   const handleDeleteFolder = () => {
-    console.log("Handle Delete Folder")
+    // console.log("Handle Delete Folder")
     if (!node.isHighlighted) {
       commitDeleteFolder();
     } else {
@@ -271,7 +271,7 @@ const Folder = ({ id, name, children, node, root}) => {
   const handleFolderCreation = (event) => {
     event.stopPropagation();
     setIsOpen(true);
-    console.log("handleFolderCreation");
+    // console.log("handleFolderCreation");
     setChilds([
       ...childs,
       <PlaceholderInput
