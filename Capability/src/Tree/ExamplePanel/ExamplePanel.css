@@ -10,11 +10,12 @@
     position: sticky;
     top: 0;
     left: 0;
+    /* overflow: scroll; */
 }
 
 .example-panel-selected-table {
     width: 100%;
-    font-size: 14px;
+    font-size: 12px;
     /* border-collapse: collapse; */
 }
 
@@ -26,13 +27,13 @@
 }
 
 .example-panel-selected-table tr:not(:first-child) {
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     border: 1px solid rgb(204, 204, 204);
   }
 
 .example-panel-selected-table td {
-    padding: 10px;
+    padding: 2px;
 }
 
 tr:not(:first-child) {

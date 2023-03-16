@@ -16,6 +16,7 @@ class Example:
         self.exampleTrue = ""
         self.examplePredicted = ""
         self.isSuggested = False
+        self.exampleOffTopic = False
 
     def generate_new_id(self) -> None:
         self.id = str(uuid.uuid4())
@@ -26,7 +27,8 @@ class Example:
             "exampleText": self.exampleText,
             "exampleTrue": self.exampleTrue,  #Correct -> label
             "examplePredicted": self.examplePredicted,
-            "isSuggested": self.isSuggested
+            "exampleOffTopic": self.exampleOffTopic,
+            "isSuggested": self.isSuggested,
         }
 
 class Node:
@@ -94,6 +96,7 @@ class Node:
             temp_example.exampleTrue = example["exampleTrue"]
             temp_example.examplePredicted = example["examplePredicted"]
             temp_example.isSuggested = example["isSuggested"]
+            temp_example.exampleOffTopic = example["exampleOffTopic"]
 
             if example["isSuggested"] == False:
                 while temp_example.id in self.examples:
