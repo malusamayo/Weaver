@@ -65,7 +65,7 @@ const ExamplePanel = ({node}) => {
 
             // If there are no examples, add a blank row
             if (newDataExamples.length === 0) {
-                const blankRow = blankRowAdd("Add an example");
+                const blankRow = blankRowAdd("Click \"Add\" to add an example");
                 setSelectedNodeExamples([blankRow]);
             } else {
                 setSelectedNodeExamples(newDataExamples);
