@@ -44,77 +44,74 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
 
     useEffect(() => {
         if (example) {
-            setExample(exampleData)
-            setPass(exampleData.exampleTrue === exampleData.examplePredicted ? true : false)
-            setFail(exampleData.exampleTrue !== exampleData.examplePredicted ? true : false)
-            console.log("example: ", example)
+            setExample(exampleData);
+            setPass(exampleData.exampleTrue === exampleData.examplePredicted ? true : false);
+            setFail(exampleData.exampleTrue !== exampleData.examplePredicted ? true : false);
+            console.log("example: ", example);
         }
-    }, [exampleData]);
+    });
 
     const handleRowSelect = () => {
-        setSelectedRow(exampleData.id)
+        setSelectedRow(exampleData.id);
     }
 
     const commitOffTopic = () => {
-        setOffTopic(true)
-        setPass(false)
-        setFail(false)
+        setOffTopic(true);
+        setPass(false);
+        setFail(false);
     };
 
     const commitPass = () => {
-        setOffTopic(false)
-        setPass(true)
-        setFail(false)
+        setOffTopic(false);
+        setPass(true);
+        setFail(false);
     };
 
     const commitFail = () => {
-        setOffTopic(false)
-        setPass(false)
-        setFail(true)
+        setOffTopic(false);
+        setPass(false);
+        setFail(true);
     };
 
     const handleExampleTextClick = () => {
-        setIsEditingExampleText(true)
+        setIsEditingExampleText(true);
     }
 
     const handleExampleTextChange = (e) => {
         setExampleText(e.target.value);
+        commitUpdateRow(exampleData, e.target.value)
     }
 
     useEffect(() => {
-        const handleKeyDown = (event) => {
-            // if (event.key === "Escape") or (event.key === "Enter") {
-            if (event.key === "Escape" || event.key === "Enter") {
-                commitUpdateRow(exampleData);
-                event.stopPropagation();
-                setIsEditingExampleText(false);
-            }
-        };
-        window.addEventListener("keydown", handleKeyDown);
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
+    const handleKeyDown = (event) => {
+        // if (event.key === "Escape") or (event.key === "Enter") {
+        if (event.key === "Escape" || event.key === "Enter") {
+            event.stopPropagation();
+            setIsEditingExampleText(false);
+        }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+    };
     }, []);
 
-    // useEffect(() => {
-    //     if (selectedRow !== exampleData.id) {
-    //         setIsEditingExampleText(false);
-    //         if (exampleText !== "Add an example") {
-    //             commitUpdateRow(exampleData);
-    //         }
-    //     }
-    // }, [selectedRow]);
+    useEffect(() => {
+        if (selectedRow !== exampleData.id) {
+            setIsEditingExampleText(false);
+        }
+    }, [selectedRow]);
 
-    const commitUpdateRow = async (example) => {
+    const commitUpdateRow = async (example, text) => {
         try {
             setIsLoading(true);
+            console.log("Updating example: ", exampleText)
             const newDataExamples = await fetchAPIDATA("updateExample/nodeId=" + nodeId +
                 "&exampleId=" + example.id +
-                "&exampleText=" + exampleText +
+                "&exampleText=" + text +
                 "&exampleTrue=" + example.exampleTrue +
                 "&isSuggested=" + example.isSuggested +
                 "&exampleOffTopic=" + example.exampleOffTopic);
-            console.log("newDataExamples: ", newDataExamples);
             setSelectedNodeExamples(newDataExamples);
             setIsLoading(false);
         } catch (error) {
@@ -128,8 +125,8 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
         border: "none", 
         backgroundColor: "rgb(247, 247, 247)", 
         textAlign: "right",
-        // outline: "none",
-        // boxShadow: "none",
+        outline: "none",
+        boxShadow: "none",
     }
 
 

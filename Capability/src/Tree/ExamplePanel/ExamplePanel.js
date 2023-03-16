@@ -60,12 +60,13 @@ const ExamplePanel = ({node}) => {
     const commitGetExample = async () => {
         try {
             setIsLoading(true);
-            const newDataExamples = await fetchAPIDATA("getExampleList/nodeId=" + selectedNode.id);
+            console.log("Getting examples for node");
+            const newDataExamples = await fetchAPIDATA("getExampleList/nodeId=" + node.node.id);
 
             // If there are no examples, add a blank row
             if (newDataExamples.length === 0) {
                 const blankRow = blankRowAdd("Add an example");
-                commitAddBlankRow(blankRow);
+                setSelectedNodeExamples([blankRow]);
             } else {
                 setSelectedNodeExamples(newDataExamples);
             }
@@ -79,6 +80,7 @@ const ExamplePanel = ({node}) => {
 
         try {
             setIsLoading(true);
+
             const newDataExamples = await fetchAPIDATA("addExample/nodeId=" + selectedNode.id + 
                 "&exampleText=" + blankRow.exampleText + 
                 "&exampleTrue=" + blankRow.exampleTrue + 
@@ -117,6 +119,7 @@ const ExamplePanel = ({node}) => {
         if (selectedRow) {
             try {
                 setIsLoading(true);
+                console.log("Deleting example")
                 const newDataExamples = await fetchAPIDATA("removeExample/nodeId=" + selectedNode.id +
                     "&exampleId=" + selectedRow);
                 setSelectedNodeExamples(newDataExamples);
