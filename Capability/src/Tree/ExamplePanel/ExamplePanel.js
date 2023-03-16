@@ -122,6 +122,7 @@ const ExamplePanel = ({node}) => {
                 console.log("Deleting example")
                 const newDataExamples = await fetchAPIDATA("removeExample/nodeId=" + selectedNode.id +
                     "&exampleId=" + selectedRow);
+                setSelectedNodeExamples([]);
                 setSelectedNodeExamples(newDataExamples);
                 setIsLoading(false);
             } catch (error) {
