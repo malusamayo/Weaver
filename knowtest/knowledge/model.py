@@ -96,14 +96,40 @@ class Model(object):
 
 class ClassificationModel(Model):
     
-    def __init__(self, model, tokenizer) -> None:
-        self.pipeline = pipeline("text-classification", model=model, tokenizer=tokenizer)
+    def __init__(self, path="") -> None:
+        if path != "":
+            self.tokenizer = AutoTokenizer.from_pretrained(path)
+            self.model = AutoModelForSequenceClassification.from_pretrained(path)
+            self.pipeline = pipeline("text-classification", model=self.model, tokenizer=self.tokenizer)
+        else:
+            self.pipeline = pipeline("text-classification")
 
     def __call__(self, example):
         return self.pipeline(example)
 
+    def predict(self, example):
+        '''
+        example: str
+            The input example
+        ----------
+        return: str
+            The predicted label
+        '''
+        return self(example)[0]['label']
+
+    def predict_batch(self, examples):
+        '''
+        example: List[str]
+            The input examples
+        ----------
+        return: str
+            The predicted labels
+        '''
+        preds = self(examples)
+        return [pred['label'] for pred in preds]
+        
+
 if __name__ == "__main__":
-    tokenizer = AutoTokenizer.from_pretrained("unitary/toxic-bert")
-    model = AutoModelForSequenceClassification.from_pretrained("unitary/toxic-bert")
-    model = ClassificationModel(model=model, tokenizer=tokenizer)
-    print(model("I love you"))
+    model = ClassificationModel()
+    print(model.predict("I love you"))
+    print(model.predict_batch(["I love you", "I hate you"]))
