@@ -339,6 +339,23 @@ class Tree:
         
     def get_example_list(self, node_id: str):
         if node_id in self.nodes:
+
+            if len(self.nodes[node_id].suggested_examples) == 0:
+
+                path = self.get_path(node_id)
+                path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
+
+                suggested_examples = self.kg.suggest_examples(
+                    topic=self.nodes[node_id].name.lower(),
+                    path=path,
+                    examples=[ex.exampleText for ex in self.nodes[node_id].examples.values()]
+                )
+
+                print("Suggested examples: ", suggested_examples)
+
+                for exampleText in suggested_examples:
+                    self.add_example(node_id, exampleText, True, True, True, False)
+
             example_list = [ex.__JSON__() for ex in self.nodes[node_id].examples.values()]
             example_list.extend([ex.__JSON__() for ex in self.nodes[node_id].suggested_examples.values()])
             return example_list
@@ -382,6 +399,11 @@ class Tree:
                                      parent_id=parent_id, 
                                      tags=[node_data['relation']])
                     self.add_node(temp_node)
+
+                    # self.kg.add_node(node_data["topic"], 
+                    #                  node_data["parent"], 
+                    #                  node_data["relation"])
+
                     break
 
     def read_json(self, filename: str):

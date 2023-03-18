@@ -34,6 +34,7 @@
 
 .example-panel-selected-table td {
     padding: 2px;
+    word-wrap: break-word;
 }
 
 tr:not(:first-child) {
@@ -49,7 +50,7 @@ tr:not(:first-child) {
 .example-panel-selected-table td:first-child {
     /* display: flex; */
     text-align: right;
-    width: 60%;
+    width: 40%;
 }
 
 /* .example-panel-selected-table tr:focus, tr:hover {
@@ -64,19 +65,19 @@ tr:not(:first-child) {
     text-align: left;
     width: 16%;
 }
-/* .example-panel-selected-table td:nth-child(4) {
-    text-align: center;
-    width: 80px;
-} */
 .example-panel-selected-table td:nth-child(4) {
     text-align: center;
-    width: 8%;
+    width: 16%;
 }
 .example-panel-selected-table td:nth-child(5) {
     text-align: center;
-    width: 6%;
+    width: 8%;
 }
 .example-panel-selected-table td:nth-child(6) {
+    text-align: center;
+    width: 6%;
+}
+.example-panel-selected-table td:nth-child(7) {
     text-align: center;
     width: 6%;
 }

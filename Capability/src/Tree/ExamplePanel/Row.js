@@ -32,85 +32,164 @@ const ExamplePanelFail = () => {
     );
 }
 
-const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeExamples}) => {
+const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeExamples, isSuggested}) => {
 
     const [example, setExample] = useState(null);
+
+    // For editing the example text
     const [isEditingExampleText, setIsEditingExampleText] = useState(false);
     const [exampleText, setExampleText] = useState(exampleData.exampleText);
+
+    // For editing the example output
+    const [isEditingExampleOutput, setIsEditingExampleOutput] = useState(false);
+    const [exampleOutput, setExampleOutput] = useState(exampleData.exampleTrue);
+
     const [offTopic, setOffTopic] = useState(false);
     const [pass, setPass] = useState(true);
     const [fail, setFail] = useState(false);
-    const { setIsLoading } = useTreeContext();
+    // const { setIsLoading } = useTreeContext();
 
     useEffect(() => {
         if (example) {
             setExample(exampleData);
-            setPass(exampleData.exampleTrue === exampleData.examplePredicted ? true : false);
-            setFail(exampleData.exampleTrue !== exampleData.examplePredicted ? true : false);
+            if (exampleData.exampleOffTopic === true) {
+                setOffTopic(true);
+                setPass(false);
+                setFail(false);
+            } else if (exampleOutput === exampleData.examplePredicted) {
+                setOffTopic(false);
+                setPass(true);
+                setFail(false);
+            } else {
+                setOffTopic(false);
+                setPass(false);
+                setFail(true);
+            }
             console.log("example: ", example);
         }
     });
+
+    
+
+    useEffect(() => {
+        if (exampleData.exampleOffTopic === true) {
+            setOffTopic(true);
+            setPass(false);
+            setFail(false);
+        } else if (exampleOutput === exampleData.examplePredicted) {
+            setOffTopic(false);
+            setPass(true);
+            setFail(false);
+        } else {
+            setOffTopic(false);
+            setPass(false);
+            setFail(true);
+        }
+    }, [exampleOutput]);
+
+    useEffect(() => {
+        if (offTopic === true) {
+            setPass(false);
+            setFail(false);
+        } else if (exampleOutput === exampleData.examplePredicted) {
+            setOffTopic(false);
+            setPass(true);
+            setFail(false);
+        } else {
+            setOffTopic(false);
+            setPass(false);
+            setFail(true);
+        }
+    }, [offTopic]);
 
     const handleRowSelect = () => {
         setSelectedRow(exampleData.id);
     }
 
     const commitOffTopic = () => {
-        setOffTopic(true);
-        setPass(false);
-        setFail(false);
+        setOffTopic(!offTopic);
+        console.log("commitOffTopic: ", !offTopic);
+        commitExampleStatus(!offTopic);
+        // setPass(false);
+        // setFail(false);
     };
 
-    const commitPass = () => {
-        setOffTopic(false);
-        setPass(true);
-        setFail(false);
-    };
+    // const commitPass = () => {
+    //     setOffTopic(false);
+    //     setPass(true);
+    //     setFail(false);
+    // };
 
-    const commitFail = () => {
-        setOffTopic(false);
-        setPass(false);
-        setFail(true);
-    };
+    // const commitFail = () => {
+    //     setOffTopic(false);
+    //     setPass(false);
+    //     setFail(true);
+    // };
 
     const handleExampleTextClick = () => {
         setIsEditingExampleText(true);
     }
 
-    const handleExampleTextChange = (e) => {
-        setExampleText(e.target.value);
-        commitUpdateRow(exampleData, e.target.value)
+    const handleExampleOutputClick = () => {
+        setIsEditingExampleOutput(true);
     }
 
-    useEffect(() => {
-    const handleKeyDown = (event) => {
-        // if (event.key === "Escape") or (event.key === "Enter") {
-        if (event.key === "Escape" || event.key === "Enter") {
-            event.stopPropagation();
+    const handleExampleTextChange = (e) => {
+        setExampleText(e.target.value);
+        commitUpdateRowText(exampleData, e.target.value);
+        if (e.key === "Enter") {
             setIsEditingExampleText(false);
         }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-        window.removeEventListener("keydown", handleKeyDown);
-    };
+    }
+
+    const handleExampleOutputChange = (e) => {
+        setExampleOutput(e.target.value);
+        commitUpdateRowOutput(exampleData, e.target.value);
+        if (e.key === "Enter") {
+            setIsEditingExampleOutput(false);
+        }
+    }
+
+    // const handleExampleOffTopicClick = () => {
+    //     commitExampleStatus(true);
+    // }
+
+    // const handleExamplePassClick = () => {
+    //     commitExampleStatus(false, true, false);
+    // }
+
+    // const handleExampleFailClick = () => {
+    //     commitExampleStatus(false, false, true);
+    // }
+
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape" || event.key === "Enter") {
+                event.stopPropagation();
+                setIsEditingExampleText(false);
+                setIsEditingExampleOutput(false);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
     }, []);
 
     useEffect(() => {
         if (selectedRow !== exampleData.id) {
             setIsEditingExampleText(false);
+            setIsEditingExampleOutput(false);
         }
     }, [selectedRow]);
 
-    const commitUpdateRow = async (example, text) => {
+    const commitUpdateRowText = async (example, text) => {
         try {
-            setIsLoading(true);
-
             if (text === "") {
                 text = " ";
             }
 
-            // console.log("Updating example: ", exampleText)
             const newDataExamples = await fetchAPIDATA("updateExample/nodeId=" + nodeId +
                 "&exampleId=" + example.id +
                 "&exampleText=" + text +
@@ -118,13 +197,44 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                 "&isSuggested=" + example.isSuggested +
                 "&exampleOffTopic=" + example.exampleOffTopic);
             setSelectedNodeExamples(newDataExamples);
-            setIsLoading(false);
         } catch (error) {
             console.log("Error: ", error);
         }
     };
 
-    const editSpecialCSS = {
+    const commitUpdateRowOutput = async (example, text) => {
+        try {
+            if (text === "") {
+                text = " ";
+            }
+
+            const newDataExamples = await fetchAPIDATA("updateExample/nodeId=" + nodeId +
+                "&exampleId=" + example.id +
+                "&exampleText=" + example.exampleText +
+                "&exampleTrue=" + text +
+                "&isSuggested=" + example.isSuggested +
+                "&exampleOffTopic=" + example.exampleOffTopic);
+            setSelectedNodeExamples(newDataExamples);
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    };
+
+    const commitExampleStatus = async (offTopicSelection) => {
+        try {
+            const newDataExamples = await fetchAPIDATA("updateExample/nodeId=" + nodeId +
+                "&exampleId=" + exampleData.id +
+                "&exampleText=" + exampleData.exampleText +
+                "&exampleTrue=" + exampleData.exampleTrue +
+                "&isSuggested=" + exampleData.isSuggested +
+                "&exampleOffTopic=" + offTopicSelection);
+            setSelectedNodeExamples(newDataExamples);
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    };
+
+    const editSpecialCSSText = {
         width: "100%", 
         height: "100%", 
         border: "none", 
@@ -132,6 +242,17 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
         textAlign: "right",
         outline: "none",
         boxShadow: "none",
+    }
+
+    const editSpecialCSSOutput = {
+        width: "100%", 
+        height: "100%", 
+        border: "none", 
+        backgroundColor: "rgb(247, 247, 247)", 
+        textAlign: "left",
+        outline: "none",
+        boxShadow: "none",
+        overflowWrap: "break-word",
     }
 
 
@@ -142,32 +263,49 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                     {backgroundColor: "rgb(247, 247, 247)"} :
                     {backgroundColor: "rgb(255, 255, 255)"}
             }>
-            {/* <td>{exampleData.exampleText}</td> */}
             {
                 isEditingExampleText ?
-                    <td><input type="text" value={exampleText} onChange={(e) => handleExampleTextChange(e)} style={editSpecialCSS}/></td> :
+                    <td><textarea name="text" value={exampleText} onChange={(e) => handleExampleTextChange(e)} style={editSpecialCSSText} wrap="soft"/></td> :
                     <td onClick={handleExampleTextClick}>{exampleText}</td>
             }
+
             <td><FaLongArrowAltRight style={{fontSize: "30px", color: "rgb(144, 144, 144)"}}/></td>
             
-            {/* <td onClick={handleExampleTextClick}>{exampleText}</td> */}
-            <td>{exampleData.examplePredicted}</td>
+            {
+                isEditingExampleOutput ?
+                    <td><input name="text" value={exampleOutput} onChange={(e) => handleExampleOutputChange(e)} style={editSpecialCSSOutput} wrap="soft"/></td> :
+                    <td onClick={handleExampleOutputClick}>{exampleOutput}</td>
+
+            }
             
-            <td onClick={commitOffTopic}>
+            <td>
                 {
-                    offTopic ?
-                        <ExamplePanelOff /> :
-                        <FaBan style={{fontSize: "20px", opacity: "0.2"}}/>
+                    exampleData.examplePredicted
                 }
             </td>
-            <td onClick={commitPass}>
+            {
+                isSuggested ?
+                    (
+                        <td onClick={commitOffTopic}>
+                            {
+                                offTopic ?
+                                    <ExamplePanelOff /> :
+                                    <FaBan style={{fontSize: "20px", opacity: "0.2"}}/>
+                            }
+                        </td>
+                    ) :
+                    (
+                        <td></td>
+                    )
+            }
+            <td>
                 {
                     pass ?
                         <ExamplePanelPass /> :
                         <TiTick style={{fontSize: "25px", opacity: "0.2"}}/>
                 }
             </td>
-            <td onClick={commitFail}>
+            <td>
                 {
                     fail ?
                         <ExamplePanelFail /> :
