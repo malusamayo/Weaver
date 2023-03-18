@@ -340,34 +340,60 @@ class Tree:
     def get_example_list(self, node_id: str):
         if node_id in self.nodes:
 
-            if len(self.nodes[node_id].suggested_examples) == 0:
+            # if len(self.nodes[node_id].suggested_examples) == 0:
 
-                path = self.get_path(node_id)
-                path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
+            #     path = self.get_path(node_id)
+            #     path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
 
-                suggested_examples = self.kg.suggest_examples(
-                    topic=self.nodes[node_id].name.lower(),
-                    path=path,
-                    examples=[ex.exampleText for ex in self.nodes[node_id].examples.values()]
-                )
+            #     suggested_examples = self.kg.suggest_examples(
+            #         topic=self.nodes[node_id].name.lower(),
+            #         path=path,
+            #         examples=[ex.exampleText for ex in self.nodes[node_id].examples.values()]
+            #     )
 
-                print("Suggested examples: ", suggested_examples)
+            #     print("Suggested examples: ", suggested_examples)
 
-                for exampleText in suggested_examples:
-                    self.add_example(node_id, exampleText, True, True, True, False)
+            #     for exampleText in suggested_examples:
+            #         self.add_example(node_id, exampleText, True, True, True, False)
 
             example_list = [ex.__JSON__() for ex in self.nodes[node_id].examples.values()]
             example_list.extend([ex.__JSON__() for ex in self.nodes[node_id].suggested_examples.values()])
             return example_list
         return []
     
+    def add_more_suggested_examples(self, node_id: str):
+        if node_id in self.nodes:
+
+            path = self.get_path(node_id)
+            path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
+
+            suggested_examples = self.kg.suggest_examples(
+                topic=self.nodes[node_id].name.lower(),
+                path=path,
+                examples=[ex.exampleText for ex in self.nodes[node_id].examples.values()]
+            )
+
+            for exampleText in suggested_examples:
+                self.add_example(node_id, exampleText, "True", "True", True, False)
+    
     def update_example(self, node_id: str, exampleID: str, exampleText: str, exampleTrue: str, isSuggested: bool, exampleOffTopic: bool):
-        if node_id in self.nodes and exampleID in self.nodes[node_id].examples:
-            example = self.nodes[node_id].examples[exampleID]
-            example.exampleText = exampleText
-            example.exampleTrue = exampleTrue
-            example.isSuggested = isSuggested
-            example.exampleOffTopic = exampleOffTopic
+        print("Updating example: ", node_id, exampleID, exampleText, exampleTrue, isSuggested, exampleOffTopic)
+        if node_id in self.nodes:
+            if exampleID in self.nodes[node_id].examples:
+                example = self.nodes[node_id].examples[exampleID]
+                example.exampleText = exampleText
+                example.exampleTrue = exampleTrue
+                example.isSuggested = isSuggested
+                example.exampleOffTopic = exampleOffTopic
+            
+            elif exampleID in self.nodes[node_id].suggested_examples:
+                example = self.nodes[node_id].suggested_examples[exampleID]
+                example.exampleText = exampleText
+                example.exampleTrue = exampleTrue
+                example.isSuggested = isSuggested
+                example.exampleOffTopic = exampleOffTopic
+
+            print("Updated example: ", example.__JSON__())
     
     def remove_example(self, node_id: str, exampleID: str):
         if node_id in self.nodes:
