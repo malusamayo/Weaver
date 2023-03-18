@@ -52,6 +52,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
     useEffect(() => {
         if (example) {
             setExample(exampleData);
+            setExampleOutput(exampleData.exampleTrue);
             if (exampleData.exampleOffTopic === true) {
                 setOffTopic(true);
                 setPass(false);

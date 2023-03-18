@@ -161,6 +161,14 @@ class CapabilityApp:
         def update_example(node_id: str, example_id: str, example_text: str, example_true: str, is_suggested: bool, example_off_topic: bool):
             self.t.update_example(node_id, example_id, example_text, example_true, is_suggested, example_off_topic)
             self.t.write_json(self.filepath)
+            print("Setting example: ", example_text, " to ", is_suggested)
+            return self.t.get_example_list(node_id)
+        
+
+        @self.app.get("/getMoreExamples/nodeId={node_id}")
+        def get_more_examples(node_id: str):
+            self.t.add_more_suggested_examples(node_id)
+            self.t.write_json(self.filepath)
             return self.t.get_example_list(node_id)
         
         self.app.add_middleware(

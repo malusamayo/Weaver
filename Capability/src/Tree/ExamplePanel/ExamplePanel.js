@@ -124,6 +124,23 @@ const ExamplePanel = ({node}) => {
         commitAddBlankRow(blankRow);
     };
 
+    const handleMoreSuggestions = () => {
+        commitMoreSuggestions();
+    }
+
+    const commitMoreSuggestions = async () => {
+        try {
+            setIsLoading(true);
+            const newDataExamples = await fetchAPIDATA("getMoreExamples/nodeId=" + selectedNode.id);
+            setSelectedNodeExamples([]);
+            setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+            setIsLoading(false);
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    };
+        
+
     useEffect(() => {
         const handleKeyDown = (event) => {     
             
@@ -259,15 +276,13 @@ const ExamplePanel = ({node}) => {
                 "&isSuggested=" + isSuggested +
                 "&exampleOffTopic=" + selectedNodeExamples[examplePosition].exampleOffTopic);
             setSelectedNodeExamples([]);
+            console.log("New data examples: ", newDataExamples);
             setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
             setIsLoading(false);
         } catch (error) {
             console.log("Error: ", error);
         }
     };
-
-
-
 
     const commitDeleteRow = async() => {
         if (selectedRow !== null) {
@@ -326,9 +341,9 @@ const ExamplePanel = ({node}) => {
                         <p>Topic: {selectedNode.name}</p>   
                         <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                             <p><u>Suggested Examples</u></p>
-                            <div style={{display: "flex", alignItems: "top"}}>
-                                {/* <p style={{marginRight: "5px"}}>Suggest Examples</p> */}
-                                <BiRefresh style={{fontSize: "20px", opacity: "1"}}/>
+                            <div style={{display: "flex", alignItems: "top"}} onClick={handleMoreSuggestions}>
+                                <p style={{marginRight: "5px"}}>More</p>
+                                <GoDiffAdded style={{fontSize: "20px", opacity: "1"}}/>
                             </div>
                         </div>
                         <table className="example-panel-selected-table">
