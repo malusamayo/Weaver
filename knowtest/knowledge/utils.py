@@ -138,50 +138,50 @@ SScorer = SimilarityScorer()
 def compute_weights(node, nodes, w_E, w_V, alpha=1):
     return w_E[node][nodes].mean() * alpha + w_V[node] 
 
-def add_nodes(cur_nodes, nodes, w_E, w_V, K, alpha=1, sampling=False):
+def add_nodes(cur_nodes, nodes, w_E, w_V, K, alpha=1):
     w_ls = []
     for node in nodes:
         w = compute_weights(node, cur_nodes, w_E, w_V, alpha=alpha)
         w_ls.append(w)
     
-    if sampling:
-        prob = F.softmax(-torch.tensor(w_ls), dim=0)
+    # if sampling:
+    #     prob = F.softmax(-torch.tensor(w_ls), dim=0)
 
-        prob_topk, idx_topk = torch.topk(prob, K)
-        prob_topk = prob_topk.numpy()
-        prob_topk /= prob_topk.sum()
+    #     prob_topk, idx_topk = torch.topk(prob, K)
+    #     prob_topk = prob_topk.numpy()
+    #     prob_topk /= prob_topk.sum()
         
-        idx_m = np.random.choice(idx_topk, p=prob_topk)
-    else:
-        idx_m = np.array(w_ls).argmin() # select node with minimum weight: minimize both perplexity and similarity
+    #     idx_m = np.random.choice(idx_topk, p=prob_topk)
+    # else:
+    idx_m = np.array(w_ls).argmin() # select node with minimum weight: minimize both perplexity and similarity
     
     return cur_nodes + [nodes[idx_m]], nodes[:idx_m] + nodes[idx_m+1:] 
 
-def greedy_collect(nodes, known_nodes, w_E, w_V, K, alpha=1, sampling=False):
+def greedy_collect(nodes, known_nodes, w_E, w_V, K, alpha=1):
     cur_nodes = known_nodes
     remaining_nodes = nodes
     while len(cur_nodes) < K:
-        cur_nodes, remaining_nodes = add_nodes(cur_nodes, remaining_nodes, w_E, w_V, K=K, alpha=alpha, sampling=sampling)
+        cur_nodes, remaining_nodes = add_nodes(cur_nodes, remaining_nodes, w_E, w_V, K=K, alpha=alpha)
     cur_nodes = [node for node in cur_nodes if node not in known_nodes]
     return cur_nodes
 
-def remove_nodes(known_nodes, nodes, w_E, w_V, K, alpha=1, sampling=False):
+def remove_nodes(known_nodes, nodes, w_E, w_V, K, alpha=1):
     w_ls = []
     for node in nodes:
         remaining_nodes = [n for n in nodes if n != node]
         w = compute_weights(node, known_nodes + remaining_nodes, w_E, w_V, alpha=alpha)
         w_ls.append(w)
     
-    if sampling:
-        prob = F.softmax(torch.tensor(w_ls), dim=0)
+    # if sampling:
+    #     prob = F.softmax(torch.tensor(w_ls), dim=0)
 
-        prob_topk, idx_topk = torch.topk(prob, K)
-        prob_topk = prob_topk.numpy()
-        prob_topk /= prob_topk.sum()
+    #     prob_topk, idx_topk = torch.topk(prob, K)
+    #     prob_topk = prob_topk.numpy()
+    #     prob_topk /= prob_topk.sum()
         
-        idx_m = np.random.choice(idx_topk, p=prob_topk)
-    else:
-        idx_m = np.array(w_ls).argmax() 
+    #     idx_m = np.random.choice(idx_topk, p=prob_topk)
+    # else:
+    idx_m = np.array(w_ls).argmax() 
     
     return nodes[:idx_m] + nodes[idx_m+1:] 
 
@@ -191,11 +191,11 @@ def sort_nodes(nodes, w_E, w_V, alpha=1):
     sorted_nodes = [node for node, _ in sorted_pairs] 
     return sorted_nodes
 
-def greedy_peeling(nodes, known_nodes, w_E, w_V, K, alpha=1, sampling=False):
+def greedy_peeling(nodes, known_nodes, w_E, w_V, K, alpha=1):
     K -= len(known_nodes) # adjust K for peeling
     cur_nodes = nodes
     while len(cur_nodes) > K:
-        cur_nodes = remove_nodes(known_nodes, cur_nodes, w_E, w_V, K=K, alpha=alpha, sampling=sampling)
+        cur_nodes = remove_nodes(known_nodes, cur_nodes, w_E, w_V, K=K, alpha=alpha)
     cur_nodes = sort_nodes(cur_nodes, w_E, w_V, alpha=alpha)
     return cur_nodes
 
@@ -208,7 +208,7 @@ def deduplicate_items(items):
             new_items.append(item)
     return new_items
 
-def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, sampling=False):
+def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, randomization=False):
     ''' Select K topics from the pool of topics.
     Parameters:
     ----------
@@ -222,8 +222,8 @@ def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, samplin
         The number of topics to be selected.
     alpha: float
         The weight of the perplexity score, used to control the trade-off between relevance and diversity.
-    sampling: bool
-        Whether to use sampling to select the nodes.
+    randomization: bool
+        Whether to randomize scores.
     Returns:
     -------
     selected_items: list of dict {to, relation}
@@ -244,7 +244,11 @@ def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, samplin
 
     w_E = SScorer.score(items, parent_topic) # [0, 1]
 
-    selected_ids = greedy_peeling(filtered_nodes, known_nodes, w_E, w_V, K, alpha=alpha, sampling=sampling)
+    # use random Gaussian noise to bring in some randomness (exploration)
+    if randomization:
+        w_V += np.random.normal(0, 0.1, size=w_V.shape) # [TODO] adjust the scale
+
+    selected_ids = greedy_peeling(filtered_nodes, known_nodes, w_E, w_V, K, alpha=alpha)
 
     selected_items = [items[i] for i in selected_ids]
     return selected_items
