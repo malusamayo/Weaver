@@ -68,6 +68,36 @@ class GPT3Model(LanguageModel):
             max_tokens=256,
             stop=["\n\n\n"],
             stream=stream,
+            user="kgtest"
+        )
+
+    @retry(wait=wait_random_exponential(min=2, max=60), stop=stop_after_attempt(6))
+    def __call__(self, prompt):
+        response = self._get_completion(prompt)
+        return response["choices"][0]["text"]
+    
+class CurieModel(LanguageModel):
+
+    def __init__(self, api_key: str = None) -> None:
+        super().__init__()
+        openai.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        assert openai.api_key is not None, "Please provide an OpenAI API key"
+
+    def _get_completion(
+        self,
+        prompt: str,
+    ):
+        """
+        Get the completion function
+        """
+        return openai.Completion.create(
+            engine="curie",
+            prompt=prompt,
+            temperature=1.0,
+            top_p=0.95,
+            max_tokens=100,
+            stop=["\""],
+            user="kgtest"
         )
 
     @retry(wait=wait_random_exponential(min=2, max=60), stop=stop_after_attempt(6))
@@ -87,7 +117,8 @@ class ChatGPTModel(LanguageModel):
         messages = [self.sys_msg] + messages
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=messages
+            messages=messages,
+            user="kgtest"
         )
         message = response["choices"][0]["message"]
         return message

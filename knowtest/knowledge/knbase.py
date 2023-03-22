@@ -215,6 +215,38 @@ class KnowledgeBase(object):
         print(f"Done with expanding node {topic}.")
         return recommended_items
 
+    def expand_node_adatest(self, topic, tree=[], n_expand=10):
+        ''' Expand a node to find related topics.
+        Parameters
+        ----------
+        topic : str
+            The topic to be expanded.
+        tree : list of dict {topic, parent}
+            The full pre-order topic trees.
+        n_expand : int
+            The number of children returned.
+        Returns
+        -------
+        children : list of dict {to, relation}
+            The expanded children of the current node.
+        '''
+
+        # compute the full path of each topic
+        full_path = {}
+        for node in tree:
+            cur_topic, parent = node['topic'], node['parent']
+            if cur_topic in full_path:
+                continue
+            if parent is None:
+                full_path[cur_topic] = '/' + cur_topic
+            else:
+                assert parent in full_path
+                full_path[cur_topic] = full_path[parent] + '/' + cur_topic
+        
+        known_topics = list(full_path.values())
+        topics = self.prompter.sugges_topics_adatest(known_topics, full_path[topic], K=n_expand)
+        items = [{'to': topic, 'relation': "RELATEDTO"} for topic in topics]
+        return items
 
     def initialize_tree(self, topic, n_expand=10):
         ''' Initialize the tree with the root node.
@@ -363,6 +395,19 @@ def run_kb_contruction(seed, max_depth=1, KGOutput="../output"):
     store_kb(knbase, os.path.join(KGOutput, taskid))
 
 if __name__ == "__main__":
-    # constructing kb
-    seed = "restaurant"
-    run_kb_contruction(seed, max_depth=1)
+    # # constructing kb
+    # seed = "restaurant"
+    # run_kb_contruction(seed, max_depth=1)
+    knbase = KnowledgeBase("output", "hate_speech")
+    tree = [
+        {'topic': 'hate speech', 'parent': None},
+        {'topic': 'abusive language', 'parent': 'hate_speech'},
+        {'topic': 'racism', 'parent': 'hate_speech'},
+        {'topic': 'sexism', 'parent': 'hate_speech'},
+        {'topic': 'anti-black', 'parent': 'racism'},
+        {'topic': 'anti-asian', 'parent': 'racism'},
+        {'topic': 'anti-semitism', 'parent': 'racism'},
+        {'topic': 'sexist language', 'parent': 'sexism'},
+        {'topic': 'white supremacy', 'parent': 'racism'}
+    ]
+    print(knbase.expand_node_adatest('racism', tree))

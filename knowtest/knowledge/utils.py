@@ -261,3 +261,13 @@ def postprocess_to_list(text, sep):
     words = text.split(sep)
     words = [normalize(word) for word in words]
     return words
+
+def is_subtopic(topic, candidate):
+    # Returns true if candidate is a subtopic of topic
+    # Both arguments are strings, which look like UNIX paths
+    # Return is boolean
+    #return True if re.search(r"^%s(/|$)" % re.escape(topic), candidate) else False
+    if len(topic)==len(candidate):
+        return topic == candidate
+    else:
+        return candidate.startswith(topic) and candidate[len(topic)]=='/'
