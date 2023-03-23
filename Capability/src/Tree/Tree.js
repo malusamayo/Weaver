@@ -262,25 +262,25 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
                 border: "1px solid rgb(204, 204, 204)", borderRadius: "2px", margin: "10px", transition: "top 1s ease-in-out, position 1s ease-in-out"}} ref={divRef} 
                 id="menu_top_tree_toolbar">
               {/* <div ref={divRef}> */}
-                <p>Selection: {selection}</p>
-                <AnimatedMultiTagging />
+                {/* <p>Selection: {selection}</p>
+                <AnimatedMultiTagging /> */}
                 <TreeActionsWrapper>
                   <div>
                     {isBackButtonActive ?
-                      (<GoArrowLeft size={30} onClick={commitBackState} id="go-back-state"/>) :
-                      (<GoArrowLeft size={30} style={{color: "grey"}} id="go-back-state"/>)
+                      (<GoArrowLeft size={30} onClick={commitBackState} style={{cursor: "pointer"}} id="go-back-state"/>) :
+                      (<GoArrowLeft size={30} style={{color: "grey", cursor: "pointer"}} id="go-back-state"/>)
                     }
-                    <AiFillHome size={20} id="go-home"/>
+                    <AiFillHome size={20} style={{cursor: "pointer"}} id="go-home"/>
                   </div>
                   <div>
-                    Suggestion
+                    Highlighted Topics Only
                     {/* <div style={{margin: "5px 0 0 50px"}}> */}
                       {toggleIsHighlighted ?
                         (<BsToggleOn size={25} onClick={() => commitToggleIsHighlighted(false)} id="toggle-highlighted-off"  style={{margin: "0px 15px 0 5px"}}/>) :
                         (<BsToggleOff size={25} onClick={() => commitToggleIsHighlighted(true)} id="toggle-highlighted-on"  style={{margin: "0px 15px 0 5px"}}/>)
                       }
                     {/* </div> */}
-                    Example Panel
+                    Show Example Panel
                     {/* <div style={{margin: "5px 0 0 50px", justifyContent: "auto"}}> */}
                       {toggleExamplePanel ?
                         (<BsToggleOn size={25} onClick={() => commitToggleExamplePanel(false)} id="toggle-example-panel-off"  style={{margin: "0px 0 0 5px"}}/>) :
@@ -290,13 +290,14 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
                   </div>
                     <Tooltip place="bottom" anchorSelect="#go-back-state" content="Back" style={tooltip_style}/>
                     <Tooltip place="bottom" anchorSelect="#go-home" content="Home" style={tooltip_style}/>
-                    <Tooltip place="bottom" anchorSelect="#toggle-highlighted-off" content="Show Suggestions" style={tooltip_style}/>
-                    <Tooltip place="bottom" anchorSelect="#toggle-highlighted-on" content="Hide Suggestions" style={tooltip_style}/>
+                    <Tooltip place="bottom" anchorSelect="#toggle-highlighted-off" content="Show all topics" style={tooltip_style}/>
+                    <Tooltip place="bottom" anchorSelect="#toggle-highlighted-on" content="Show only highlighted topics" style={tooltip_style}/>
                     <Tooltip place="bottom" anchorSelect="#toggle-example-panel-off" content="Hide example panel" style={tooltip_style}/>
                     <Tooltip place="bottom" anchorSelect="#toggle-example-panel-on" content="Show example panel" style={tooltip_style}/>
                 </TreeActionsWrapper>  
               </div>
             <Row>
+              {/* <Scroll Down> */}
               <Col xs="auto">
                 <StyledTree>
                   {isImparative ? (
@@ -306,9 +307,12 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
                   )}
                 </StyledTree>
               </Col>
+              {/* </Scroll> */}
+              {/* <Scroll Down> */}
               <Col>
-                {toggleExamplePanel && <ExamplePanel node={selectedNode}/>}
+                  {toggleExamplePanel && <ExamplePanel node={selectedNode}/>}
               </Col>
+              {/* </Scroll> */}
             </Row>
             </TreeContext.Provider>
           </ThemeProvider>

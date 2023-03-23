@@ -338,12 +338,13 @@ const ExamplePanel = ({node}) => {
                 <h4>Example Panel</h4>
                 {selectedNode &&
                     <div>
-                        <p>Topic: {selectedNode.name}</p>   
+                        <p>Topic: {selectedNode.name}</p> 
+                        <p>Path: {selectedNode.naturalLanguagePath}</p>
                         <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                             <p><u>Suggested Examples</u></p>
                             <div style={{display: "flex", alignItems: "top"}} onClick={handleMoreSuggestions}>
                                 <p style={{marginRight: "5px"}}>More</p>
-                                <GoDiffAdded style={{fontSize: "20px", opacity: "1"}}/>
+                                <GoDiffAdded style={{fontSize: "20px", opacity: "1", cursor: "pointer"}}/>
                             </div>
                         </div>
                         <table className="example-panel-selected-table">
@@ -385,7 +386,7 @@ const ExamplePanel = ({node}) => {
                             <p><u>Selected Examples</u></p>
                             <div style={{display: "flex", alignItems: "top"}} onClick={handleAddBlankRow}>
                                 <p style={{marginRight: "5px"}}>Add</p>
-                                <GoDiffAdded style={{fontSize: "20px", opacity: "1"}}/>
+                                <GoDiffAdded style={{fontSize: "20px", opacity: "1", cursor: "pointer"}}/>
                             </div>
                         </div>
                         <table className="example-panel-selected-table">
