@@ -8,7 +8,7 @@ export default function App() {
   // console.log("data: " + data)
 
   const fetchData = () => {
-    return fetch("http://localhost:3001/")
+    return fetch(process.env.REACT_APP_BACKEND_SERVER_URL)
       .then((response) => response.json())
       .then((data) => setData(data))
       .then(() => console.log("fetch data from base"))

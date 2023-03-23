@@ -3,7 +3,7 @@ import { useRef, useEffect } from "react";
 
 export const fetchAPIDATA = async (getRequest) => {
   try {
-    let newData = await fetch("http://127.0.0.1:3001/" + getRequest);
+    let newData = await fetch(process.env.REACT_APP_BACKEND_SERVER_URL + getRequest);
     newData = await newData.json();
     return newData;
   } catch (error) {
