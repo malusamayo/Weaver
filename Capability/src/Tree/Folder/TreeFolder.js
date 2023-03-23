@@ -9,6 +9,10 @@ import {
   AiFillFolder,
   AiFillFolderOpen,
 } from "react-icons/ai";
+import {
+  RiCheckboxCircleFill,
+  RiCheckboxBlankCircleLine,
+} from "react-icons/ri";
 
 import { MdDeleteForever } from "react-icons/md";
 import { FaFolderPlus } from "react-icons/fa";
@@ -74,11 +78,11 @@ const StyledRelation = ({node, nodeTag}) => {
       <div style={{alignItems:"top"}}>
         {nodeTag}
       </div>
-      <div className="actionbutton">
+      {/* <div className="actionbutton">
         <ImPlus onClick={handleActionPlusClick} />
         &nbsp;&nbsp;
         <ImCross onClick={handleActionCrossClick} />
-      </div>
+      </div> */}
     </StyledTag>
   )
 }
@@ -119,18 +123,27 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
   }
 
   return (
-    <StyledName onClick={handleClick}>
+    <StyledName>
+      <div style={{cursor: "pointer"}}>
       {
-        isHighlighted ?
-          isOpen ? <AiFillFolderOpen onClick={handleNodeHighlight}/> : <AiFillFolder onClick={handleNodeHighlight}/> :
-          isOpen ? <AiOutlineFolderOpen onClick={handleNodeHighlight}/> : <AiOutlineFolder onClick={handleNodeHighlight}/>
+        // isHighlighted ?
+          // isOpen ? <AiFillFolderOpen onClick={handleNodeHighlight}/> : <AiFillFolder onClick={handleNodeHighlight}/> :
+          isOpen ? <AiOutlineFolderOpen onClick={handleClick}/> : <AiOutlineFolder onClick={handleClick}/>
       }
+      </div>
+      <div style={{cursor: "pointer"}}>
+      {
+        isHighlighted ? 
+          <RiCheckboxCircleFill onClick={handleNodeHighlight} id="hide-subtopic"/> :
+          <RiCheckboxBlankCircleLine onClick={handleNodeHighlight} id="show-subtopic"/>
+      }
+      </div>
       {!isEditing ? 
         node.tag.length > 0 ? node.tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>) : null :
         node.tag.length ? (<Dropdown node={node}/>): null
       }
       &nbsp;&nbsp;
-      <div id={anchor_id}>
+      <div id={anchor_id} st>
         {name}
       </div>
       {/* <Tooltip place="top" anchorSelect={"#" + anchor_id} content={node.naturalLanguagePath} style={tooltip_style}/> */}
@@ -350,11 +363,11 @@ const Folder = ({ id, name, children, node, root}) => {
               <FaFolderPlus onClick={handleFolderCreation} id="add-topic"/>
               {root ? null : <MdDeleteForever onClick={handleDeleteFolder} id="delete-topic"/>}
               <Tooltip place="bottom" anchorSelect="#highlight-topic" content="Highlight the Topic" style={tooltip_style}/>
-              <Tooltip place="bottom" anchorSelect="#example-panel-explore" content="Explore the Topic" style={tooltip_style}/>
+              <Tooltip place="bottom" anchorSelect="#example-panel-explore" content="Explore Examples" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#unhighlight-topic" content="Unhighlight the Topic" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#refresh-suggestion" content="Refresh Suggestions" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#edit-topic" content="Edit Topic" style={tooltip_style}/>
-              <Tooltip place="bottom" anchorSelect="#add-topic" content="Add Topic" style={tooltip_style}/>
+              <Tooltip place="bottom" anchorSelect="#add-topic" content="Add Subtopic" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#delete-topic" content="Delete Topic" style={tooltip_style}/>
             </div>
           </ActionsWrapper>
@@ -364,8 +377,9 @@ const Folder = ({ id, name, children, node, root}) => {
             <StyledName onClick={commitSuggestions} 
               style={{
                 paddingLeft: "22px",
-                fontSize: "100%",
-                color: "rgba(167, 20, 168, 1)",
+                fontSize: "90%",
+                color: "grey",
+                cursor: "pointer",
               }}>
               <BsFillPlusCircleFill style={{fontSize: "80%", opacity:"0.8"}}/> &nbsp;&nbsp; 
               <div style={{

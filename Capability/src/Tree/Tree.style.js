@@ -100,7 +100,6 @@ export const StyledName = styled.div`
   background-color: white;
   display: flex;
   align-items: center;
-  cursor: pointer;
 `;
 
 export const StyledAddTopic = styled.div`
@@ -114,7 +113,6 @@ export const StyledTag = styled.div`
   background-color: white;
   display: flex;
   align-items: center;
-  cursor: pointer;
   margin-left: 4px;
   font-size: 11px;
   color: rgb(54, 54, 54);
