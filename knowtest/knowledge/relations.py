@@ -86,7 +86,7 @@ def to_nl_description(topic, relation, parent_topic):
             sentence = f"{parent_topic} {descrp} {topic}."
         return sentence
     sentence = f"{topic} is {relation} {parent_topic}." # all custom relations should be in this form
-    return sentence
+    return sentence.capitalize()
 
 def path_to_nl_description(path):
     '''
