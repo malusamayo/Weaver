@@ -35,7 +35,10 @@ const Dropdown = ({node}) => {
         console.log("node: ", node, "selectedTag: ", selectedTag)
         selectedTag = selectedTag.toUpperCase()
         try {
-            const newData = await fetchAPIDATA("setNodeTag/nodeId=" + node.id + "&tag=" + selectedTag);
+            const newData = await fetchAPIDATA("setNodeTag", {
+                "nodeId": node.id,
+                "tag": selectedTag
+            }, true);
             dispatch({type: "SET_DATA", payload: newData})
         } catch (error) {
             console.error(error);

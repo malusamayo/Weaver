@@ -187,16 +187,14 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
 
     const commitUpdateRowText = async (example, text) => {
         try {
-            if (text === "") {
-                text = " ";
-            }
-
-            const newDataExamples = await fetchAPIDATA("updateExample/nodeId=" + nodeId +
-                "&exampleId=" + example.id +
-                "&exampleText=" + text +
-                "&exampleTrue=" + example.exampleTrue +
-                "&isSuggested=" + example.isSuggested +
-                "&exampleOffTopic=" + example.exampleOffTopic);
+            const newDataExamples = await fetchAPIDATA("updateExample", {
+                "nodeId": nodeId,
+                "exampleId": example.id,
+                "exampleText": text,
+                "exampleTrue": example.exampleTrue,
+                "isSuggested": example.isSuggested,
+                "exampleOffTopic": example.exampleOffTopic
+            }, true);
             setSelectedNodeExamples(newDataExamples);
         } catch (error) {
             console.log("Error: ", error);
@@ -205,16 +203,15 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
 
     const commitUpdateRowOutput = async (example, text) => {
         try {
-            if (text === "") {
-                text = " ";
-            }
 
-            const newDataExamples = await fetchAPIDATA("updateExample/nodeId=" + nodeId +
-                "&exampleId=" + example.id +
-                "&exampleText=" + example.exampleText +
-                "&exampleTrue=" + text +
-                "&isSuggested=" + example.isSuggested +
-                "&exampleOffTopic=" + example.exampleOffTopic);
+            const newDataExamples = await fetchAPIDATA("updateExample",{
+                "nodeId": nodeId,
+                "exampleId": example.id,
+                "exampleText": example.exampleText,
+                "exampleTrue": text,
+                "isSuggested": example.isSuggested,
+                "exampleOffTopic": example.exampleOffTopic
+            }, true);
             setSelectedNodeExamples(newDataExamples);
         } catch (error) {
             console.log("Error: ", error);
@@ -223,12 +220,14 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
 
     const commitExampleStatus = async (offTopicSelection) => {
         try {
-            const newDataExamples = await fetchAPIDATA("updateExample/nodeId=" + nodeId +
-                "&exampleId=" + exampleData.id +
-                "&exampleText=" + exampleData.exampleText +
-                "&exampleTrue=" + exampleData.exampleTrue +
-                "&isSuggested=" + exampleData.isSuggested +
-                "&exampleOffTopic=" + offTopicSelection);
+            const newDataExamples = await fetchAPIDATA("updateExample", {
+                "nodeId": nodeId,
+                "exampleId": exampleData.id,
+                "exampleText": exampleData.exampleText,
+                "exampleTrue": exampleData.exampleTrue,
+                "isSuggested": exampleData.isSuggested,
+                "exampleOffTopic": offTopicSelection
+            }, true);
             setSelectedNodeExamples(newDataExamples);
         } catch (error) {
             console.log("Error: ", error);

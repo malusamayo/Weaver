@@ -48,7 +48,9 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
 
       setIsLoading(true);
 
-      const newData = await fetchAPIDATA("getTopics/isHighlighted="+toggleIsHighlighted);
+      const newData = await fetchAPIDATA("getTopics", {
+        'isHighlighted' : toggleIsHighlighted
+      });
       dispatch({ type: "SET_DATA", payload: newData });
       setData(newData);
 
@@ -60,7 +62,6 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
 
   const commitSelection = async (path) => {
     try {
-      // const path = await fetchAPIDATA("getNodePath/nodeId=" + id);
       setSelection(path)
       // console.log("path: ", path);
     } catch (error) {

@@ -43,7 +43,10 @@ const StyledRelation = ({node, nodeTag}) => {
 
   const commitRemoveSimilarRelationSiblings = async (node, nodeTag) => {
     try {
-      const newData = await fetchAPIDATA("removeSimilarRelationSiblings/nodeId=" + node.id + "&tag=" + nodeTag);
+      const newData = await fetchAPIDATA("removeSimilarRelationSiblings", {
+        "nodeId": node.id,
+        "tag": nodeTag
+      }, true);
       dispatch({ type: "SET_DATA", payload: newData });
     } catch (error) {
       console.log(error);
@@ -53,7 +56,10 @@ const StyledRelation = ({node, nodeTag}) => {
   const commitAddSimilarRelationSiblings = async (node, nodeTag) => {
     try {
       setIsLoading(true);
-      const newData = await fetchAPIDATA("addSimilarRelationSiblings/nodeId=" + node.id + "&tag=" + nodeTag);
+      const newData = await fetchAPIDATA("addSimilarRelationSiblings", {
+        "nodeId": node.id,
+        "tag": nodeTag
+      }, true);
       dispatch({ type: "SET_DATA", payload: newData });
       setIsLoading(false);
     } catch (error) {
@@ -173,7 +179,10 @@ const Folder = ({ id, name, children, node, root}) => {
         setIsLoading(true);
       }
 
-      const newData = await fetchAPIDATA("setOpen/nodeId=" + node.id + "&isOpen=" + open);
+      const newData = await fetchAPIDATA("setOpen", {
+        "nodeId": node.id,
+        "isOpen": open
+      }, true);
       dispatch({ type: "SET_DATA", payload: newData });
       setIsOpen(open);
       
@@ -188,7 +197,10 @@ const Folder = ({ id, name, children, node, root}) => {
 
   const setNodeHighlighted = async (highlighted) => {
     try {
-      const newData = await fetchAPIDATA("setHighlighted/nodeId=" + node.id + "&isHighlighted=" + highlighted);
+      const newData = await fetchAPIDATA("setHighlighted", {
+        "nodeId": node.id,
+        "isHighlighted": highlighted
+      }, true);
       dispatch({ type: "SET_DATA", payload: newData });
       // setHighlighted(highlighted);
     } catch (error) {
@@ -214,7 +226,11 @@ const Folder = ({ id, name, children, node, root}) => {
         name = "New Topic";
       }
       // console.log("commitFolderCreation");
-      const newData = await fetchAPIDATA("addNode/parentID=" + node.id + "&nodeName=" + name + "&nodeTag=RELATEDTO");
+      const newData = await fetchAPIDATA("addNode", {
+        "parentID": node.id,
+        "nodeName": name,
+        "nodeTag": "RELATEDTO"
+      }, true);
       dispatch({ type: "SET_DATA", payload: newData });
       setEditing(false);
     } catch (error) {
@@ -223,7 +239,9 @@ const Folder = ({ id, name, children, node, root}) => {
   };
   const commitDeleteFolder = async () => {
     try {
-      const newData = await fetchAPIDATA("deleteNode/nodeId=" + node.id);
+      const newData = await fetchAPIDATA("deleteNode", {
+        "nodeId": node.id
+      }, true);
       dispatch({ type: "SET_DATA", payload: newData });
       setEditing(false);
     } catch (error) {
@@ -247,7 +265,10 @@ const Folder = ({ id, name, children, node, root}) => {
 
   const commitFolderEdit = async (name) => {
     try {
-      const newData = await fetchAPIDATA("editFolderName/nodeId=" + id + "&newName=" + name);
+      const newData = await fetchAPIDATA("editFolderName", {
+        "nodeId": node.id,
+        "newName": name
+      }, true);
       dispatch({ type: "SET_DATA", payload: newData });
       setEditing(false);
     } catch (error) {
@@ -259,7 +280,9 @@ const Folder = ({ id, name, children, node, root}) => {
     try {
 
       setIsLoading(true);
-      const newData = await fetchAPIDATA("getSuggestions/nodeId=" + id);
+      const newData = await fetchAPIDATA("getSuggestions", {
+        "nodeId": id
+      });
       dispatch({ type: "SET_DATA", payload: newData });
       setEditing(false);
       setIsLoading(false);

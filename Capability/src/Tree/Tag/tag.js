@@ -16,14 +16,13 @@ const AnimatedMultiTagging = () => {
     setSelectedOptions(selectedOptions);
     try {
         let tags = selectedOptions.map((option) => option.value);
-        let apiEndpoint = "setTagFilter/tags=";
+        let apiEndpoint = "setTagFilter";
         if (tags.length === 0) {
             apiEndpoint = "resetTagFilter";
-        } else {
-            tags = tags.join(",");
-            apiEndpoint = "setTagFilter/tags=" + tags;
         }
-        const newData = await fetchAPIDATA(apiEndpoint);
+        const newData = await fetchAPIDATA(apiEndpoint, {
+            "tags": tags
+        }, true);
         dispatch({type: "SET_DATA", payload: newData})
     } catch (error) {
         console.error(error);

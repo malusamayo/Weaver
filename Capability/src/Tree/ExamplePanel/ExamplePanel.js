@@ -75,7 +75,9 @@ const ExamplePanel = ({node}) => {
         try {
             setIsLoading(true);
             // console.log("Getting examples for node");
-            const newDataExamples = await fetchAPIDATA("getExampleList/nodeId=" + node.node.id);
+            const newDataExamples = await fetchAPIDATA("getExampleList", {
+                "nodeId": node.node.id
+            });
 
             // If there are no examples, add a blank row
 
@@ -105,11 +107,13 @@ const ExamplePanel = ({node}) => {
         try {
             setIsLoading(true);
 
-            const newDataExamples = await fetchAPIDATA("addExample/nodeId=" + selectedNode.id + 
-                "&exampleText=" + blankRow.exampleText + 
-                "&exampleTrue=" + blankRow.exampleTrue + 
-                "&isSuggested=" + blankRow.isSuggested + 
-                "&exampleOffTopic=" + blankRow.exampleOffTopic);
+            const newDataExamples = await fetchAPIDATA("addExample", {
+                "nodeId": selectedNode.id,
+                "exampleText": blankRow.exampleText,
+                "exampleTrue": blankRow.exampleTrue,
+                "isSuggested": blankRow.isSuggested,
+                "exampleOffTopic": blankRow.exampleOffTopic
+            }, true);
             setSelectedNodeExamples([]);
             setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
             setIsLoading(false);
@@ -131,7 +135,9 @@ const ExamplePanel = ({node}) => {
     const commitMoreSuggestions = async () => {
         try {
             setIsLoading(true);
-            const newDataExamples = await fetchAPIDATA("getMoreExamples/nodeId=" + selectedNode.id);
+            const newDataExamples = await fetchAPIDATA("getMoreExamples", {
+                "nodeId": selectedNode.id
+            });
             setSelectedNodeExamples([]);
             setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
             setIsLoading(false);
@@ -269,12 +275,14 @@ const ExamplePanel = ({node}) => {
             console.log("Node: ", selectedNode.id);
             console.log("Example: ", selectedNodeExamples[examplePosition]);
             console.log("Setting isSuggested to: ", isSuggested);
-            const newDataExamples = await fetchAPIDATA("updateExample/nodeId=" + selectedNode.id +
-                "&exampleId=" + selectedNodeExamples[examplePosition].id +
-                "&exampleText=" + selectedNodeExamples[examplePosition].exampleText +
-                "&exampleTrue=" + selectedNodeExamples[examplePosition].exampleTrue +
-                "&isSuggested=" + isSuggested +
-                "&exampleOffTopic=" + selectedNodeExamples[examplePosition].exampleOffTopic);
+            const newDataExamples = await fetchAPIDATA("updateExample", {
+                "nodeId": selectedNode.id,
+                "exampleId": selectedNodeExamples[examplePosition].id,
+                "exampleText": selectedNodeExamples[examplePosition].exampleText,
+                "exampleTrue": selectedNodeExamples[examplePosition].exampleTrue,
+                "isSuggested": isSuggested,
+                "exampleOffTopic": selectedNodeExamples[examplePosition].exampleOffTopic
+            }, true);
             setSelectedNodeExamples([]);
             console.log("New data examples: ", newDataExamples);
             setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
@@ -297,8 +305,10 @@ const ExamplePanel = ({node}) => {
                     }
                 }
 
-                const newDataExamples = await fetchAPIDATA("removeExample/nodeId=" + selectedNode.id +
-                    "&exampleId=" + selectedRow);
+                const newDataExamples = await fetchAPIDATA("removeExample", {
+                    "nodeId": selectedNode.id,
+                    "exampleId": selectedRow
+                }, true);
                 setSelectedNodeExamples([]);
                 setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
                 setIsLoading(false);
@@ -374,7 +384,6 @@ const ExamplePanel = ({node}) => {
                                                 setSelectedNodeExamples={setSelectedNodeExamples}
                                                 isSuggested={true}
                                             />
-
                                         )
                                     }
                                 })

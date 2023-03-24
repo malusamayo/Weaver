@@ -1,9 +1,28 @@
 import { useRef, useEffect } from "react";
 
 
-export const fetchAPIDATA = async (getRequest) => {
+export const fetchAPIDATA = async (method, data={}, isPost=false) => {
   try {
-    let newData = await fetch(process.env.REACT_APP_BACKEND_SERVER_URL + getRequest);
+    const queryString = new URLSearchParams(data).toString();
+    console.log(method, queryString);
+
+    let fetchData = isPost ? {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    } : null;
+    
+    let newData = null;
+    if (method == 'updateExample') {
+      newData = await fetch(process.env.REACT_APP_BACKEND_SERVER_URL + method, fetchData);
+    } else if (queryString.length > 0) {
+      newData = await fetch(process.env.REACT_APP_BACKEND_SERVER_URL + method + '?' + queryString, fetchData);
+    } else {
+      newData = await fetch(process.env.REACT_APP_BACKEND_SERVER_URL + method);
+    }
+
     newData = await newData.json();
     return newData;
   } catch (error) {
