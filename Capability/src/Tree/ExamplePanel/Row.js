@@ -9,7 +9,7 @@ import {fetchAPIDATA} from "../../utils";
 const ExamplePanelOff = () => {
     return (
         <div>
-            <FaBan style={{fontSize: "20px", opacity: "1", color: "rgb(197, 143, 59)", fontWeight: "bold"}}/>
+            <FaBan style={{fontSize: "20px", opacity: "1", color: "rgb(197, 143, 59)", fontWeight: "bold", cursor: "pointer"}}/>
         </div>
     );
 }
@@ -18,7 +18,7 @@ const ExamplePanelPass = () => {
     return (
         <div>
             <div style={{margin: "0px", backgroundColor: "rgb(230, 238, 230)", padding: "1px"}}>
-                <TiTick style={{fontSize: "25px", opacity: "1", color: "rgb(61, 125, 68)"}}/>
+                <TiTick style={{fontSize: "25px", opacity: "1", color: "rgb(61, 125, 68)", cursor: "pointer"}}/>
             </div>
         </div>
     );
@@ -27,7 +27,7 @@ const ExamplePanelPass = () => {
 const ExamplePanelFail = () => {
     return (
         <div>
-            <ImCross style={{fontSize: "12px", opacity: "1", color: "rgb(190, 53, 53"}}/>
+            <ImCross style={{fontSize: "12px", opacity: "1", color: "rgb(190, 53, 53", cursor: "pointer"}}/>
         </div>
     );
 }
@@ -52,7 +52,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
     useEffect(() => {
         if (example) {
             setExample(exampleData);
-            setExampleOutput(exampleData.exampleTrue);
+            // setExampleOutput(exampleData.exampleTrue);
             if (exampleData.exampleOffTopic === true) {
                 setOffTopic(true);
                 setPass(false);
@@ -109,23 +109,26 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
 
     const commitOffTopic = () => {
         setOffTopic(!offTopic);
-        console.log("commitOffTopic: ", !offTopic);
+        setPass(false);
+        setFail(false);
         commitExampleStatus(!offTopic);
-        // setPass(false);
-        // setFail(false);
     };
 
-    // const commitPass = () => {
-    //     setOffTopic(false);
-    //     setPass(true);
-    //     setFail(false);
-    // };
+    const commitPass = () => {
+        setExampleOutput(exampleData.examplePredicted);
+        setPass(true);
+        setFail(false);
+        setOffTopic(false);
+        commitUpdateRowOutput(exampleData, exampleData.examplePredicted);
+    };
 
-    // const commitFail = () => {
-    //     setOffTopic(false);
-    //     setPass(false);
-    //     setFail(true);
-    // };
+    const commitFail = () => {
+        setExampleOutput("");
+        setPass(false);
+        setFail(true);
+        setOffTopic(false);
+        commitUpdateRowOutput(exampleData, "");
+    };
 
     const handleExampleTextClick = () => {
         setIsEditingExampleText(true);
@@ -138,8 +141,11 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
     const handleExampleTextChange = (e) => {
         setExampleText(e.target.value);
         commitUpdateRowText(exampleData, e.target.value);
+        console.log(e);
         if (e.key === "Enter") {
+            console.log("enter pressed")
             setIsEditingExampleText(false);
+            commitUpdateRowText(exampleData, e.target.value);
         }
     }
 
@@ -290,7 +296,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                             {
                                 offTopic ?
                                     <ExamplePanelOff /> :
-                                    <FaBan style={{fontSize: "20px", opacity: "0.2"}}/>
+                                    <FaBan style={{fontSize: "20px", opacity: "0.2", cursor: "pointer"}}/>
                             }
                         </td>
                     ) :
@@ -298,18 +304,18 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                         <td></td>
                     )
             }
-            <td>
+            <td onClick={commitPass}>
                 {
                     pass ?
                         <ExamplePanelPass /> :
-                        <TiTick style={{fontSize: "25px", opacity: "0.2"}}/>
+                        <TiTick style={{fontSize: "25px", opacity: "0.2", cursor: "pointer"}}/>
                 }
             </td>
-            <td>
+            <td onClick={commitFail}>
                 {
                     fail ?
                         <ExamplePanelFail /> :
-                        <ImCross style={{fontSize: "12px", opacity: "0.2"}}/>
+                        <ImCross style={{fontSize: "12px", opacity: "0.2", cursor: "pointer"}}/>
                 }
             </td>
             </tr>

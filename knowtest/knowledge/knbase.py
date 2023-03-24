@@ -203,7 +203,7 @@ class KnowledgeBase(object):
             
         print("Recommending children...")
         items = children[['to', 'relation', 'score']].to_dict('records')
-        recommended_items = recommend_topics(items, topic, known_items, K=n_expand, sampling=False)
+        recommended_items = recommend_topics(items, topic, known_items, K=n_expand)
         # self.recommended |= set([item['to'] for item in recommended_items])
 
         # prefetch children of the recommended topics
