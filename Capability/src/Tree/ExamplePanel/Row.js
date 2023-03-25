@@ -140,19 +140,24 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
 
     const handleExampleTextChange = (e) => {
         setExampleText(e.target.value);
-        commitUpdateRowText(exampleData, e.target.value);
-        console.log(e);
-        if (e.key === "Enter") {
-            console.log("enter pressed")
+    }
+
+    const handleExampleTextKeyDown = (event) => {
+        if (event.key === "Escape" || event.key === 'Enter') {
+            console.log(exampleText)
+            commitUpdateRowText(exampleData, exampleText);
             setIsEditingExampleText(false);
-            commitUpdateRowText(exampleData, e.target.value);
         }
     }
 
     const handleExampleOutputChange = (e) => {
         setExampleOutput(e.target.value);
-        commitUpdateRowOutput(exampleData, e.target.value);
-        if (e.key === "Enter") {
+    }
+
+    const handleExampleOutputKeyDown = (event) => {
+        if (event.key === "Escape" || event.key === 'Enter') {
+            console.log(exampleOutput)
+            commitUpdateRowText(exampleData, exampleOutput);
             setIsEditingExampleOutput(false);
         }
     }
@@ -170,24 +175,26 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
     // }
 
 
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-            if (event.key === "Escape" || event.key === "Enter") {
-                event.stopPropagation();
-                setIsEditingExampleText(false);
-                setIsEditingExampleOutput(false);
-            }
-        };
-        window.addEventListener("keydown", handleKeyDown);
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
-    }, []);
+    // useEffect(() => {
+    //     const handleKeyDown = (event) => {
+    //         if (event.key === "Escape" || event.key === "Enter") {
+    //             event.stopPropagation();
+    //             setIsEditingExampleText(false);
+    //             setIsEditingExampleOutput(false);
+    //         }
+    //     };
+    //     window.addEventListener("keydown", handleKeyDown);
+    //     return () => {
+    //         window.removeEventListener("keydown", handleKeyDown);
+    //     };
+    // }, []);
 
     useEffect(() => {
         if (selectedRow !== exampleData.id) {
             setIsEditingExampleText(false);
             setIsEditingExampleOutput(false);
+        } else {
+            console.log("selectedRow: ", selectedRow);
         }
     }, [selectedRow]);
 
@@ -271,7 +278,10 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
             }>
             {
                 isEditingExampleText ?
-                    <td><textarea name="text" value={exampleText} onChange={(e) => handleExampleTextChange(e)} style={editSpecialCSSText} wrap="soft"/></td> :
+                    <td><textarea name="text" value={exampleText} 
+                        onChange={handleExampleTextChange} 
+                        onKeyDown={handleExampleTextKeyDown} 
+                        style={editSpecialCSSText} wrap="soft"/></td>:
                     <td onClick={handleExampleTextClick}>{exampleText}</td>
             }
 
@@ -279,7 +289,10 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
             
             {
                 isEditingExampleOutput ?
-                    <td><input name="text" value={exampleOutput} onChange={(e) => handleExampleOutputChange(e)} style={editSpecialCSSOutput} wrap="soft"/></td> :
+                    <td><input name="text" value={exampleOutput} 
+                        onChange={handleExampleOutputChange} 
+                        onKeyDown={handleExampleOutputKeyDown} 
+                        style={editSpecialCSSOutput} wrap="soft"/></td> :
                     <td onClick={handleExampleOutputClick}>{exampleOutput}</td>
 
             }
