@@ -11,11 +11,11 @@ import sys
 from .Server import CapabilityApp
 
 class Capability(object):
-    def __init__(self, topic="hate speech", build_directory="Build", model_directory="Model"):
+    def __init__(self, topic="hate speech", build_directory="Build", model_dir="Model", serverHost: str="localhost", serverPort: int=3001):
         self.topic = topic
         self.build_directory = os.path.abspath(__file__).replace("Capability.py", build_directory)
-        self.server_link = "http://localhost:3001"
-        self.app = CapabilityApp(self.topic)
+        self.server_link = f"http://{serverHost}:{serverPort}"
+        self.app = CapabilityApp(self.topic, model_dir=model_dir, serverHost=serverHost, serverPort=serverPort)
         self.app.initializeServer()
 
     def get_tree(self):

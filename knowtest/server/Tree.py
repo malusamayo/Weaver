@@ -361,7 +361,7 @@ class Tree:
             return example_list
         return []
     
-    def add_more_suggested_examples(self, node_id: str):
+    def suggest_examples(self, node_id: str):
         if node_id in self.nodes:
 
             path = self.get_path(node_id)
@@ -373,8 +373,7 @@ class Tree:
                 examples=[ex.exampleText for ex in self.nodes[node_id].examples.values()]
             )
 
-            for exampleText in suggested_examples:
-                self.add_example(node_id, exampleText, "True", "True", True, False)
+            return suggested_examples
     
     def update_example(self, node_id: str, exampleID: str, exampleText: str, exampleTrue: str, examplePredicted: str, isSuggested: bool, exampleOffTopic: bool):
         print("Updating example: ", node_id, exampleID, exampleText, exampleTrue, examplePredicted, isSuggested, exampleOffTopic)

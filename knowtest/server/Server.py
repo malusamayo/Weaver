@@ -11,7 +11,7 @@ from .Tree import Tree, Node
 import logging
 from pydantic import BaseModel
 from typing import Optional
-
+from ..knowledge.model import ClassificationModel
 
 class ExampleRow(BaseModel):
     nodeId: str
@@ -23,11 +23,12 @@ class ExampleRow(BaseModel):
 
 
 class CapabilityApp:
-    def __init__(self, topic: str, filename: str="../output/", serverHost: str="0.0.0.0", serverPort: int=3001):
+    def __init__(self, topic: str, filename: str="../output/", model_dir:str="", serverHost: str="0.0.0.0", serverPort: int=3001):
         self.filename = filename
         self.topic = topic
         self.topic = "_".join(topic.split(" "))
         self.filepath = self.filename + self.topic + ".json"
+        self.model = ClassificationModel(path=model_dir)
         self.change_topic(topic)
 
         self.serverHost = serverHost
@@ -147,8 +148,7 @@ class CapabilityApp:
         @self.app.post("/addExample")
         def add_example(exampleRow: ExampleRow):
             nodeId, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
-            # TODO: Predict
-            example_predicted = "True"
+            example_predicted = "None"
             self.t.add_example(nodeId, example_text, example_true, example_predicted, is_suggested, example_off_topic)
             self.t.write_json(self.filepath)
             return self.t.get_example_list(nodeId)
@@ -166,8 +166,7 @@ class CapabilityApp:
         @self.app.post("/updateExample")
         def update_example(exampleRow: ExampleRow):
             nodeId, example_id, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
-            # TODO: Predict
-            example_predicted = "Predicted"
+            example_predicted = self.model.predict(example_text)
             updatedRow = self.t.update_example(nodeId, example_id, example_text, example_true, example_predicted, is_suggested, example_off_topic)
             self.t.write_json(self.filepath)
             print("Setting example: ", example_text, " to ", is_suggested)
@@ -175,7 +174,10 @@ class CapabilityApp:
 
         @self.app.get("/getMoreExamples")
         def get_more_examples(nodeId: str):
-            self.t.add_more_suggested_examples(nodeId)
+            suggested_examples = self.t.suggest_examples(nodeId)
+            for exampleText in suggested_examples:
+                example_predicted = self.model.predict(exampleText)
+                self.t.add_example(nodeId, exampleText, "", example_predicted, True, False)
             self.t.write_json(self.filepath)
             return self.t.get_example_list(nodeId)
         
