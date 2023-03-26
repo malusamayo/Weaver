@@ -104,10 +104,10 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
   }
 
   let parentName = node.parentNode.name
-  let nodeTag = node.tag[0]
+  let nodeTag = node.nl_tag[0]
 
   if (type === "folderCreation") {
-    // console.log("FolderName", node, type, isEditing, node.tag.length)
+    // console.log("FolderName", node, type, isEditing, node.nl_tag.length)
     parentName = node.name
     nodeTag = "RELATEDTO"
   }
@@ -145,8 +145,8 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
       }
       </div>
       {!isEditing ? 
-        node.tag.length > 0 ? node.tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>) : null :
-        node.tag.length ? (<Dropdown node={node}/>): null
+        node.nl_tag.length > 0 ? node.nl_tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>) : null :
+        node.nl_tag.length ? (<Dropdown node={node}/>): null
       }
       &nbsp;&nbsp;
       <div id={anchor_id} st>
@@ -171,7 +171,7 @@ const Folder = ({ id, name, children, node, root}) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Setting new const here
-  const [tags, setTags] = useState(node.tags);
+  const [tag, setTags] = useState(node.nl_tag);
 
   const setNodeOpen = async (open) => {
     try {
@@ -213,8 +213,8 @@ const Folder = ({ id, name, children, node, root}) => {
   }, [node.isOpen]);
 
   useEffect(() => {
-    setTags(node.tags);
-  }, [node.tags]);
+    setTags(node.nl_tag);
+  }, [node.nl_tag]);
 
   useEffect(() => {
     setChilds([children]);

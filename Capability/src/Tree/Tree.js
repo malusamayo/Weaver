@@ -311,7 +311,7 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
               </Col>
               {/* </Scroll> */}
               {/* <Scroll Down> */}
-              <Col style={{overflowY:"scroll", maxHeight:"calc(100vh - 100px)"}}>
+              <Col>
                   {toggleExamplePanel && <ExamplePanel node={selectedNode}/>}
               </Col>
               {/* </Scroll> */}

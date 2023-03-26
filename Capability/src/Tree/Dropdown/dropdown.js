@@ -23,7 +23,7 @@ const relationships = [
 const Dropdown = ({node}) => {
 
 
-    const [selectedTag, setSelectedTag] = useState(node.tag[0])
+    const [selectedTag, setSelectedTag] = useState(node.nl_tag[0])
     const [isActive, setIsActive] = useState(true)
 
     // Filter out the selected tag from the relationships array
