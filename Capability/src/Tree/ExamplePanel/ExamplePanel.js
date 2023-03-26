@@ -272,6 +272,20 @@ const ExamplePanel = ({node}) => {
     //     return () => document.removeEventListener("keydown", handleCMDMinusPress);
     // });
 
+    const commitUpdateExample = (updatedExample) => {
+        try {
+
+            const newDataExamples = selectedNodeExamples.map((example) => {
+                return example.id !== updatedExample.id ? example : updatedExample;
+            });
+
+            // console.log("New data examples: ", newDataExamples);
+            setSelectedNodeExamples(newDataExamples);
+            // setIsLoading(false);
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    };
 
     const commitUpdateExampleSuggested = async (updatedExample, isSuggested) => {
         try {
@@ -371,7 +385,7 @@ const ExamplePanel = ({node}) => {
                             setSelectedRow={setSelectedRow}
                             selectedRow={selectedRow}
                             nodeId={selectedNode.id}
-                            setSelectedNodeExamples={setSelectedNodeExamples}
+                            commitUpdateExample={commitUpdateExample}
                             isSuggested={true}
                             commitDeleteRow={commitDeleteRow}
                             commitUpdateExampleSuggested={commitUpdateExampleSuggested}
@@ -382,6 +396,7 @@ const ExamplePanel = ({node}) => {
     };
 
     const SelectedTable = ({selectedNodeExamples}) => {
+        // console.log("SelectedTable: ", selectedNodeExamples);
         return selectedNodeExamples.map((example, index) => {
             if (example.isSuggested === false) {
                 return (
@@ -391,7 +406,7 @@ const ExamplePanel = ({node}) => {
                         setSelectedRow={setSelectedRow}
                         selectedRow={selectedRow}
                         nodeId={selectedNode.id}
-                        setSelectedNodeExamples={setSelectedNodeExamples}
+                        commitUpdateExample={commitUpdateExample}
                         isSuggested={false}
                         commitDeleteRow={commitDeleteRow}
                         commitUpdateExampleSuggested={commitUpdateExampleSuggested}
@@ -426,7 +441,7 @@ const ExamplePanel = ({node}) => {
                                 <td></td>
                                 <td>Output</td>
                                 <td>Predicted</td>
-                                <td>Off-topic</td> 
+                                {/* <td>Off-topic</td>  */}
                                 <td>Pass</td>
                                 <td>Fail</td>
                                 <td></td>

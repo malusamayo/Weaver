@@ -36,7 +36,7 @@ const ExamplePanelFail = () => {
     );
 }
 
-const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeExamples, isSuggested, commitDeleteRow, commitUpdateExampleSuggested}) => {
+const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExample, isSuggested, commitDeleteRow, commitUpdateExampleSuggested}) => {
 
     const [example, setExample] = useState(null);
 
@@ -49,9 +49,9 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
     const [exampleOutput, setExampleOutput] = useState(exampleData.exampleTrue);
     const [examplePredicted, setExamplePredicted] = useState(exampleData.examplePredicted);
 
-    const [offTopic, setOffTopic] = useState(false);
-    const [pass, setPass] = useState(true);
-    const [fail, setFail] = useState(false);
+    const [offTopic, setOffTopic] = useState(exampleData.exampleOffTopic);
+    const [pass, setPass] = useState(exampleData.exampleTrue === exampleData.examplePredicted);
+    const [fail, setFail] = useState(exampleData.exampleTrue !== exampleData.examplePredicted);
     // const { setIsLoading } = useTreeContext();
 
     useEffect(() => {
@@ -113,10 +113,10 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
     }
 
     const commitOffTopic = () => {
-        setOffTopic(!offTopic);
-        setPass(false);
-        setFail(false);
-        commitExampleStatus(!offTopic);
+        const newOfftopic = !offTopic;
+        setOffTopic(newOfftopic);
+        // commitUpdateRowOutput(exampleData, "");
+        commitExampleStatus(exampleData, newOfftopic);
     };
 
     const commitPass = () => {
@@ -223,6 +223,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                 "exampleOffTopic": example.exampleOffTopic
             }, true);
             setExamplePredicted(newExampleData.examplePredicted);
+            commitUpdateExample(newExampleData);
         } catch (error) {
             console.log("Error: ", error);
         }
@@ -230,7 +231,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
 
     const commitUpdateRowOutput = async (example, text) => {
         try {
-            const _ = await fetchAPIDATA("updateExample",{
+            const newExampleData = await fetchAPIDATA("updateExample",{
                 "nodeId": nodeId,
                 "exampleId": example.id,
                 "exampleText": example.exampleText,
@@ -238,21 +239,23 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                 "isSuggested": example.isSuggested,
                 "exampleOffTopic": example.exampleOffTopic
             }, true);
+            commitUpdateExample(newExampleData);
         } catch (error) {
             console.log("Error: ", error);
         }
     };
 
-    const commitExampleStatus = async (offTopicSelection) => {
+    const commitExampleStatus = async (example, offTopicSelection) => {
         try {
-            const _ = await fetchAPIDATA("updateExample", {
+            const newExampleData = await fetchAPIDATA("updateExample", {
                 "nodeId": nodeId,
-                "exampleId": exampleData.id,
-                "exampleText": exampleData.exampleText,
-                "exampleTrue": exampleData.exampleTrue,
-                "isSuggested": exampleData.isSuggested,
+                "exampleId": example.id,
+                "exampleText": example.exampleText,
+                "exampleTrue": example.exampleTrue,
+                "isSuggested": example.isSuggested,
                 "exampleOffTopic": offTopicSelection
             }, true);
+            commitUpdateExample(newExampleData);
         } catch (error) {
             console.log("Error: ", error);
         }
@@ -283,9 +286,10 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
     return (
             <tr onClick={() => handleRowSelect()} 
             
-                style={selectedRow === exampleData.id ?
-                    {backgroundColor: "rgb(247, 247, 247)"} :
-                    {backgroundColor: "rgb(255, 255, 255)"}
+                style={
+                    selectedRow === exampleData.id ?
+                        {backgroundColor: "rgb(247, 247, 247)"} :
+                        {backgroundColor: "rgb(255, 255, 255)"}
             }>
             {
                 isEditingExampleText ?
@@ -313,7 +317,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                     examplePredicted
                 }
             </td>
-            {
+            {/* {
                 isSuggested ?
                     (
                         <td onClick={commitOffTopic}>
@@ -327,7 +331,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                     (
                         <td></td>
                     )
-            }
+            } */}
             <td onClick={commitPass}>
                 {
                     pass ?
@@ -343,11 +347,11 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                 }
             </td>
             
-            <td onClick={handleAddSuggested}>
+            <td>
                 {
                     isSuggested ?
-                        <AiOutlinePlus style={{fontSize: "15px", cursor: "pointer"}}/> :
-                        null
+                        <AiOutlinePlus onClick={handleAddSuggested} style={{fontSize: "15px", cursor: "pointer"}}/> :
+                        <AiOutlinePlus style={{fontSize: "15px", opacity: "0"}}/>
                 }
             </td>
 
