@@ -11,32 +11,37 @@ from ..knowledge.relations import path_to_nl_description
 from .Node import Example
 
 class Tree:
-    def __init__(self, topic: str="root", filename: str=None, KGOutput: str="../output", stateDirectory: str="../output", firstLoad: int=1):
+    def __init__(self, topic: str="root", file_directory: str="output", overwrite: bool=False, is_baseline_mode: bool=False):
 
         self.tag_filters = []
         self.number_of_topics = 0
         self.nodes = {}
+        self.is_baseline_mode = is_baseline_mode
 
-        # if not KGOutput + "_".join(topic.split(" ")) in os.listdir(KGOutput):
-        print(os.path.join(KGOutput, "_".join(topic.split(" "))))
-        if not os.path.exists(os.path.join(KGOutput, "_".join(topic.split(" ")))):
-            print("Running Knowledge Base Construction")
-            run_kb_contruction(topic, 3, KGOutput)
+        # # if not KGOutput + "_".join(topic.split(" ")) in os.listdir(KGOutput):
+        # print(os.path.join(KGOutput, "_".join(topic.split(" "))))
+        # if not os.path.exists(os.path.join(KGOutput, "_".join(topic.split(" ")))):
+        #     print("Running Knowledge Base Construction")
+        #     run_kb_contruction(topic, 3, KGOutput)
 
-        self.kg = KnowledgeBase(KGOutput, "_".join(topic.split(" ")))
-        self.stateDirectory = stateDirectory + "/"
+        self.taskid = "_".join(topic.split(" "))
+        self.kg = KnowledgeBase(file_directory, taskid=self.taskid, is_baseline_mode=self.is_baseline_mode)
+        self.stateDirectory = file_directory
         self.state = StateStack(self.stateDirectory)
         self.only_highlighted = False
-        self.firstLoad = firstLoad
 
-        if filename:
-            self.read_json(filename)
-        elif topic:
+        self.path_to_json = os.path.join(file_directory, self.taskid + ".json")
+
+        if os.path.exists(self.path_to_json) and not overwrite:
+            self.read_json(self.path_to_json)
+        else:
             node = Node(name=topic, 
-                        parent_id=None)
+                        parent_id=None,
+                        isOpen=True)
             self.add_node(node)
-            data = self.kg.initialize_tree(topic=topic)
-            self.add_initial_data(data)
+            if not self.is_baseline_mode:
+                data = self.kg.initialize_tree(topic=topic)
+                self.add_initial_data(data)
 
     def set_only_highlighted(self, only_highlighted: bool):
         print("Setting only highlighted to: ", only_highlighted)
@@ -75,8 +80,9 @@ class Tree:
                 # position_to_add = self.nodes[node.parent_id].children.index(addAfter)
                 self.nodes[node.parent_id].children.insert(
                     self.nodes[node.parent_id].children.index(addAfter)+1, node.id)
-                
-            node.natural_language_path = self.get_nl_path(node.id)
+            
+            if not self.is_baseline_mode:
+                node.natural_language_path = self.get_nl_path(node.id)
 
             return True
         else:
@@ -94,19 +100,9 @@ class Tree:
         tree = self.generate_tree_helper(self.root, sorting)
         tree["isHighlighted"] = True
         tree = [tree]
-
-        # if self.firstLoad > 0:
-        #     self.firstLoad -= 1
-        #     for child in tree[0]["children"]:
-        #         child["isOpen"] = True
-        #         for grandchild in child["children"]:
-        #             grandchild["isOpen"] = True
-
         return tree
 
     def generate_tree_helper(self, node: Node, sorting: bool=False) -> dict:
-
-        # node.natural_language_path = self.get_natural_language_path(node.id)
         node = node.get_Json_object()
         if len(self.tag_filters) > 0 and len(node["tag"]) > 0:
             if not any(tag in self.tag_filters for tag in node["tag"]):
@@ -178,49 +174,6 @@ class Tree:
         path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
         return path_to_nl_description(path)
 
-    # def get_natural_language_relation(self, parent: str, child: str, child_tag: str):
-    #     if child_tag.lower() == "atlocation":
-    #         return "At location {}".format(child)
-    #     elif child_tag.lower() == "relatedto":
-    #         return "{} is related to {}".format(child, parent)
-    #     elif child_tag.lower() == "typesof":
-    #         return "{} is a type of {}".format(child, parent)
-    #     elif child_tag.lower() == "partof":
-    #         return "{} is a part of {}".format(child, parent)
-    #     elif child_tag.lower() == "hasproperty":
-    #         return "{} has property {}".format(parent, child)
-    #     elif child_tag.lower() == "usedfor":
-    #         return "{} is used for {}".format(parent, child)
-    #     elif child_tag.lower() == "causes":
-    #         return "{} causes {}".format(parent, child)
-    #     elif child_tag.lower() == "motivatedby":
-    #         return "{} is motivated by {}".format(parent, child)
-    #     elif child_tag.lower() == "obstructedby":
-    #         return "{} is obstructed by {}".format(parent, child)
-    #     elif child_tag.lower() == "mannerof":
-    #         return "{} is a manner of {}".format(child, parent)
-    #     elif child_tag.lower() == "locatednear":
-    #         return "{} is located near {}".format(parent, child)
-    #     elif child_tag.lower() == "hasagent":
-    #         return "{} has agent {}".format(parent, child)
-    #     elif child_tag.lower() == "haspatient":
-    #         return "{} has patient {}".format(parent, child)
-    #     else:
-    #         return "{} is related to {}".format(child, parent)
-
-    # def get_natural_language_path(self, node_id: str):
-    #     path = self.get_path(node_id)
-    #     path = path[::-1]
-    #     natural_language_path = ""
-    #     for child, parent in zip(path, path[1:]):
-    #         child_id, child_tag = child
-    #         parent_id, parent_tag = parent
-    #         # print(self.nodes[parent_id].name, self.nodes[child_id].name, child_tag)
-    #         natural_language_path += self.get_natural_language_relation(self.nodes[parent_id].name, self.nodes[child_id].name, child_tag)
-    #         natural_language_path += ". "
-        
-    #     return natural_language_path
-
     def remove_non_highlighted_nodes(self, node_id: str):
         if node_id in self.nodes:
             children_ids = self.nodes[node_id].children
@@ -232,27 +185,43 @@ class Tree:
                 # else:
                 #     self.remove_non_highlighted_nodes(child_id)
 
+    def get_preorder_nodes(self):
+        preorder_nodes = []
+        def add_children_nodes(node: Node, parent_topic: str=None):
+            node_id = node.id
+            topic = node.name
+            preorder_nodes.append({"topic": topic, "parent": parent_topic})
+            for child_id in self.nodes[node_id].children:
+                add_children_nodes(self.nodes[child_id], topic)
+        
+        add_children_nodes(self.root)
+        return preorder_nodes
+
     def refresh_suggestions(self, node_id: str):
         if node_id in self.nodes:
 
-            # Get all siblings of the selected node
-            existing_children = []
-            for child_id in self.nodes[node_id].children:
-                existing_children.append({
-                    "topic": self.nodes[child_id].name,
-                    "relation": self.nodes[child_id].tags[0],
-                    "is_highlighted": self.nodes[child_id].isHighlighted
-                })
-            
-            path = self.get_path(node_id)
-            path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
-            
-            print("Refresh suggestion path: ", path)
-            print("Refresh suggestion existing_children: ", existing_children)
-            
-            # self.remove_non_highlighted_nodes(node_id) # DISABLED
-            
-            suggestions = self.kg.expand_node(topic=self.nodes[node_id].name.lower(), path=path, existing_children=existing_children)
+            if self.is_baseline_mode:
+                preorder_nodes = self.get_preorder_nodes()
+                suggestions = self.kg.expand_node_adatest(topic=self.nodes[node_id].name.lower(), tree=preorder_nodes)
+            else:
+                # Get all siblings of the selected node
+                existing_children = []
+                for child_id in self.nodes[node_id].children:
+                    existing_children.append({
+                        "topic": self.nodes[child_id].name,
+                        "relation": self.nodes[child_id].tags[0],
+                        "is_highlighted": self.nodes[child_id].isHighlighted
+                    })
+                
+                path = self.get_path(node_id)
+                path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
+                
+                print("Refresh suggestion path: ", path)
+                print("Refresh suggestion existing_children: ", existing_children)
+                
+                # self.remove_non_highlighted_nodes(node_id) # DISABLED
+                
+                suggestions = self.kg.expand_node(topic=self.nodes[node_id].name.lower(), path=path, existing_children=existing_children)
 
             for dic in suggestions:
                 (suggestion, relation) = dic["to"], dic["relation"]
@@ -451,7 +420,8 @@ class Tree:
             return False
         
 
-    def write_json(self, filename: str, updateState: bool = True):
+    def write_json(self, updateState: bool = True):
+        filename = self.path_to_json
         if updateState:
             self.state.addState(filename)
         stack_id = [self.root.id]

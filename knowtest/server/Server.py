@@ -23,13 +23,12 @@ class ExampleRow(BaseModel):
 
 
 class CapabilityApp:
-    def __init__(self, topic: str, filename: str="../output/", model_dir:str="", serverHost: str="0.0.0.0", serverPort: int=3001):
-        self.filename = filename
+    def __init__(self, topic: str, file_directory: str="./output/", model_dir:str="", serverHost: str="0.0.0.0", serverPort: int=3001, is_baseline_mode: bool=False, overwrite: bool=False):
+        self.file_directory = file_directory
         self.topic = topic
-        self.topic = "_".join(topic.split(" "))
-        self.filepath = self.filename + self.topic + ".json"
         self.model = ClassificationModel(path=model_dir)
-        self.change_topic(topic)
+        self.is_baseline_mode = is_baseline_mode
+        self.change_topic(topic, overwrite=overwrite)
 
         self.serverHost = serverHost
         self.serverPort = serverPort
@@ -47,31 +46,31 @@ class CapabilityApp:
             node = Node(name=nodeName, parent_id=parentID, tags=[nodeTag])
             self.t.add_node(node)
             self.t.set_highlight(node.id, True)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.generate_json()
 
         @self.app.post("/editFolderName")
         def edit_folder_name(nodeId: str, newName: str):
             self.t.rename_node(nodeId, newName)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.generate_json()
 
         @self.app.post("/deleteNode")
         def delete_node(nodeId: str):
             self.t.remove_node_with_id(nodeId)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.generate_json()
 
         @self.app.post("/setOpen")
         def set_open(nodeId: str, isOpen: bool):
             self.t.set_open(nodeId, isOpen)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.generate_json()
 
         @self.app.post("/setHighlighted")
         def set_highlight(nodeId: str, isHighlighted: bool):
             self.t.set_highlight(nodeId, isHighlighted)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.generate_json()
 
         @self.app.get("/getNodePath")
@@ -83,7 +82,7 @@ class CapabilityApp:
         def set_node_tag(nodeId: str, tag: str):
             print("Setting node tag ({}) for: {}".format(tag, nodeId))
             self.t.set_node_tag(nodeId, tag)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.generate_json()
 
         @self.app.post("/setTagFilter")
@@ -104,27 +103,27 @@ class CapabilityApp:
             print("Getting suggestion for: ", nodeId)
             self.t.set_open(nodeId, True)
             self.t.refresh_suggestions(nodeId)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.generate_json()
 
         @self.app.post("/removeSimilarRelationSiblings")
         def remove_similar_relation_siblings(nodeId: str, tag: str):
             # print("Removing similar relation children for {} with tag {}".format(t.nodes[t.nodes[nodeId].parent_id], relation))
             self.t.remove_same_relation_sibling(nodeId, tag)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.generate_json()
 
         @self.app.post("/addSimilarRelationSiblings")
         def add_similar_relation_siblings(nodeId: str, tag: str):
             print("Adding siblings with relation: ", tag)
             self.t.add_relation_based_suggestions_sibling(nodeId, tag)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.generate_json()
 
         @self.app.get("/previousState")
         def previous_state():
             print("Going to previous state")
-            self.t.load_last_state(self.filepath)
+            self.t.load_last_state()
             return self.t.generate_json()
 
         @self.app.get("/isBackAvailable")
@@ -150,13 +149,13 @@ class CapabilityApp:
             nodeId, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
             example_predicted = "None"
             self.t.add_example(nodeId, example_text, example_true, example_predicted, is_suggested, example_off_topic)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.get_example_list(nodeId)
         
         @self.app.post("/removeExample")
         def remove_example(nodeId: str, exampleId: str):
             self.t.remove_example(nodeId, exampleId)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.get_example_list(nodeId)
         
         @self.app.get("/getExampleList")
@@ -168,7 +167,7 @@ class CapabilityApp:
             nodeId, example_id, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
             example_predicted = self.model.predict(example_text)
             updatedRow = self.t.update_example(nodeId, example_id, example_text, example_true, example_predicted, is_suggested, example_off_topic)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             print("Setting example: ", example_text, " to ", is_suggested)
             return updatedRow.__JSON__()
 
@@ -178,7 +177,7 @@ class CapabilityApp:
             for exampleText in suggested_examples:
                 example_predicted = self.model.predict(exampleText)
                 self.t.add_example(nodeId, exampleText, "", example_predicted, True, False)
-            self.t.write_json(self.filepath)
+            self.t.write_json()
             return self.t.get_example_list(nodeId)
         
         self.app.add_middleware(
@@ -189,15 +188,9 @@ class CapabilityApp:
             allow_headers=["*"],
         )
 
-    def change_topic(self, topic: str):
-        self.topic = "_".join(topic.split(" "))
-        self.filepath = self.filename + self.topic + ".json"
-
-        if not os.path.exists(self.filepath):
-            self.t = Tree(topic=topic)
-            self.t.write_json(self.filepath)
-        else:
-            self.t = Tree(topic=topic, filename=self.filepath)
+    def change_topic(self, topic: str, overwrite: bool = False):
+        self.t = Tree(topic=topic, file_directory=self.file_directory, is_baseline_mode=self.is_baseline_mode, overwrite=overwrite)
+        self.t.write_json()
 
     def initializeServer(self):
 
@@ -220,6 +213,12 @@ class CapabilityApp:
 
         
 if __name__ == "__main__":
-    server = CapabilityApp(topic="hate speech", filename='output/', serverHost='172.24.20.95')
+    server = CapabilityApp(
+            topic="movie", 
+            file_directory='output/', 
+            serverHost='172.24.20.95', 
+            is_baseline_mode=True, 
+            # overwrite=True
+        )
     server.initializeServer()
     # uvicorn.run(server.app, host="0.0.0.0", port=3001, log_level="info")

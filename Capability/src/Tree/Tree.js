@@ -299,7 +299,8 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
               </div>
             <Row>
               {/* <Scroll Down> */}
-              <Col xs="auto">
+              <Col xs="auto"> 
+               {/* style={{overflowY:"scroll", maxHeight:"calc(100vh - 100px)"}}> */}
                 <StyledTree>
                   {isImparative ? (
                     <TreeRecusive data={state} parentNode={state} root={true}/>
@@ -310,7 +311,7 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
               </Col>
               {/* </Scroll> */}
               {/* <Scroll Down> */}
-              <Col>
+              <Col style={{overflowY:"scroll", maxHeight:"calc(100vh - 100px)"}}>
                   {toggleExamplePanel && <ExamplePanel node={selectedNode}/>}
               </Col>
               {/* </Scroll> */}

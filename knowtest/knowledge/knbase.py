@@ -9,25 +9,34 @@ from .utils import normalize, recommend_topics, PScorer
 
 class KnowledgeBase(object):
 
-    def __init__(self, path, taskid, domain="", uid=None) -> None:
+    def __init__(self, path: str, taskid: str, domain: str="", uid: str="", is_baseline_mode: bool=False) -> None:
         self.dir = os.path.join(path, taskid)
+        self.path_to_nodes = os.path.join(self.dir, "nodes.csv")
+        self.path_to_edges = os.path.join(self.dir, "edges.csv")
         self.domain = "online platform" if domain == "" else domain # setting domain to "online platform" by default
+        print("Path: ", path, "OS Path: ", os.getcwd())
+        self.lock = threading.Lock() # for multi-threading
+        print(normalize("Initializing wordnet"))
+        self.prompter = Prompter(taskid=taskid)
+
+        if uid == None:
+            uid = 0
+        self.upath = path + f"/user_{uid}_history.csv"
+
+        if is_baseline_mode:
+            self.nodes = pd.DataFrame(columns=['id', 'weight'])
+            self.edges = pd.DataFrame(columns=['from', 'to', 'relation', 'score'])
+            return
         
+        # initialize knowledge base if it does not exist
         if not os.path.exists(self.dir):
             seed = ' '.join(taskid.split("_")) 
             print(f"Creating knowledge base for {seed}...")
             print(f"It may need to take a few minutes...")
             run_kb_contruction(seed, max_depth=1)
 
-        self.nodes = pd.read_csv(self.dir + "/nodes.csv")
-        self.edges = pd.read_csv(self.dir + "/edges.csv")
-        print("Path: ", path, "OS Path: ", os.getcwd())
-        self.lock = threading.Lock() # for multi-threading
-        print(normalize("Initializing wordnet"))
-
-        if uid == None:
-            uid = 0
-        self.upath = path + f"/user_{uid}_history.csv"
+        self.nodes = pd.read_csv(self.path_to_nodes)
+        self.edges = pd.read_csv(self.path_to_edges)
 
         # if os.path.exists(self.upath):
         #     self.user_history = pd.read_csv(self.upath)
@@ -41,11 +50,9 @@ class KnowledgeBase(object):
         #     master_JSON = json.load(f)
         #     self.recommended = {node["name"] for node in master_JSON}
 
-        self.prompter = Prompter(taskid=taskid)
-
     def save(self):
-        self.nodes.to_csv(self.dir + "/nodes.csv", index=False)
-        self.edges.to_csv(self.dir + "/edges.csv", index=False)
+        self.nodes.to_csv(self.path_to_nodes, index=False)
+        self.edges.to_csv(self.path_to_edges, index=False)
         # self.user_history.to_csv(self.upath, index=False)
 
     # def update_user_history(self, recommended=None, existing_children=None):
@@ -180,6 +187,8 @@ class KnowledgeBase(object):
             print("Initializing children...") # SHOULD NOT BE HERE: ALL children should be prefetched
             self.extend_node_all_relation(topic)
             children = self.find_children(topic)
+
+            #[TODO] fix the bug in this branch
         
         # remove the ancesters of the current node
         ancesters = [item['topic'] for item in path]
@@ -383,7 +392,7 @@ def store_kb(knbase, path):
 
     print("Knowledge base stored at {}".format(path))
 
-def run_kb_contruction(seed, max_depth=1, KGOutput="../output"):
+def run_kb_contruction(seed, max_depth=1, KGOutput="./output"):
 
     taskid = "_".join(seed.split())
 
@@ -396,18 +405,18 @@ def run_kb_contruction(seed, max_depth=1, KGOutput="../output"):
 
 if __name__ == "__main__":
     # # constructing kb
-    # seed = "restaurant"
-    # run_kb_contruction(seed, max_depth=1)
-    knbase = KnowledgeBase("output", "hate_speech")
-    tree = [
-        {'topic': 'hate speech', 'parent': None},
-        {'topic': 'abusive language', 'parent': 'hate_speech'},
-        {'topic': 'racism', 'parent': 'hate_speech'},
-        {'topic': 'sexism', 'parent': 'hate_speech'},
-        {'topic': 'anti-black', 'parent': 'racism'},
-        {'topic': 'anti-asian', 'parent': 'racism'},
-        {'topic': 'anti-semitism', 'parent': 'racism'},
-        {'topic': 'sexist language', 'parent': 'sexism'},
-        {'topic': 'white supremacy', 'parent': 'racism'}
-    ]
-    print(knbase.expand_node_adatest('racism', tree))
+    seed = "movie"
+    run_kb_contruction(seed, max_depth=1)
+    # knbase = KnowledgeBase("output", "hate_speech")
+    # tree = [
+    #     {'topic': 'hate speech', 'parent': None},
+    #     {'topic': 'abusive language', 'parent': 'hate_speech'},
+    #     {'topic': 'racism', 'parent': 'hate_speech'},
+    #     {'topic': 'sexism', 'parent': 'hate_speech'},
+    #     {'topic': 'anti-black', 'parent': 'racism'},
+    #     {'topic': 'anti-asian', 'parent': 'racism'},
+    #     {'topic': 'anti-semitism', 'parent': 'racism'},
+    #     {'topic': 'sexist language', 'parent': 'sexism'},
+    #     {'topic': 'white supremacy', 'parent': 'racism'}
+    # ]
+    # print(knbase.expand_node_adatest('racism', tree))

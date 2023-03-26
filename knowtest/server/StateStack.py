@@ -3,8 +3,8 @@ import os
 import shutil
 
 class StateStack:
-    def __init__(self, directory="../output/", stateSaveDirectory="savedStates/", maxStates=100):
-        self.stateSaveDirectory = directory + stateSaveDirectory
+    def __init__(self, directory="../output", stateSaveDirectory="savedStates/", maxStates=100):
+        self.stateSaveDirectory = os.path.join(directory, stateSaveDirectory)
         print("stateSaveDirectory: {}".format(self.stateSaveDirectory))
         self.maxStates = max(10, maxStates)
         print("maxStates: {}".format(self.maxStates))
