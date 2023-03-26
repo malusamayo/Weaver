@@ -55,7 +55,7 @@ class CapabilityApp:
         @self.app.post("/addNode")
         def add_node(parentID: str, nodeName: str, nodeTag: str):
             node = Node(name=nodeName, parent_id=parentID, tags=[nodeTag])
-            self.t.add_node(node)
+            self.t.add_node(node, user_added=True)
             self.t.set_highlight(node.id, True)
             self.t.write_json()
             return self.t.generate_json()

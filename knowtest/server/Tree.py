@@ -54,7 +54,7 @@ class Tree:
     def reset_state(self):
         self.state = StateStack(self.stateDirectory)
 
-    def add_node(self, node: Node, addAfter: str=None) -> bool:
+    def add_node(self, node: Node, addAfter: str=None, user_added: bool=False) -> bool:
         if self.number_of_topics == 0:
             self.number_of_topics += 1
 
@@ -88,6 +88,11 @@ class Tree:
             if not self.is_baseline_mode:
                 node.natural_language_path = self.get_nl_path(node.id)
 
+            if user_added:
+                path = self.get_path(node.id)
+                path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
+                for tag in node.tags:
+                    self.kg.add_node(node.name, self.nodes[node.parent_id].name, tag, path=path)
             return True
         else:
             return False
@@ -259,7 +264,15 @@ class Tree:
         
     def rename_node(self, node_id: str, new_name: str):
         if node_id in self.nodes:
-            self.nodes[node_id].name = new_name
+            node = self.nodes[node_id]
+            node.name = new_name
+            if not self.is_baseline_mode:
+                node.natural_language_path = self.get_nl_path(node.id)
+            if node.parent_id in self.nodes:
+                path = self.get_path(node.id)
+                path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
+                for tag in node.tags:
+                    self.kg.add_node(node.name, self.nodes[node.parent_id].name, tag)
     
     def add_tag_to_node(self, node_id: str, tag: str):
         if node_id in self.nodes:

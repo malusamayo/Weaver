@@ -29,11 +29,11 @@ class KnowledgeBase(object):
             return
         
         # initialize knowledge base if it does not exist
-        if not os.path.exists(self.dir):
+        if not os.path.exists(self.dir) or not os.path.exists(self.path_to_nodes) or not os.path.exists(self.path_to_edges):
             seed = ' '.join(taskid.split("_")) 
             print(f"Creating knowledge base for {seed}...")
             print(f"It may need to take a few minutes...")
-            run_kb_contruction(seed, max_depth=1)
+            run_kb_contruction(seed, max_depth=1, KGOutput=path)
 
         self.nodes = pd.read_csv(self.path_to_nodes)
         self.edges = pd.read_csv(self.path_to_edges)
@@ -359,9 +359,20 @@ class KnowledgeBase(object):
         new_examples = self.prompter.suggest_examples(self.domain, topic, context=context, examples=examples, N=N)
         return new_examples
 
-    def add_node(self, topic, parent_topic, relation):
-        self.nodes = self.nodes.append({"id": topic}, ignore_index=True)
+    def add_node(self, topic, parent_topic, relation, path=[]):
+        if topic not in self.nodes['id'].values:
+            self.nodes = self.nodes.append({"id": topic, "weight":1}, ignore_index=True)
+
         self.edges = self.edges.append({"from": parent_topic, "to": topic, "relation": relation}, ignore_index=True)
+        
+        # prefetch children when none exists
+        children = self.find_children(topic) 
+        if len(children) == 0:
+            print("Prefetching children...")
+            context = "Context: " + path_to_nl_description(path)
+            t = threading.Thread(target=self.prefech_init_children, args=([topic], context), name=f"prefetch_gc_{topic}")
+            t.start()
+        self.save()
 
 
 def graph_to_knbase(graph):
