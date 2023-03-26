@@ -11,7 +11,7 @@ from ..knowledge.relations import path_to_nl_description
 from .Node import Example
 
 class Tree:
-    def __init__(self, topic: str="root", file_directory: str="output", overwrite: bool=False, is_baseline_mode: bool=False):
+    def __init__(self, topic: str="root", file_directory: str="output", uid: str="", overwrite: bool=False, is_baseline_mode: bool=False):
 
         self.tag_filters = []
         self.number_of_topics = 0
@@ -25,12 +25,16 @@ class Tree:
         #     run_kb_contruction(topic, 3, KGOutput)
 
         self.taskid = "_".join(topic.split(" "))
-        self.kg = KnowledgeBase(file_directory, taskid=self.taskid, is_baseline_mode=self.is_baseline_mode)
+        kg_dir = os.path.join(file_directory, "kg")
+        self.kg = KnowledgeBase(kg_dir, taskid=self.taskid, is_baseline_mode=self.is_baseline_mode)
         self.stateDirectory = file_directory
         self.state = StateStack(self.stateDirectory)
         self.only_highlighted = False
 
-        self.path_to_json = os.path.join(file_directory, self.taskid + ".json")
+        usr_dir = os.path.join(file_directory, "usr", uid)
+        if not os.path.exists(usr_dir):
+            os.makedirs(usr_dir)
+        self.path_to_json = os.path.join(usr_dir, self.taskid + ".json")
 
         if os.path.exists(self.path_to_json) and not overwrite:
             self.read_json(self.path_to_json)

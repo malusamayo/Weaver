@@ -12,6 +12,7 @@ import logging
 from pydantic import BaseModel
 from typing import Optional
 from ..knowledge.model import ClassificationModel
+import argparse
 
 class ExampleRow(BaseModel):
     nodeId: str
@@ -23,11 +24,21 @@ class ExampleRow(BaseModel):
 
 
 class CapabilityApp:
-    def __init__(self, topic: str, file_directory: str="./output/", model_dir:str="", serverHost: str="0.0.0.0", serverPort: int=3001, is_baseline_mode: bool=False, overwrite: bool=False):
+    def __init__(self, topic: str, file_directory: str="./output/", model_dir:str="", uid:str="", serverHost: str="0.0.0.0", serverPort: int=3001, is_baseline_mode: bool=False, overwrite: bool=False):
         self.file_directory = file_directory
         self.topic = topic
-        self.model = ClassificationModel(path=model_dir)
         self.is_baseline_mode = is_baseline_mode
+        self.uid = uid
+
+        # Create the output directory if it doesn't exist
+        if not os.path.exists(self.file_directory):
+            os.makedirs(self.file_directory)
+        if not os.path.exists(os.path.join(self.file_directory, "usr")):
+            os.makedirs(os.path.join(self.file_directory, "usr"))
+        if not os.path.exists(os.path.join(self.file_directory, "kg")):
+            os.makedirs(os.path.join(self.file_directory, "kg"))
+
+        self.model = ClassificationModel(path=model_dir)
         self.change_topic(topic, overwrite=overwrite)
 
         self.serverHost = serverHost
@@ -189,7 +200,7 @@ class CapabilityApp:
         )
 
     def change_topic(self, topic: str, overwrite: bool = False):
-        self.t = Tree(topic=topic, file_directory=self.file_directory, is_baseline_mode=self.is_baseline_mode, overwrite=overwrite)
+        self.t = Tree(topic=topic, file_directory=self.file_directory, uid=self.uid, is_baseline_mode=self.is_baseline_mode, overwrite=overwrite)
         self.t.write_json()
 
     def initializeServer(self):
@@ -213,12 +224,24 @@ class CapabilityApp:
 
         
 if __name__ == "__main__":
+    # parase arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--topic', type=str, default='hate speech', help='topic of the dataset')
+    parser.add_argument('--file_directory', type=str, default='output/', help='directory of the dataset')
+    parser.add_argument('--serverHost', type=str, default='172.24.20.95', help='host of the server')
+    parser.add_argument('--serverPort', type=int, default=3001, help='port of the server')
+    parser.add_argument('--uid', type=str, default='', help='uid of the user')
+    parser.add_argument('--is_baseline_mode', type=bool, default=False, help='whether to use baseline mode')
+    parser.add_argument('--overwrite', type=bool, default=False, help='whether to overwrite the existing history')
+    args = parser.parse_args()
+
     server = CapabilityApp(
-            topic="movie", 
-            file_directory='output/', 
-            serverHost='172.24.20.95', 
-            is_baseline_mode=True, 
-            # overwrite=True
+            topic=args.topic, 
+            file_directory=args.file_directory,
+            serverHost=args.serverHost,
+            serverPort=args.serverPort,
+            uid=args.uid,
+            is_baseline_mode=args.is_baseline_mode,
+            overwrite=args.overwrite
         )
     server.initializeServer()
-    # uvicorn.run(server.app, host="0.0.0.0", port=3001, log_level="info")
