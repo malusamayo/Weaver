@@ -231,8 +231,8 @@ if __name__ == "__main__":
     parser.add_argument('--serverHost', type=str, default='172.24.20.95', help='host of the server')
     parser.add_argument('--serverPort', type=int, default=3001, help='port of the server')
     parser.add_argument('--uid', type=str, default='', help='uid of the user')
-    parser.add_argument('--is_baseline_mode', type=bool, default=False, help='whether to use baseline mode')
-    parser.add_argument('--overwrite', type=bool, default=False, help='whether to overwrite the existing history')
+    parser.add_argument('--is_baseline_mode', action='store_true', help='whether to use baseline mode')
+    parser.add_argument('--overwrite', action='store_true', help='whether to overwrite the existing history')
     args = parser.parse_args()
 
     server = CapabilityApp(

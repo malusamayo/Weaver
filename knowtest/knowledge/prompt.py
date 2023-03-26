@@ -53,7 +53,7 @@ class Prompter(object):
         words = [normalize(word) for word in words]
         return words
 
-    def query_topics(self, topic, relation, known_topics=[], N=20):
+    def query_topics(self, topic, relation, context="", known_topics=[], N=20):
         """ Query the model of related topics.
         Parameters
         ----------
@@ -71,6 +71,9 @@ class Prompter(object):
         prompt = ""
         cached_topics = []
 
+        prompt += context
+        prompt += "\n"
+
         # check caches
         if self.cache.exists_cached_queries(topic, relation):
             # if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:
@@ -86,8 +89,9 @@ class Prompter(object):
         else:
             prompt += self.generate_prompt(topic, relation, N)
         
-        # adding format instructions
+        prompt += " Pay attention to the context above."
         prompt += "\n"
+        # adding format instructions
         prompt += f"Summarize in a list of words. Separate the list by '{self.sep}' only. Keep only the list."
         extend = len(cached_topics) > 0 # if there are cached topics, we are extending the list
         if extend:
@@ -95,6 +99,8 @@ class Prompter(object):
             prompt += "Known examples: "
             prompt += self.sep.join(cached_topics) + "\n"
             prompt += "Extra examples: "
+
+        print(prompt)
         response = self.model(prompt)
         topic_list = self.postprocess_to_list(response)
 
@@ -131,11 +137,12 @@ class Prompter(object):
         prompt = ""
         prompt += context
         prompt += "\n"
-        prompt += f"Write {N + len(examples)} comments on the topic '{topic}' in {domain}.\n"
+        prompt += f"Write {N + len(examples)} comments on the topic '{topic}' in {domain}. Pay attention to the context above.\n"
         for i, example in enumerate(examples):
             prompt += f"{i+1}. {example}\n"
         prompt += f"{len(examples) + 1}. "
         
+        print(prompt)
         response = self.model(prompt)
         new_examples = response.split("\n")
         for i in range(len(new_examples)):

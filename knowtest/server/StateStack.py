@@ -51,7 +51,7 @@ class StateStack:
         print("making copy of {} to {}".format(stateFileName, self.stateSaveDirectory + newStateFileName))
         self.copyFile(stateFileName, self.stateSaveDirectory + newStateFileName)
         self.stack.append(newStateFileName)
-        print("self.stack: {}".format(self.stack))
+        # print("self.stack: {}".format(self.stack))
         filesToBeDeleted = []
         if len(self.stack) > self.maxStates:
             for filename in self.stack[:len(self.stack) - self.maxStates]:

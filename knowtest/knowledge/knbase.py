@@ -3,7 +3,7 @@ import os
 import threading
 import pandas as pd
 from .prompt import Prompter
-from .relations import RELATIONS
+from .relations import RELATIONS, path_to_nl_description
 from .graph import run_graph_construction
 from .utils import normalize, recommend_topics, PScorer
 
@@ -81,10 +81,10 @@ class KnowledgeBase(object):
         children = children.merge(self.nodes, left_on='to', right_on='id')
         return children
 
-    def extend_node(self, topic, relation):
+    def extend_node(self, topic, relation, context=""):
         children = self.find_children(topic, relation)
         known_topics = children['to'].to_list()
-        new_topics = self.prompter.query_topics(topic, relation, known_topics=known_topics)
+        new_topics = self.prompter.query_topics(topic, relation, context=context, known_topics=known_topics)
         if topic in new_topics:
             new_topics.remove(topic) # remove self-loop
 
@@ -103,7 +103,7 @@ class KnowledgeBase(object):
         # self.user_history = pd.concat([self.user_history, pd.DataFrame(new_user_history)], ignore_index=True)
         self.lock.release()
 
-    def extend_node_all_relation(self, topic):
+    def extend_node_all_relation(self, topic, context=""):
         threads = []
         for relation in RELATIONS.relations:
             # # skip the relation if more than half topics under the relation are recommended but not selected
@@ -116,10 +116,10 @@ class KnowledgeBase(object):
 
             # synchronous call for RELATEDTO
             if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:            
-                self.extend_node(topic, relation)
+                self.extend_node(topic, relation, context=context)
             else:
                 thread_name = f"{topic}_{relation}"
-                t = threading.Thread(target=self.extend_node, args=(topic,relation,), name=thread_name)
+                t = threading.Thread(target=self.extend_node, args=(topic,relation,context), name=thread_name)
                 threads.append(t)
                 t.start()
 
@@ -144,14 +144,14 @@ class KnowledgeBase(object):
     #     # [TODO] adjust weights based on topic similarity
     #     return rows
 
-    def prefech_init_children(self, topics):
+    def prefech_init_children(self, topics, context=""):
         for topic in topics:
             children = self.find_children(topic)
             if len(children) == 0:
-                self.extend_node_all_relation(topic)
+                self.extend_node_all_relation(topic, context=context)
 
-    def prefech_new_children(self, topic, known_topics, threshold):
-        self.extend_node_all_relation(topic)
+    def prefech_new_children(self, topic, known_topics, threshold, context=""):
+        self.extend_node_all_relation(topic, context=context)
         children = self.find_children(topic)
         
         # [TODO] disable prefetching when there are too few new topics
@@ -159,7 +159,7 @@ class KnowledgeBase(object):
         if len(new_topics) < threshold:
             return
 
-    def expand_node(self, topic, path=[], existing_children=[], n_expand=10):
+    def expand_node(self, topic, path=[], existing_children=[], n_expand=5):
         ''' Expand a node to find related topics.
         Parameters
         ----------
@@ -181,11 +181,13 @@ class KnowledgeBase(object):
         known_items = []
         print(f"Expanding node {topic}...")
 
+        context = "Context: " + path_to_nl_description(path)
+
         children = self.find_children(topic)
         # if the node has no children, extend the node
         if len(children) == 0:
             print("Initializing children...") # SHOULD NOT BE HERE: ALL children should be prefetched
-            self.extend_node_all_relation(topic)
+            self.extend_node_all_relation(topic, context=context)
             children = self.find_children(topic)
 
             #[TODO] fix the bug in this branch
@@ -207,7 +209,7 @@ class KnowledgeBase(object):
         threshold = 2*n_expand
         if len(children) <= threshold:
             print("Prefetching extra children...")
-            t = threading.Thread(target=self.prefech_new_children, args=(topic, known_topics, threshold), name=f"prefetch_c_{topic}")
+            t = threading.Thread(target=self.prefech_new_children, args=(topic, known_topics, threshold, context), name=f"prefetch_c_{topic}")
             t.start()
             
         print("Recommending children...")
@@ -218,13 +220,13 @@ class KnowledgeBase(object):
         # prefetch children of the recommended topics
         print("Prefetching grandchildren...")
         recommended_topics = [item['to'] for item in recommended_items]
-        t = threading.Thread(target=self.prefech_init_children, args=(recommended_topics,), name=f"prefetch_gc_{topic}")
+        t = threading.Thread(target=self.prefech_init_children, args=(recommended_topics, context), name=f"prefetch_gc_{topic}")
         t.start()
                 
         print(f"Done with expanding node {topic}.")
         return recommended_items
 
-    def expand_node_adatest(self, topic, tree=[], n_expand=10):
+    def expand_node_adatest(self, topic, tree=[], n_expand=5):
         ''' Expand a node to find related topics.
         Parameters
         ----------
@@ -277,15 +279,17 @@ class KnowledgeBase(object):
             tree.append({'topic': child['to'], 'relation': child['relation'], 'parent': topic})
 
         # expand children of the root node
-        children_n_expand = n_expand // 2 # expand children with half the number of children
+        children_n_expand = n_expand // 3 # expand children with one thirds the number of children
         children = children[:children_n_expand]
         for child in children:
-            grand_children = self.expand_node(child['to'], n_expand=children_n_expand)
+            path = [{'topic': topic, 'relation': None}, {'topic': child['to'], 'relation': child['relation']}] # depth-2 path
+            grand_children = self.expand_node(child['to'], path=path, n_expand=children_n_expand)
             for grand_child in grand_children:
                 tree.append({'topic': grand_child['to'], 'relation': grand_child['relation'], 'parent': child['to']})
 
         return tree
 
+    # [DEPRECATED]
     def suggest_siblings(self, topic, relation, path=[], existing_siblings=[], n_expand=3):
         ''' Suggest siblings of a node.
         Parameters
@@ -351,8 +355,7 @@ class KnowledgeBase(object):
             The suggested examples.
         '''
 
-        # [TODO] translate path to context
-        context = ""
+        context = "Context: " + path_to_nl_description(path)
         new_examples = self.prompter.suggest_examples(self.domain, topic, context=context, examples=examples, N=N)
         return new_examples
 
