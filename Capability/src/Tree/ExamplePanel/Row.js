@@ -3,6 +3,10 @@ import { FaBan } from "react-icons/fa";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
+import {    
+    AiOutlinePlus,
+    AiOutlineMinus
+  } from "react-icons/ai";
 import { useTreeContext } from "../state/TreeContext";
 import {fetchAPIDATA} from "../../utils";
 
@@ -32,7 +36,7 @@ const ExamplePanelFail = () => {
     );
 }
 
-const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeExamples, isSuggested}) => {
+const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeExamples, isSuggested, commitDeleteRow, commitUpdateExampleSuggested}) => {
 
     const [example, setExample] = useState(null);
 
@@ -43,6 +47,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
     // For editing the example output
     const [isEditingExampleOutput, setIsEditingExampleOutput] = useState(false);
     const [exampleOutput, setExampleOutput] = useState(exampleData.exampleTrue);
+    const [examplePredicted, setExamplePredicted] = useState(exampleData.examplePredicted);
 
     const [offTopic, setOffTopic] = useState(false);
     const [pass, setPass] = useState(true);
@@ -157,9 +162,18 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
     const handleExampleOutputKeyDown = (event) => {
         if (event.key === "Escape" || event.key === 'Enter') {
             console.log(exampleOutput)
-            commitUpdateRowText(exampleData, exampleOutput);
+            commitUpdateRowOutput(exampleData, exampleOutput);
             setIsEditingExampleOutput(false);
         }
+    }
+
+    const handleDeleteRow = () => {
+        commitDeleteRow(exampleData.id);
+    }
+
+    const handleAddSuggested = () => {
+        exampleData.isSuggested = !exampleData.isSuggested;
+        commitUpdateExampleSuggested(exampleData, false);    
     }
 
     // const handleExampleOffTopicClick = () => {
@@ -200,7 +214,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
 
     const commitUpdateRowText = async (example, text) => {
         try {
-            const newDataExamples = await fetchAPIDATA("updateExample", {
+            const newExampleData = await fetchAPIDATA("updateExample", {
                 "nodeId": nodeId,
                 "exampleId": example.id,
                 "exampleText": text,
@@ -208,7 +222,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                 "isSuggested": example.isSuggested,
                 "exampleOffTopic": example.exampleOffTopic
             }, true);
-            setSelectedNodeExamples(newDataExamples);
+            setExamplePredicted(newExampleData.examplePredicted);
         } catch (error) {
             console.log("Error: ", error);
         }
@@ -216,8 +230,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
 
     const commitUpdateRowOutput = async (example, text) => {
         try {
-
-            const newDataExamples = await fetchAPIDATA("updateExample",{
+            const _ = await fetchAPIDATA("updateExample",{
                 "nodeId": nodeId,
                 "exampleId": example.id,
                 "exampleText": example.exampleText,
@@ -225,7 +238,6 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                 "isSuggested": example.isSuggested,
                 "exampleOffTopic": example.exampleOffTopic
             }, true);
-            setSelectedNodeExamples(newDataExamples);
         } catch (error) {
             console.log("Error: ", error);
         }
@@ -233,7 +245,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
 
     const commitExampleStatus = async (offTopicSelection) => {
         try {
-            const newDataExamples = await fetchAPIDATA("updateExample", {
+            const _ = await fetchAPIDATA("updateExample", {
                 "nodeId": nodeId,
                 "exampleId": exampleData.id,
                 "exampleText": exampleData.exampleText,
@@ -241,7 +253,6 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                 "isSuggested": exampleData.isSuggested,
                 "exampleOffTopic": offTopicSelection
             }, true);
-            setSelectedNodeExamples(newDataExamples);
         } catch (error) {
             console.log("Error: ", error);
         }
@@ -299,7 +310,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
             
             <td>
                 {
-                    exampleData.examplePredicted
+                    examplePredicted
                 }
             </td>
             {
@@ -331,6 +342,19 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, setSelectedNodeE
                         <ImCross style={{fontSize: "12px", opacity: "0.2", cursor: "pointer"}}/>
                 }
             </td>
+            
+            <td onClick={handleAddSuggested}>
+                {
+                    isSuggested ?
+                        <AiOutlinePlus style={{fontSize: "15px", cursor: "pointer"}}/> :
+                        null
+                }
+            </td>
+
+            <td onClick={handleDeleteRow} >
+                <AiOutlineMinus style={{fontSize: "15px", cursor: "pointer"}}/>
+            </td>
+
             </tr>
     );
 }

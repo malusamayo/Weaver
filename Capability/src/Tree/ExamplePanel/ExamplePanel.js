@@ -44,6 +44,10 @@ const ExamplePanel = ({node}) => {
         examplePanelContainer.style.top = menuTopTreeToolbarBox.bottom + 20 + "px";
     }, []);
 
+    useEffect(() => {
+        console.log(selectedNodeExamples);
+    }, [selectedNodeExamples]);  
+
     const blankRowAdd = (text) => {
         const blankExample = {
             "id": uuidv4(),
@@ -147,170 +151,179 @@ const ExamplePanel = ({node}) => {
     };
         
 
-    useEffect(() => {
-        const handleKeyDown = (event) => {     
+    // useEffect(() => {
+    //     const handleKeyDown = (event) => {     
             
-            if ((event.metaKey || event.ctrlKey) && event.key === "Backspace") {
-                commitDeleteRow();
-            }
-        };
+    //         if ((event.metaKey || event.ctrlKey) && event.key === "Backspace") {
+    //             commitDeleteRow();
+    //         }
+    //     };
         
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    });
+    //     document.addEventListener("keydown", handleKeyDown);
+    //     return () => document.removeEventListener("keydown", handleKeyDown);
+    // });
 
-    useEffect(() => {
-        const handleArrowDown = (event) => {     
-            // if down arrow is pressed
-            if (event.key === "ArrowDown") {
-                // console.log("Arrow down pressed");
-                if (selectedNodeExamples.length > 0) {
-                    let nextRowPosition = 0;
-                    for (let i = 0; i < selectedNodeExamples.length; i++) {
-                        if (selectedNodeExamples[i].id === selectedRow) {
-                            nextRowPosition = i;
-                        }
-                    }
-                    nextRowPosition = (nextRowPosition + 1) % selectedNodeExamples.length;
+    // useEffect(() => {
+    //     const handleArrowDown = (event) => {     
+    //         // if down arrow is pressed
+    //         if (event.key === "ArrowDown") {
+    //             // console.log("Arrow down pressed");
+    //             if (selectedNodeExamples.length > 0) {
+    //                 let nextRowPosition = 0;
+    //                 for (let i = 0; i < selectedNodeExamples.length; i++) {
+    //                     if (selectedNodeExamples[i].id === selectedRow) {
+    //                         nextRowPosition = i;
+    //                     }
+    //                 }
+    //                 nextRowPosition = (nextRowPosition + 1) % selectedNodeExamples.length;
 
-                    if (selectedRow === null) {
-                        nextRowPosition = 0;
-                    }
-                    setSelectedRow(selectedNodeExamples[nextRowPosition].id);
-                }
-            }
-        };
-        document.addEventListener("keydown", handleArrowDown);
-        return () => document.removeEventListener("keydown", handleArrowDown);
-    });
+    //                 if (selectedRow === null) {
+    //                     nextRowPosition = 0;
+    //                 }
+    //                 setSelectedRow(selectedNodeExamples[nextRowPosition].id);
+    //             }
+    //         }
+    //     };
+    //     document.addEventListener("keydown", handleArrowDown);
+    //     return () => document.removeEventListener("keydown", handleArrowDown);
+    // });
 
-    useEffect(() => {
-        const handleArrowUp = (event) => {
-            // if up arrow is pressed
-            if (event.key === "ArrowUp") {
-                // console.log("Arrow up pressed");
-                if (selectedNodeExamples.length > 0) {
-                    let nextRowPosition = 0;
-                    for (let i = 0; i < selectedNodeExamples.length; i++) {
-                        if (selectedNodeExamples[i].id === selectedRow) {
-                            nextRowPosition = i;
-                        }
-                    }
-                    nextRowPosition = (nextRowPosition - 1 + selectedNodeExamples.length) % selectedNodeExamples.length;
-                    if (selectedRow === null) {
-                        nextRowPosition = selectedNodeExamples.length - 1;
-                    }
-                    setSelectedRow(selectedNodeExamples[nextRowPosition].id);
-                }
-            }
-        };
-        document.addEventListener("keydown", handleArrowUp);
-        return () => document.removeEventListener("keydown", handleArrowUp);
-    });
+    // useEffect(() => {
+    //     const handleArrowUp = (event) => {
+    //         // if up arrow is pressed
+    //         if (event.key === "ArrowUp") {
+    //             // console.log("Arrow up pressed");
+    //             if (selectedNodeExamples.length > 0) {
+    //                 let nextRowPosition = 0;
+    //                 for (let i = 0; i < selectedNodeExamples.length; i++) {
+    //                     if (selectedNodeExamples[i].id === selectedRow) {
+    //                         nextRowPosition = i;
+    //                     }
+    //                 }
+    //                 nextRowPosition = (nextRowPosition - 1 + selectedNodeExamples.length) % selectedNodeExamples.length;
+    //                 if (selectedRow === null) {
+    //                     nextRowPosition = selectedNodeExamples.length - 1;
+    //                 }
+    //                 setSelectedRow(selectedNodeExamples[nextRowPosition].id);
+    //             }
+    //         }
+    //     };
+    //     document.addEventListener("keydown", handleArrowUp);
+    //     return () => document.removeEventListener("keydown", handleArrowUp);
+    // });
 
-    useEffect(() => {
-        const handlePlusClick = (event) => {
-            if (event.key === "+") {
-                handleAddBlankRow();
-            }
-        };
-        document.addEventListener("keydown", handlePlusClick);
-        return () => document.removeEventListener("keydown", handlePlusClick);
-    });
+    // useEffect(() => {
+    //     const handlePlusClick = (event) => {
+    //         if (event.key === "+") {
+    //             handleAddBlankRow();
+    //         }
+    //     };
+    //     document.addEventListener("keydown", handlePlusClick);
+    //     return () => document.removeEventListener("keydown", handlePlusClick);
+    // });
 
-    useEffect(() => {
-        const handleCMDPlusPress = (event) => {
-            if ((event.metaKey || event.ctrlKey) && event.key === "=") {
-                event.preventDefault();
-                let nextRowPosition = null;
-                for (let i = 0; i < selectedNodeExamples.length; i++) {
-                    if (selectedNodeExamples[i].id === selectedRow) {
-                        nextRowPosition = i;
-                    }
-                }
-                // console.log("handleCMDPlusPress + pressed: "+ selectedRow);
-                // console.log("handleCMDPlusPress + pressed: "+ nextRowPosition);
-                // console.log("handleCMDPlusPress + pressed: "+ selectedNodeExamples[nextRowPosition].isSuggested);
+    // useEffect(() => {
+    //     const handleCMDPlusPress = (event) => {
+    //         if ((event.metaKey || event.ctrlKey) && event.key === "=") {
+    //             event.preventDefault();
+    //             let nextRowPosition = null;
+    //             for (let i = 0; i < selectedNodeExamples.length; i++) {
+    //                 if (selectedNodeExamples[i].id === selectedRow) {
+    //                     nextRowPosition = i;
+    //                 }
+    //             }
+    //             // console.log("handleCMDPlusPress + pressed: "+ selectedRow);
+    //             // console.log("handleCMDPlusPress + pressed: "+ nextRowPosition);
+    //             // console.log("handleCMDPlusPress + pressed: "+ selectedNodeExamples[nextRowPosition].isSuggested);
 
-                if (selectedRow !== null && 
-                        nextRowPosition !== null &&
-                        selectedNodeExamples[nextRowPosition].isSuggested === true) {
-                    // console.log("commiting update for plus");
-                    commitUpdateExampleSuggested(nextRowPosition, false);
-                }
-            }
-        };
-        document.addEventListener("keydown", handleCMDPlusPress);
-        return () => document.removeEventListener("keydown", handleCMDPlusPress);
-    });
+    //             if (selectedRow !== null && 
+    //                     nextRowPosition !== null &&
+    //                     selectedNodeExamples[nextRowPosition].isSuggested === true) {
+    //                 // console.log("commiting update for plus");
+    //                 commitUpdateExampleSuggested(nextRowPosition, false);
+    //             }
+    //         }
+    //     };
+    //     document.addEventListener("keydown", handleCMDPlusPress);
+    //     return () => document.removeEventListener("keydown", handleCMDPlusPress);
+    // });
 
-    useEffect(() => {
-        const handleCMDMinusPress = (event) => {
+    // useEffect(() => {
+    //     const handleCMDMinusPress = (event) => {
 
-            if ((event.metaKey || event.ctrlKey) && event.key === "-") {
-                event.preventDefault();
-                let nextRowPosition = null;
-                for (let i = 0; i < selectedNodeExamples.length; i++) {
-                    if (selectedNodeExamples[i].id === selectedRow) {
-                        nextRowPosition = i;
-                    }
-                }
+    //         if ((event.metaKey || event.ctrlKey) && event.key === "-") {
+    //             event.preventDefault();
+    //             let nextRowPosition = null;
+    //             for (let i = 0; i < selectedNodeExamples.length; i++) {
+    //                 if (selectedNodeExamples[i].id === selectedRow) {
+    //                     nextRowPosition = i;
+    //                 }
+    //             }
 
-                if (selectedRow !== null 
-                    && nextRowPosition !== null
-                    && selectedNodeExamples[nextRowPosition].isSuggested === false) {
-                    // console.log("handleCMDMinusPress - pressed");
-                    commitUpdateExampleSuggested(nextRowPosition, true);
-                }
-            }
-        };
-        document.addEventListener("keydown", handleCMDMinusPress);
-        return () => document.removeEventListener("keydown", handleCMDMinusPress);
-    });
+    //             if (selectedRow !== null 
+    //                 && nextRowPosition !== null
+    //                 && selectedNodeExamples[nextRowPosition].isSuggested === false) {
+    //                 // console.log("handleCMDMinusPress - pressed");
+    //                 commitUpdateExampleSuggested(nextRowPosition, true);
+    //             }
+    //         }
+    //     };
+    //     document.addEventListener("keydown", handleCMDMinusPress);
+    //     return () => document.removeEventListener("keydown", handleCMDMinusPress);
+    // });
 
 
-    const commitUpdateExampleSuggested = async (examplePosition, isSuggested) => {
+    const commitUpdateExampleSuggested = async (updatedExample, isSuggested) => {
         try {
             setIsLoading(true);
             console.log("Node: ", selectedNode.id);
-            console.log("Example: ", selectedNodeExamples[examplePosition]);
+            console.log("Example: ", updatedExample);
             console.log("Setting isSuggested to: ", isSuggested);
-            const newDataExamples = await fetchAPIDATA("updateExample", {
-                "nodeId": selectedNode.id,
-                "exampleId": selectedNodeExamples[examplePosition].id,
-                "exampleText": selectedNodeExamples[examplePosition].exampleText,
-                "exampleTrue": selectedNodeExamples[examplePosition].exampleTrue,
+            const _ = await fetchAPIDATA("updateExample", {
+                "nodeId": selectedNode.id, 
+                "exampleId": updatedExample.id,
+                "exampleText": updatedExample.exampleText,
+                "exampleTrue": updatedExample.exampleTrue,
                 "isSuggested": isSuggested,
-                "exampleOffTopic": selectedNodeExamples[examplePosition].exampleOffTopic
+                "exampleOffTopic": updatedExample.exampleOffTopic
             }, true);
-            setSelectedNodeExamples([]);
+
+            const filteredNodeExamples = selectedNodeExamples.filter((example) => {
+                return example.id !== updatedExample.id;
+            });
+
+            const newDataExamples = sortSelectedNodeExamples([...filteredNodeExamples, updatedExample]);
+
+            // setSelectedNodeExamples([]);
             console.log("New data examples: ", newDataExamples);
-            setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+            setSelectedNodeExamples(newDataExamples);
             setIsLoading(false);
         } catch (error) {
             console.log("Error: ", error);
         }
     };
 
-    const commitDeleteRow = async() => {
+    const commitDeleteRow = async(selectedRow) => {
         if (selectedRow !== null) {
             try {
                 setIsLoading(true);
 
-                // First set the selected row to new available row
-                let nextRowPosition = 0;
-                for (let i = 0; i < selectedNodeExamples.length; i++) {
-                    if (selectedNodeExamples[i].id === selectedRow) {
-                        nextRowPosition = i;
-                    }
-                }
-
-                const newDataExamples = await fetchAPIDATA("removeExample", {
+                const _ = await fetchAPIDATA("removeExample", {
                     "nodeId": selectedNode.id,
                     "exampleId": selectedRow
                 }, true);
-                setSelectedNodeExamples([]);
-                setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+
+                console.log("removeExample: ", selectedRow);
+
+                const filteredNodeExamples = selectedNodeExamples.filter((example) => {
+                    return example.id !== selectedRow;
+                });
+
+                const newDataExamples = sortSelectedNodeExamples(filteredNodeExamples);
+
+                console.log(newDataExamples)
+                
+                setSelectedNodeExamples(newDataExamples);
                 setIsLoading(false);
 
                 let countNotSuggested = 0;
@@ -325,7 +338,15 @@ const ExamplePanel = ({node}) => {
                     setSelectedNodeExamples([...newDataExamples, blankRow]);
                 }
 
-                nextRowPosition = nextRowPosition % newDataExamples.length;
+                // First set the selected row to new available row
+                let nextRowPosition = 0;
+                for (let i = 0; i < selectedNodeExamples.length; i++) {
+                    if (selectedNodeExamples[i].id === selectedRow) {
+                        nextRowPosition = i;
+                    }
+                }
+
+                nextRowPosition = Math.min(nextRowPosition, newDataExamples.length - 1);
                 console.log("nextRowPosition: ", nextRowPosition);
                 try {
                     setSelectedRow(newDataExamples[nextRowPosition].id);
@@ -333,12 +354,53 @@ const ExamplePanel = ({node}) => {
                 } catch (error) {
                     console.log("Error: ", error);
                 }
-
             } catch (error) {
                 console.log("Error: ", error);
             }
         }
     };
+
+    const SuggestedTable = ({selectedNodeExamples}) => {
+        return selectedNodeExamples.map((example, index) => {
+                // console.log("example: ", example);
+                if (example.isSuggested === true) {
+                    return (
+                        <Row 
+                            exampleData={example}
+                            key={index}
+                            setSelectedRow={setSelectedRow}
+                            selectedRow={selectedRow}
+                            nodeId={selectedNode.id}
+                            setSelectedNodeExamples={setSelectedNodeExamples}
+                            isSuggested={true}
+                            commitDeleteRow={commitDeleteRow}
+                            commitUpdateExampleSuggested={commitUpdateExampleSuggested}
+                        />
+                    )
+                }
+        })
+    };
+
+    const SelectedTable = ({selectedNodeExamples}) => {
+        return selectedNodeExamples.map((example, index) => {
+            if (example.isSuggested === false) {
+                return (
+                    <Row 
+                        exampleData={example}
+                        key={index}
+                        setSelectedRow={setSelectedRow}
+                        selectedRow={selectedRow}
+                        nodeId={selectedNode.id}
+                        setSelectedNodeExamples={setSelectedNodeExamples}
+                        isSuggested={false}
+                        commitDeleteRow={commitDeleteRow}
+                        commitUpdateExampleSuggested={commitUpdateExampleSuggested}
+                    />
+                )
+            }
+        })
+    };
+
 
     const divRef = useRef(null);
 
@@ -367,26 +429,13 @@ const ExamplePanel = ({node}) => {
                                 <td>Off-topic</td> 
                                 <td>Pass</td>
                                 <td>Fail</td>
+                                <td></td>
+                                <td></td>
                             </tr>
                             </thead>
                             <tbody>
                             {
-                                selectedNodeExamples.map((example, index) => {
-                                    // console.log("example: ", example);
-                                    if (example.isSuggested === true) {
-                                        return (
-                                            <Row 
-                                                exampleData={example}
-                                                key={index}
-                                                setSelectedRow={setSelectedRow}
-                                                selectedRow={selectedRow}
-                                                nodeId={selectedNode.id}
-                                                setSelectedNodeExamples={setSelectedNodeExamples}
-                                                isSuggested={true}
-                                            />
-                                        )
-                                    }
-                                })
+                                <SuggestedTable selectedNodeExamples={selectedNodeExamples}/>
                             }
                             </tbody>
                         </table>
@@ -401,21 +450,7 @@ const ExamplePanel = ({node}) => {
                         <table className="example-panel-selected-table">
                             <tbody>
                             {
-                                selectedNodeExamples.map((example, index) => {
-                                    if (example.isSuggested === false) {
-                                        return (
-                                            <Row 
-                                                exampleData={example}
-                                                key={index}
-                                                setSelectedRow={setSelectedRow}
-                                                selectedRow={selectedRow}
-                                                nodeId={selectedNode.id}
-                                                setSelectedNodeExamples={setSelectedNodeExamples}
-                                                isSuggested={false}
-                                            />
-                                        )
-                                    }
-                                })
+                                <SelectedTable selectedNodeExamples={selectedNodeExamples}/>
                             }
                             </tbody>
                         </table>

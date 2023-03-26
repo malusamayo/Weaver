@@ -167,11 +167,11 @@ class CapabilityApp:
         def update_example(exampleRow: ExampleRow):
             nodeId, example_id, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
             # TODO: Predict
-            self.t.update_example(nodeId, example_id, example_text, example_true, is_suggested, example_off_topic)
+            example_predicted = "Predicted"
+            updatedRow = self.t.update_example(nodeId, example_id, example_text, example_true, example_predicted, is_suggested, example_off_topic)
             self.t.write_json(self.filepath)
             print("Setting example: ", example_text, " to ", is_suggested)
-            return self.t.get_example_list(nodeId)
-        
+            return updatedRow.__JSON__()
 
         @self.app.get("/getMoreExamples")
         def get_more_examples(nodeId: str):

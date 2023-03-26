@@ -376,24 +376,24 @@ class Tree:
             for exampleText in suggested_examples:
                 self.add_example(node_id, exampleText, "True", "True", True, False)
     
-    def update_example(self, node_id: str, exampleID: str, exampleText: str, exampleTrue: str, isSuggested: bool, exampleOffTopic: bool):
-        print("Updating example: ", node_id, exampleID, exampleText, exampleTrue, isSuggested, exampleOffTopic)
+    def update_example(self, node_id: str, exampleID: str, exampleText: str, exampleTrue: str, examplePredicted: str, isSuggested: bool, exampleOffTopic: bool):
+        print("Updating example: ", node_id, exampleID, exampleText, exampleTrue, examplePredicted, isSuggested, exampleOffTopic)
         if node_id in self.nodes:
             if exampleID in self.nodes[node_id].examples:
                 example = self.nodes[node_id].examples[exampleID]
-                example.exampleText = exampleText
-                example.exampleTrue = exampleTrue
-                example.isSuggested = isSuggested
-                example.exampleOffTopic = exampleOffTopic
-            
             elif exampleID in self.nodes[node_id].suggested_examples:
                 example = self.nodes[node_id].suggested_examples[exampleID]
-                example.exampleText = exampleText
-                example.exampleTrue = exampleTrue
-                example.isSuggested = isSuggested
-                example.exampleOffTopic = exampleOffTopic
+            else:
+                raise Exception("Example not found")
+            
+            example.exampleText = exampleText
+            example.exampleTrue = exampleTrue
+            example.examplePredicted = examplePredicted
+            example.isSuggested = isSuggested
+            example.exampleOffTopic = exampleOffTopic
 
             print("Updated example: ", example.__JSON__())
+            return example
     
     def remove_example(self, node_id: str, exampleID: str):
         if node_id in self.nodes:
