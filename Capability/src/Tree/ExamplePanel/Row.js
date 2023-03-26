@@ -3,10 +3,13 @@ import { FaBan } from "react-icons/fa";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
-import {    
-    AiOutlinePlus,
-    AiOutlineMinus
-  } from "react-icons/ai";
+import {
+    RiDeleteBin2Line
+}   from "react-icons/ri";
+import {
+    BiAddToQueue
+}   from "react-icons/bi";
+
 import { useTreeContext } from "../state/TreeContext";
 import {fetchAPIDATA} from "../../utils";
 
@@ -148,7 +151,8 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExam
     }
 
     const handleExampleTextKeyDown = (event) => {
-        if (event.key === "Escape" || event.key === 'Enter') {
+        console.log(event)
+        if (event.key === "Escape" || ((event.shiftKey) && event.key === 'Enter')) {
             console.log(exampleText)
             commitUpdateRowText(exampleData, exampleText);
             setIsEditingExampleText(false);
@@ -160,7 +164,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExam
     }
 
     const handleExampleOutputKeyDown = (event) => {
-        if (event.key === "Escape" || event.key === 'Enter') {
+        if (event.key === "Escape" ||  ((event.shiftKey) && event.key === 'Enter')) {
             console.log(exampleOutput)
             commitUpdateRowOutput(exampleData, exampleOutput);
             setIsEditingExampleOutput(false);
@@ -350,13 +354,13 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExam
             <td>
                 {
                     isSuggested ?
-                        <AiOutlinePlus onClick={handleAddSuggested} style={{fontSize: "15px", cursor: "pointer"}}/> :
-                        <AiOutlinePlus style={{fontSize: "15px", opacity: "0"}}/>
+                        <BiAddToQueue onClick={handleAddSuggested} style={{fontSize: "20px", cursor: "pointer"}}/> :
+                        <BiAddToQueue style={{fontSize: "20px", opacity: "0"}}/>
                 }
             </td>
 
             <td onClick={handleDeleteRow} >
-                <AiOutlineMinus style={{fontSize: "15px", cursor: "pointer"}}/>
+                <RiDeleteBin2Line style={{fontSize: "20px", cursor: "pointer"}}/>
             </td>
 
             </tr>

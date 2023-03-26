@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { Tooltip } from 'react-tooltip';
 import {fetchAPIDATA} from "../../utils";
 import { examplePanel } from "./ExamplePanel.css";
 import { HiOutlineBan } from "react-icons/hi";
@@ -52,8 +53,8 @@ const ExamplePanel = ({node}) => {
         const blankExample = {
             "id": uuidv4(),
             "exampleText": text,
-            "exampleTrue": "True",
-            "examplePredicted": "True",
+            "exampleTrue": "",
+            "examplePredicted": "",
             "isSuggested": false,
             "exampleOffTopic": false,
         }
@@ -93,13 +94,15 @@ const ExamplePanel = ({node}) => {
                 }
             }
 
-            if (countNotSuggested === 0) {
-                const blankRow = blankRowAdd("Click \"Add\" to add an example");
-                // setSelectedNodeExamples([blankRow]);
-                setSelectedNodeExamples([...newDataExamples, blankRow]);
-            } else {
-                setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
-            }
+            // if (countNotSuggested === 0) {
+            //     const blankRow = blankRowAdd("Click \"Add\" to add an example");
+            //     // setSelectedNodeExamples([blankRow]);
+            //     setSelectedNodeExamples([...newDataExamples, blankRow]);
+            // } else {
+            //     setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+            // }
+
+            setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
             setIsLoading(false);
         } catch (error) {
             console.log("Error: ", error);
@@ -419,6 +422,14 @@ const ExamplePanel = ({node}) => {
 
     const divRef = useRef(null);
 
+    const tooltip_style= {
+        zIndex: 9999, 
+        position: "absolute", 
+        backgroundColor: "rgba(54, 54, 54, 1)",
+        padding : "5px",
+        fontSize: "80%",
+      };
+
     return (
         <div className="example-panel" ref={divRef}>
             <div className="example-panel__content">
@@ -431,7 +442,8 @@ const ExamplePanel = ({node}) => {
                             <p><u>Suggested Examples</u></p>
                             <div style={{display: "flex", alignItems: "top"}} onClick={handleMoreSuggestions}>
                                 <p style={{marginRight: "5px"}}>More</p>
-                                <GoDiffAdded style={{fontSize: "20px", opacity: "1", cursor: "pointer"}}/>
+                                <GoDiffAdded style={{fontSize: "20px", opacity: "1", cursor: "pointer"}} id="suggest-examples"/>
+                                <Tooltip place="bottom" anchorSelect="#suggest-examples" content="Suggest More Examples" style={tooltip_style}/>
                             </div>
                         </div>
                         <table className="example-panel-selected-table">
@@ -459,7 +471,8 @@ const ExamplePanel = ({node}) => {
                             <p><u>Selected Examples</u></p>
                             <div style={{display: "flex", alignItems: "top"}} onClick={handleAddBlankRow}>
                                 <p style={{marginRight: "5px"}}>Add</p>
-                                <GoDiffAdded style={{fontSize: "20px", opacity: "1", cursor: "pointer"}}/>
+                                <GoDiffAdded style={{fontSize: "20px", opacity: "1", cursor: "pointer"}} id="add-example"/>
+                                <Tooltip place="bottom" anchorSelect="#add-example" content="Add Example" style={tooltip_style}/>
                             </div>
                         </div>
                         <table className="example-panel-selected-table">
