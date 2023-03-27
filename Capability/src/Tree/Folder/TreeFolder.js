@@ -93,7 +93,7 @@ const StyledRelation = ({node, nodeTag}) => {
   )
 }
 
-const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighted, node, isEditing, setIsEditing, type, setNodeHighlighted}) => {
+const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighted, node, isEditing, handleNodeClick, type, setNodeHighlighted}) => {
 
   if (type === "specialAddSuggestion") {
     return (
@@ -137,21 +137,23 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
           isOpen ? <AiOutlineFolderOpen onClick={handleClick}/> : <AiOutlineFolder onClick={handleClick}/>
       }
       </div>
-      <div style={{cursor: "pointer"}}>
+      <div style={{cursor: "pointer"}} onClick={handleNodeClick}>
       {
         isHighlighted ? 
           <RiCheckboxCircleFill onClick={handleNodeHighlight} id="hide-subtopic"/> :
           <RiCheckboxBlankCircleLine onClick={handleNodeHighlight} id="show-subtopic"/>
       }
-      </div>
+      </div >
+      <div onClick={handleNodeClick}>
       {
         node.nl_tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>)
       // !isEditing ? 
       //   node.nl_tag.length > 0 ? node.nl_tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>) : null :
       //   node.nl_tag.length ? (<Dropdown node={node}/>): null
       }
+      </div>
       &nbsp;&nbsp;
-      <div id={anchor_id} onDoubleClick={handleDoubleClick}>
+      <div id={anchor_id} onDoubleClick={handleDoubleClick} onClick={handleNodeClick}>
         {name}
       </div>
       {/* <Tooltip place="top" anchorSelect={"#" + anchor_id} content={node.naturalLanguagePath} style={tooltip_style}/> */}
@@ -305,6 +307,7 @@ const Folder = ({ id, name, children, node, root}) => {
       });
       dispatch({ type: "SET_DATA", payload: newData });
       setIsEditing(false);
+      console.log("commitSuggestions", newData);
       setIsLoading(false);
     } catch (error) {
       console.error(error);
@@ -369,7 +372,7 @@ const Folder = ({ id, name, children, node, root}) => {
   };
 
   return (
-    <StyledFolder id={id} onClick={handleNodeClick} className="tree__folder">
+    <StyledFolder id={id} className="tree__folder">
         <AlertDelete node={node} onConfirm={commitDeleteFolder} isDeleting={isDeleting} setIsDeleting={setIsDeleting}/>
         <VerticalLine root={false}>
           <ActionsWrapper>
@@ -385,6 +388,7 @@ const Folder = ({ id, name, children, node, root}) => {
                 onCancel={handleCancel}
                 onSubmit={commitFolderEdit}
                 isEditing={true}
+                handleNodeClick={handleNodeClick}
               />
             ) : (
               <FolderName
@@ -395,6 +399,7 @@ const Folder = ({ id, name, children, node, root}) => {
                 node={node}
                 handleClick={() => setNodeOpen(!isOpen)}
                 handleDoubleClick={handleFolderRename}
+                handleNodeClick={handleNodeClick}
               />
             )}
             </div>
@@ -403,7 +408,7 @@ const Folder = ({ id, name, children, node, root}) => {
               {/* {root ? null : node.isHighlighted ?
                 <AiOutlineMinus onClick={() => setNodeHighlighted(false)} id="unhighlight-topic"/> :
                 <AiOutlinePlus onClick={() => setNodeHighlighted(true)} id="highlight-topic"/> } */}
-              <BsSearch id="example-panel-explore"/>
+              <BsSearch  onClick={handleNodeClick} id="example-panel-explore"/>
               {/* <BiRefresh onClick={commitSuggestions} id="refresh-suggestion"/> */}
               <AiFillEdit onClick={handleFolderRename} id="edit-topic"/>
               <FaFolderPlus onClick={handleFolderCreation} id="add-topic"/>
