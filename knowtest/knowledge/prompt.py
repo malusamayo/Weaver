@@ -92,7 +92,7 @@ class Prompter(object):
         prompt += " Pay attention to the context above."
         prompt += "\n"
         # adding format instructions
-        prompt += f"Summarize in a list of words. Separate the list by '{self.sep}' only. Keep only the list."
+        prompt += f"Summarize in a list of words. Separate the list by '{self.sep}' only. Don't use numbers to separate. Keep only the list."
         extend = len(cached_topics) > 0 # if there are cached topics, we are extending the list
         if extend:
             prompt += "\n"
