@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { Tooltip } from 'react-tooltip';
 import {
   AiOutlineFolder,
   AiOutlineFolderOpen,
-  AiOutlinePlus,
+  // AiOutlinePlus,
   AiFillEdit,
-  AiOutlineMinus,
-  AiFillFolder,
-  AiFillFolderOpen,
+  // AiOutlineMinus,
+  // AiFillFolder,
+  // AiFillFolderOpen,
 } from "react-icons/ai";
 import {
   RiCheckboxCircleFill,
@@ -16,9 +16,9 @@ import {
 
 import { MdDeleteForever } from "react-icons/md";
 import { FaFolderPlus } from "react-icons/fa";
-import { BiRefresh, BiPlusMedical } from "react-icons/bi";
+// import { BiRefresh } from "react-icons/bi";
 import { BsSearch, BsFillPlusCircleFill } from "react-icons/bs";
-import { ImPlus, ImCross } from "react-icons/im";
+// import { ImPlus, ImCross } from "react-icons/im";
 
 import {
   ActionsWrapper,
@@ -26,58 +26,58 @@ import {
   StyledName,
   VerticalLine,
   StyledTag,
-  StyledAddTopic,
+  // StyledAddTopic,
 } from "../Tree.style";
 import { StyledFolder } from "./TreeFolder.style";
 
 import { useTreeContext } from "../state/TreeContext";
 import { PlaceholderInput } from "../TreePlaceholderInput";
 import {fetchAPIDATA} from "../../utils";
-import { Dropdown } from "../Dropdown/dropdown";
+import "../Dropdown/dropdown.css";
 import { AlertDelete } from "./AlertDelete";
-import { size } from "lodash";
+// import { size } from "lodash";
 
 const StyledRelation = ({node, nodeTag}) => {
 
-  const { dispatch, setIsLoading } = useTreeContext();
+  // const { dispatch, setIsLoading } = useTreeContext();
 
-  const commitRemoveSimilarRelationSiblings = async (node, nodeTag) => {
-    try {
-      const newData = await fetchAPIDATA("removeSimilarRelationSiblings", {
-        "nodeId": node.id,
-        "tag": nodeTag
-      }, true);
-      dispatch({ type: "SET_DATA", payload: newData });
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // const commitRemoveSimilarRelationSiblings = async (node, nodeTag) => {
+  //   try {
+  //     const newData = await fetchAPIDATA("removeSimilarRelationSiblings", {
+  //       "nodeId": node.id,
+  //       "tag": nodeTag
+  //     }, true);
+  //     dispatch({ type: "SET_DATA", payload: newData });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
-  const commitAddSimilarRelationSiblings = async (node, nodeTag) => {
-    try {
-      setIsLoading(true);
-      const newData = await fetchAPIDATA("addSimilarRelationSiblings", {
-        "nodeId": node.id,
-        "tag": nodeTag
-      }, true);
-      dispatch({ type: "SET_DATA", payload: newData });
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // const commitAddSimilarRelationSiblings = async (node, nodeTag) => {
+  //   try {
+  //     setIsLoading(true);
+  //     const newData = await fetchAPIDATA("addSimilarRelationSiblings", {
+  //       "nodeId": node.id,
+  //       "tag": nodeTag
+  //     }, true);
+  //     dispatch({ type: "SET_DATA", payload: newData });
+  //     setIsLoading(false);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
-  const handleActionPlusClick = (event) => {
-    event.stopPropagation();
-    // console.log("handleActionPlusClick", event)
-    commitAddSimilarRelationSiblings(node, nodeTag)
-  }
+  // const handleActionPlusClick = (event) => {
+  //   event.stopPropagation();
+  //   // console.log("handleActionPlusClick", event)
+  //   commitAddSimilarRelationSiblings(node, nodeTag)
+  // }
 
-  const handleActionCrossClick = (event) => {
-    event.stopPropagation();
-    // console.log("handleActionCrossClick", event)
-    commitRemoveSimilarRelationSiblings(node, nodeTag)
-  }
+  // const handleActionCrossClick = (event) => {
+  //   event.stopPropagation();
+  //   // console.log("handleActionCrossClick", event)
+  //   commitRemoveSimilarRelationSiblings(node, nodeTag)
+  // }
 
   return (
     <StyledTag>
@@ -95,30 +95,37 @@ const StyledRelation = ({node, nodeTag}) => {
 
 const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighted, node, isEditing, handleNodeClick, type, setNodeHighlighted}) => {
 
-  if (type === "specialAddSuggestion") {
-    return (
-      <StyledName onClick={handleClick}>
-        <BiRefresh /> &nbsp;&nbsp; {name} 
-      </StyledName>
-    )
-  }
+  const [tag, setTags] = useState(node.nl_tag);
 
-  let parentName = node.parentNode.name
-  let nodeTag = node.nl_tag[0]
+  useEffect(() => {
+    setTags(node.nl_tag);
+  }, [node.nl_tag]);
 
-  if (type === "folderCreation") {
-    // console.log("FolderName", node, type, isEditing, node.nl_tag.length)
-    parentName = node.name
-    nodeTag = "RELATEDTO"
-  }
 
-  const tooltip_style= {
-    zIndex: 9999, 
-    position: "absolute", 
-    backgroundColor: "rgba(54, 54, 54, 1)",
-    padding : "5px",
-    fontSize: "80%",
-  };
+  // if (type === "specialAddSuggestion") {
+  //   return (
+  //     <StyledName onClick={handleClick}>
+  //       <BiRefresh /> &nbsp;&nbsp; {name} 
+  //     </StyledName>
+  //   )
+  // }
+
+  // let parentName = node.parentNode.name
+  // let nodeTag = node.nl_tag[0]
+
+  // if (type === "folderCreation") {
+  //   // console.log("FolderName", node, type, isEditing, node.nl_tag.length)
+  //   parentName = node.name
+  //   nodeTag = "RELATEDTO"
+  // }
+
+  // const tooltip_style= {
+  //   zIndex: 9999, 
+  //   position: "absolute", 
+  //   backgroundColor: "rgba(54, 54, 54, 1)",
+  //   padding : "5px",
+  //   fontSize: "80%",
+  // };
   
   // make const anchor_id = "node-info-" + node.id and all spaces in node.id to be replaced by "-"
   const anchor_id = "node-info-" + node.id;
@@ -146,7 +153,7 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
       </div >
       <div onClick={handleNodeClick}>
       {
-        node.nl_tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>)
+        tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>)
       // !isEditing ? 
       //   node.nl_tag.length > 0 ? node.nl_tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>) : null :
       //   node.nl_tag.length ? (<Dropdown node={node}/>): null
@@ -174,24 +181,28 @@ const Folder = ({ id, name, children, node, root}) => {
   const [childs, setChilds] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Setting new const here
-  const [tag, setTags] = useState(node.nl_tag);
+  useLayoutEffect(() => {
+    setIsOpen(node.isOpen);
+  }, [node.isOpen]);
 
-
-  const editTextBox = useRef(null);
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (isEditing && editTextBox.current && !editTextBox.current.contains(event.target)) {
-        handleCancel();
-      }
-    }
-  
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isEditing]);
+    setChilds([children]);
+  }, [children]);
+
+  // // handle hover over className="AddFolder"
+  // useEffect(() => {
+  //   const handleMouseOverForAddFolder = (event) => {
+  //     if (event.target.className === "AddFolder") {
+  //       // Show a box with the text "Add Topic" in it
+  //       console.log("Mouse Over Add Folder");
+  //     }
+  //   };
+  //   document.addEventListener("mouseover", handleMouseOverForAddFolder);
+  //   return () => {
+  //     document.removeEventListener("mouseover", handleMouseOverForAddFolder);
+  //   };
+  // }, []);
 
   const setNodeOpen = async (open) => {
     try {
@@ -221,24 +232,13 @@ const Folder = ({ id, name, children, node, root}) => {
         "nodeId": node.id,
         "isHighlighted": highlighted
       }, true);
+      console.log("setNodeHighlighted", newData)
       dispatch({ type: "SET_DATA", payload: newData });
       // setHighlighted(highlighted);
     } catch (error) {
       console.error(error);
     }
   };
-
-  useLayoutEffect(() => {
-    setIsOpen(node.isOpen);
-  }, [node.isOpen]);
-
-  useEffect(() => {
-    setTags(node.nl_tag);
-  }, [node.nl_tag]);
-
-  useEffect(() => {
-    setChilds([children]);
-  }, [children]);
 
   const commitFolderCreation = async (name) => {
     try {
@@ -257,6 +257,7 @@ const Folder = ({ id, name, children, node, root}) => {
       console.error(error);
     }
   };
+
   const commitDeleteFolder = async () => {
     try {
       const newData = await fetchAPIDATA("deleteNode", {
@@ -319,12 +320,12 @@ const Folder = ({ id, name, children, node, root}) => {
     setChilds([children]);
   };
 
-  const handleNodeClick = React.useCallback(
+  const handleNodeClick = useCallback(
     (event) => {
       event.stopPropagation();
       onNodeClick({ node });
     },
-    [node]
+    [node, onNodeClick]
   );
 
   const handleFolderCreation = (event) => {
@@ -349,20 +350,6 @@ const Folder = ({ id, name, children, node, root}) => {
     setIsEditing(true);
   };
 
-  // handle hover over className="AddFolder"
-  useEffect(() => {
-    const handleMouseOverForAddFolder = (event) => {
-      if (event.target.className === "AddFolder") {
-        // Show a box with the text "Add Topic" in it
-        console.log("Mouse Over Add Folder");
-      }
-    };
-    document.addEventListener("mouseover", handleMouseOverForAddFolder);
-    return () => {
-      document.removeEventListener("mouseover", handleMouseOverForAddFolder);
-    };
-  }, []);
-
   const tooltip_style= {
     zIndex: 9999, 
     position: "absolute", 
@@ -378,7 +365,7 @@ const Folder = ({ id, name, children, node, root}) => {
           <ActionsWrapper>
             {/* {root ? (<div style={{marginRight: "15px"}} >></div>) : null} */}
             {/* {node.tag.length ? (<Dropdown node={node}/>): null} */}
-            <div ref={editTextBox}>
+            {/* <div ref={editTextBox}> */}
             {isEditing ? (
               <PlaceholderInput
                 style={{ paddingLeft: 0}}
@@ -402,7 +389,7 @@ const Folder = ({ id, name, children, node, root}) => {
                 handleNodeClick={handleNodeClick}
               />
             )}
-            </div>
+            {/* </div> */}
 
             <div className="actions">
               {/* {root ? null : node.isHighlighted ?

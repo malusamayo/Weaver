@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FaBan } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+// import { FaBan } from "react-icons/fa";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
@@ -10,16 +10,17 @@ import {
     BiAddToQueue
 }   from "react-icons/bi";
 
-import { useTreeContext } from "../state/TreeContext";
+// import { useTreeContext } from "../state/TreeContext";
 import {fetchAPIDATA} from "../../utils";
+// import { set } from "lodash";
 
-const ExamplePanelOff = () => {
-    return (
-        <div>
-            <FaBan style={{fontSize: "20px", opacity: "1", color: "rgb(197, 143, 59)", fontWeight: "bold", cursor: "pointer"}}/>
-        </div>
-    );
-}
+// const ExamplePanelOff = () => {
+//     return (
+//         <div>
+//             <FaBan style={{fontSize: "20px", opacity: "1", color: "rgb(197, 143, 59)", fontWeight: "bold", cursor: "pointer"}}/>
+//         </div>
+//     );
+// }
 
 const ExamplePanelPass = () => {
     return (
@@ -39,9 +40,9 @@ const ExamplePanelFail = () => {
     );
 }
 
-const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExample, isSuggested, commitDeleteRow, commitUpdateExampleSuggested}) => {
+const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, commitDeleteRow, commitUpdateExampleSuggested, commitUpdateExample}) => {
 
-    const [example, setExample] = useState(null);
+    // const [example, setExample] = useState(null);
 
     // For editing the example text
     const [isEditingExampleText, setIsEditingExampleText] = useState(false);
@@ -52,89 +53,65 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExam
     const [exampleOutput, setExampleOutput] = useState(exampleData.exampleTrue);
     const [examplePredicted, setExamplePredicted] = useState(exampleData.examplePredicted);
 
-    const [offTopic, setOffTopic] = useState(exampleData.exampleOffTopic);
+    // const [offTopic, setOffTopic] = useState(exampleData.exampleOffTopic);
     const [pass, setPass] = useState(exampleData.exampleTrue === exampleData.examplePredicted);
     const [fail, setFail] = useState(exampleData.exampleTrue !== exampleData.examplePredicted);
     // const { setIsLoading } = useTreeContext();
 
     useEffect(() => {
-        if (example) {
-            setExample(exampleData);
-            // setExampleOutput(exampleData.exampleTrue);
-            if (exampleData.exampleOffTopic === true) {
-                setOffTopic(true);
-                setPass(false);
-                setFail(false);
-            } else if (exampleOutput === exampleData.examplePredicted) {
-                setOffTopic(false);
-                setPass(true);
-                setFail(false);
-            } else {
-                setOffTopic(false);
-                setPass(false);
-                setFail(true);
-            }
-            console.log("example: ", example);
-        }
-    });
-
-    
-
-    useEffect(() => {
-        if (exampleData.exampleOffTopic === true) {
-            setOffTopic(true);
-            setPass(false);
-            setFail(false);
-        } else if (exampleOutput === exampleData.examplePredicted) {
-            setOffTopic(false);
+        if (exampleOutput === examplePredicted) {
             setPass(true);
             setFail(false);
+            // setOffTopic(false);
         } else {
-            setOffTopic(false);
             setPass(false);
             setFail(true);
+            // setOffTopic(false);
         }
-    }, [exampleOutput]);
+    }, [exampleOutput, examplePredicted]);
 
     useEffect(() => {
-        if (offTopic === true) {
-            setPass(false);
-            setFail(false);
-        } else if (exampleOutput === exampleData.examplePredicted) {
-            setOffTopic(false);
-            setPass(true);
-            setFail(false);
+        if (selectedRow !== exampleData.id) {
+            setIsEditingExampleText(false);
+            setIsEditingExampleOutput(false);
         } else {
-            setOffTopic(false);
-            setPass(false);
-            setFail(true);
+            console.log("selectedRow: ", selectedRow);
         }
-    }, [offTopic]);
+    }, [exampleData.id, selectedRow]);
+
+    // const textRef = useRef();
+
+    // useEffect(() => {
+    //     function handleClickOutside(event) {
+    //       if (isEditingExampleText && textRef.current && !textRef.current.contains(event.target)) {
+    //         commitEditUpdate({isText: true});
+    //       }
+    //     }
+      
+    //     document.addEventListener("mousedown", handleClickOutside);
+    //     return () => {
+    //       document.removeEventListener("mousedown", handleClickOutside);
+    //     };
+    //   }, [isEditingExampleText]);
 
     const handleRowSelect = () => {
         setSelectedRow(exampleData.id);
     }
 
-    const commitOffTopic = () => {
-        const newOfftopic = !offTopic;
-        setOffTopic(newOfftopic);
-        // commitUpdateRowOutput(exampleData, "");
-        commitExampleStatus(exampleData, newOfftopic);
-    };
+    // const commitOffTopic = () => {
+    //     const newOfftopic = !offTopic;
+    //     setOffTopic(newOfftopic);
+    //     // commitUpdateRowOutput(exampleData, "");
+    //     commitExampleStatus(exampleData, newOfftopic);
+    // };
 
     const commitPass = () => {
         setExampleOutput(exampleData.examplePredicted);
-        setPass(true);
-        setFail(false);
-        setOffTopic(false);
         commitUpdateRowOutput(exampleData, exampleData.examplePredicted);
     };
 
     const commitFail = () => {
         setExampleOutput("");
-        setPass(false);
-        setFail(true);
-        setOffTopic(false);
         commitUpdateRowOutput(exampleData, "");
     };
 
@@ -151,7 +128,6 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExam
     }
 
     const handleExampleTextKeyDown = (event) => {
-        console.log(event)
         if (event.key === "Escape" || ((event.shiftKey) && event.key === 'Enter')) {
             console.log(exampleText)
             commitUpdateRowText(exampleData, exampleText);
@@ -176,7 +152,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExam
     }
 
     const handleAddSuggested = () => {
-        exampleData.isSuggested = !exampleData.isSuggested;
+        exampleData = {...exampleData, isSuggested: false};
         commitUpdateExampleSuggested(exampleData, false);    
     }
 
@@ -191,30 +167,6 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExam
     // const handleExampleFailClick = () => {
     //     commitExampleStatus(false, false, true);
     // }
-
-
-    // useEffect(() => {
-    //     const handleKeyDown = (event) => {
-    //         if (event.key === "Escape" || event.key === "Enter") {
-    //             event.stopPropagation();
-    //             setIsEditingExampleText(false);
-    //             setIsEditingExampleOutput(false);
-    //         }
-    //     };
-    //     window.addEventListener("keydown", handleKeyDown);
-    //     return () => {
-    //         window.removeEventListener("keydown", handleKeyDown);
-    //     };
-    // }, []);
-
-    useEffect(() => {
-        if (selectedRow !== exampleData.id) {
-            setIsEditingExampleText(false);
-            setIsEditingExampleOutput(false);
-        } else {
-            console.log("selectedRow: ", selectedRow);
-        }
-    }, [selectedRow]);
 
     const commitUpdateRowText = async (example, text) => {
         try {
@@ -249,21 +201,21 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExam
         }
     };
 
-    const commitExampleStatus = async (example, offTopicSelection) => {
-        try {
-            const newExampleData = await fetchAPIDATA("updateExample", {
-                "nodeId": nodeId,
-                "exampleId": example.id,
-                "exampleText": example.exampleText,
-                "exampleTrue": example.exampleTrue,
-                "isSuggested": example.isSuggested,
-                "exampleOffTopic": offTopicSelection
-            }, true);
-            commitUpdateExample(newExampleData);
-        } catch (error) {
-            console.log("Error: ", error);
-        }
-    };
+    // const commitExampleStatus = async (example, offTopicSelection) => {
+    //     try {
+    //         const newExampleData = await fetchAPIDATA("updateExample", {
+    //             "nodeId": nodeId,
+    //             "exampleId": example.id,
+    //             "exampleText": example.exampleText,
+    //             "exampleTrue": example.exampleTrue,
+    //             "isSuggested": example.isSuggested,
+    //             "exampleOffTopic": offTopicSelection
+    //         }, true);
+    //         commitUpdateExample(newExampleData);
+    //     } catch (error) {
+    //         console.log("Error: ", error);
+    //     }
+    // };
 
     const editSpecialCSSText = {
         width: "100%", 
@@ -288,7 +240,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, commitUpdateExam
 
 
     return (
-            <tr onClick={() => handleRowSelect()} 
+            <tr onClick={handleRowSelect}
             
                 style={
                     selectedRow === exampleData.id ?

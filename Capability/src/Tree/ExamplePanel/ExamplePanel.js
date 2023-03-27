@@ -1,13 +1,8 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { Tooltip } from 'react-tooltip';
 import {fetchAPIDATA} from "../../utils";
-import { examplePanel } from "./ExamplePanel.css";
-import { HiOutlineBan } from "react-icons/hi";
-import { FaLongArrowAltRight } from "react-icons/fa";
+import "./ExamplePanel.css";
 import { GoDiffAdded } from "react-icons/go";
-import { BiRefresh } from "react-icons/bi";
-import { TiTick } from "react-icons/ti";
-import { ImCross } from "react-icons/im";
 import { Row } from "./Row";
 import { v4 as uuidv4 } from "uuid";
 import { useTreeContext } from "../state/TreeContext";
@@ -24,18 +19,54 @@ const ExamplePanel = ({node}) => {
     
 
     useEffect(() => {
+
+        const commitGetExample = async () => {
+            try {
+                setIsLoading(true);
+                // console.log("Getting examples for node");
+                const newDataExamples = await fetchAPIDATA("getExampleList", {
+                    "nodeId": node.node.id
+                });
+    
+                setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+                setIsLoading(false);
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        };
+
         if (node) {
             setSelectedNodeExamples([]);
             setSelectedNode(node.node);
             commitGetExample();
         }
-    }, [node]);
+    }, [node, setIsLoading]);
 
     useLayoutEffect(() => {
+
+        const commitGetExample = async () => {
+            try {
+                setIsLoading(true);
+                
+                // [TODO] make sure they always equal
+                // if (node.node.id !== selectedNode.id) {
+                //     console.log("Getting examples for node", node, selectedNode);
+                // }
+                const newDataExamples = await fetchAPIDATA("getExampleList", {
+                    "nodeId": selectedNode.id
+                }); 
+    
+                setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+                setIsLoading(false);
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        };
+
         if (selectedNode) {
             commitGetExample();
         }
-    }, [selectedNode]);
+    }, [selectedNode, setIsLoading]);
 
     useEffect(() => {
         const examplePanelContainer = divRef.current;
@@ -76,38 +107,6 @@ const ExamplePanel = ({node}) => {
         );
         return sortedSelectedNodeExamples;
     }
-    const commitGetExample = async () => {
-        try {
-            setIsLoading(true);
-            // console.log("Getting examples for node");
-            const newDataExamples = await fetchAPIDATA("getExampleList", {
-                "nodeId": node.node.id
-            });
-
-            // If there are no examples, add a blank row
-
-            // Count the number of examples that are not suggested
-            let countNotSuggested = 0;
-            for (let i = 0; i < newDataExamples.length; i++) {
-                if (newDataExamples[i].isSuggested === false) {
-                    countNotSuggested++;
-                }
-            }
-
-            // if (countNotSuggested === 0) {
-            //     const blankRow = blankRowAdd("Click \"Add\" to add an example");
-            //     // setSelectedNodeExamples([blankRow]);
-            //     setSelectedNodeExamples([...newDataExamples, blankRow]);
-            // } else {
-            //     setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
-            // }
-
-            setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
-            setIsLoading(false);
-        } catch (error) {
-            console.log("Error: ", error);
-        }
-    };
 
     const commitAddBlankRow = async (blankRow) => {
 
@@ -296,7 +295,7 @@ const ExamplePanel = ({node}) => {
             console.log("Node: ", selectedNode.id);
             console.log("Example: ", updatedExample);
             console.log("Setting isSuggested to: ", isSuggested);
-            const _ = await fetchAPIDATA("updateExample", {
+            await fetchAPIDATA("updateExample", {
                 "nodeId": selectedNode.id, 
                 "exampleId": updatedExample.id,
                 "exampleText": updatedExample.exampleText,
@@ -325,7 +324,7 @@ const ExamplePanel = ({node}) => {
             try {
                 setIsLoading(true);
 
-                const _ = await fetchAPIDATA("removeExample", {
+                await fetchAPIDATA("removeExample", {
                     "nodeId": selectedNode.id,
                     "exampleId": selectedRow
                 }, true);
@@ -377,6 +376,14 @@ const ExamplePanel = ({node}) => {
         }
     };
 
+    // const handleRowKeyDown = (event) => {
+    //     console.log(event)
+    //     if ((event.metaKey || event.ctrlKey) && event.key === "Backspace") {
+    //         commitDeleteRow(selectedRow);
+    //     }
+
+    // }
+
     const SuggestedTable = ({selectedNodeExamples}) => {
         return selectedNodeExamples.map((example, index) => {
                 // console.log("example: ", example);
@@ -394,6 +401,8 @@ const ExamplePanel = ({node}) => {
                             commitUpdateExampleSuggested={commitUpdateExampleSuggested}
                         />
                     )
+                } else {
+                    return null;
                 }
         })
     };
@@ -415,6 +424,8 @@ const ExamplePanel = ({node}) => {
                         commitUpdateExampleSuggested={commitUpdateExampleSuggested}
                     />
                 )
+            } else {
+                return null;
             }
         })
     };

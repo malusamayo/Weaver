@@ -1,113 +1,107 @@
-import React, { useReducer, useLayoutEffect, useState, useEffect, useRef } from "react";
+import React, { useReducer, useLayoutEffect, useState, useEffect, useRef, useCallback } from "react";
 import { Tooltip } from 'react-tooltip';
 import { ThemeProvider } from "styled-components";
 import { AiFillHome } from "react-icons/ai";
 import { GoArrowLeft } from "react-icons/go";
 import { BsToggleOff, BsToggleOn } from "react-icons/bs";
-import { useDidMountEffect } from "../utils";
+// import { useDidMountEffect } from "../utils";
 import { TreeContext, reducer } from "./state";
 import {fetchAPIDATA} from "../utils";
 import { StyledTree, TreeActionsWrapper } from "./Tree.style";
 import { Folder } from "./Folder/TreeFolder";
-import { loading } from "./Loading.css";
-import { AnimatedMultiTagging } from "./Tag/tag";
+import "./Loading.css";
+// import { AnimatedMultiTagging } from "./Tag/tag";
 import { ExamplePanel } from "./ExamplePanel/ExamplePanel";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // import react bootstrap components for row, column and container
 import { Row, Col } from 'react-bootstrap';
 
-const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
+const Tree = ({data}) => {
 
   const [state, dispatch] = useReducer(reducer, data);
-  const [selection, setSelection] = useState("/");
+  // const [selection, setSelection] = useState("/");
   const [isLoading, setIsLoading] = useState(false);
   const [isBackButtonActive, setIsBackButtonActive] = useState(true);
   const [toggleIsHighlighted, setToggleIsHighlighted] = useState(false);
-  const [selectedNode, setSelectedNode] = useState(null);
   const [toggleExamplePanel, setToggleExamplePanel] = useState(true);
+  const [selectedNode, setSelectedNode] = useState(null);
 
+  useEffect(() => {
+    commitBackAvailability();
+  });
 
-  const commitBackState = async() => {
+  // render exactly once on mount
+  useEffect(() => {
+    const commitToggleIsHighlightedSelection = async () => {
+      try {
+        const initToggleIsHighlighted = await fetchAPIDATA("toggleIsHighlightedSelection");
+        setToggleIsHighlighted(initToggleIsHighlighted);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    commitToggleIsHighlightedSelection();
+  }, []);
+
+  // render exactly once on mount
+  useLayoutEffect(() => {
+    console.log("state: ", data);
+    dispatch({ type: "SET_DATA", payload: data });
+  }, [data]);
+
+  // useDidMountEffect(() => {
+  //   console.log("state: ", state);
+  //   onUpdate && onUpdate(state);
+  // }, [state]);
+
+  
+  useEffect(() => {
+    // Add event listener to scroll of id site and 
+    // call handleDivRefFloat function on scroll but
+    // limit the call to once every 100ms using setTimeout
+
+    if (document.getElementById("site")) {
+      let parentContainer = document.getElementById("site");
+      parentContainer.addEventListener("scroll", () => {
+        setTimeout(() => {
+          handleDivRefFloat();
+        }, 10);
+      });
+    } else if (document.getElementsByClassName("jp-NotebookPanel-notebook")[0]) {
+      let parentContainer = document.getElementsByClassName("jp-NotebookPanel-notebook")[0];
+      parentContainer.addEventListener("scroll", () => {
+        setTimeout(() => {
+          handleDivRefFloat();
+        }, 10);
+      });
+    }
+
+    return () => {
+      if (document.getElementById("site")) {
+        let parentContainer = document.getElementById("site");
+        parentContainer.removeEventListener("scroll", handleDivRefFloat);
+      } else if (document.getElementsByClassName("jp-Notebook")[0]) {
+        let parentContainer = document.getElementsByClassName("jp-Notebook")[0];
+        parentContainer.removeEventListener("scroll", handleDivRefFloat);
+      }
+    };
+  });
+
+  const commitBackState = useCallback( async() => {
     try {
       setIsLoading(true);
 
       const newData = await fetchAPIDATA("previousState");
       dispatch({ type: "SET_DATA", payload: newData });
-      setData(newData);
+      // setData(newData);
       // console.log("going back to: ", newData);
 
       setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
-  };
-
-  const commitToggleIsHighlighted = async(toggleIsHighlighted) => {
-    try {
-
-      setIsLoading(true);
-
-      const newData = await fetchAPIDATA("getTopics", {
-        'isHighlighted' : toggleIsHighlighted
-      });
-      dispatch({ type: "SET_DATA", payload: newData });
-      setData(newData);
-
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const commitSelection = async (path) => {
-    try {
-      setSelection(path)
-      // console.log("path: ", path);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const commitBackAvailability = async () => {
-    try {
-      const isBackAvailable = await fetchAPIDATA("isBackAvailable");
-      setIsBackButtonActive(isBackAvailable);
-      // console.log("isBackAvailable: ", isBackAvailable);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const commitToggleIsHighlightedSelection = async () => {
-    try {
-      const toggleIsHighlighted = await fetchAPIDATA("toggleIsHighlightedSelection");
-      setToggleIsHighlighted(toggleIsHighlighted);
-      // console.log("toggleIsHighlighted: ", toggleIsHighlighted);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const commitToggleExamplePanel = async (value) => {
-    setToggleExamplePanel(!toggleExamplePanel);
-  };
-
-  useEffect(() => {
-    commitBackAvailability();
-  });
-
-  useEffect(() => {
-    commitToggleIsHighlightedSelection();
-  });
-
-  useLayoutEffect(() => {
-    dispatch({ type: "SET_DATA", payload: data });
-  }, [data]);
-
-  useDidMountEffect(() => {
-    onUpdate && onUpdate(state);
-  }, [state]);
+  }, []);
 
   // handle cmd + z ctrl + z to go back
   useEffect(() => {
@@ -120,9 +114,52 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [commitBackState]);
 
-  const isImparative = data && !children;
+  const commitToggleIsHighlighted = async() => {
+    try {
+
+      setIsLoading(true);
+
+      const newToggleIsHighlighted = !toggleIsHighlighted;
+      setToggleIsHighlighted(newToggleIsHighlighted);
+
+      const newData = await fetchAPIDATA("getTopics", {
+        'isHighlighted' : newToggleIsHighlighted
+      });
+      dispatch({ type: "SET_DATA", payload: newData });
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // const commitSelection = async (path) => {
+  //   try {
+  //     setSelection(path)
+  //     // console.log("path: ", path);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const commitBackAvailability = async () => {
+    try {
+      const isBackAvailable = await fetchAPIDATA("isBackAvailable");
+      setIsBackButtonActive(isBackAvailable);
+      // console.log("isBackAvailable: ", isBackAvailable);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const commitToggleExamplePanel = async (value) => {
+    setToggleExamplePanel(toggleExamplePanel => !toggleExamplePanel);
+  };
+
+
+  // const isImparative = data && !children;
 
   const tooltip_style= {
     zIndex: 9999, 
@@ -202,38 +239,6 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
     }
   };
 
-  useEffect(() => {
-    // Add event listener to scroll of id site and 
-    // call handleDivRefFloat function on scroll but
-    // limit the call to once every 100ms using setTimeout
-
-    if (document.getElementById("site")) {
-      let parentContainer = document.getElementById("site");
-      parentContainer.addEventListener("scroll", () => {
-        setTimeout(() => {
-          handleDivRefFloat();
-        }, 10);
-      });
-    } else if (document.getElementsByClassName("jp-NotebookPanel-notebook")[0]) {
-      let parentContainer = document.getElementsByClassName("jp-NotebookPanel-notebook")[0];
-      parentContainer.addEventListener("scroll", () => {
-        setTimeout(() => {
-          handleDivRefFloat();
-        }, 10);
-      });
-    }
-
-    return () => {
-      if (document.getElementById("site")) {
-        let parentContainer = document.getElementById("site");
-        parentContainer.removeEventListener("scroll", handleDivRefFloat);
-      } else if (document.getElementsByClassName("jp-Notebook")[0]) {
-        let parentContainer = document.getElementsByClassName("jp-Notebook")[0];
-        parentContainer.removeEventListener("scroll", handleDivRefFloat);
-      }
-    };
-  });
-
   return (
     <div>
       {
@@ -246,14 +251,14 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
           <ThemeProvider theme={{ indent: 20 }}>
               <TreeContext.Provider
                 value={{
-                  isImparative,
+                  // isImparative,
                   state,
                   dispatch,
                   setIsLoading: setIsLoading,
                   onNodeClick: (node) => {
-                    commitSelection(node.node.naturalLanguagePath);
+                    // commitSelection(node.node.naturalLanguagePath);
                     commitBackAvailability();
-                    onNodeClick && onNodeClick(node);
+                    // onNodeClick && onNodeClick(node);
                     setSelectedNode(node);
                   },
                   selectedNode: selectedNode,
@@ -277,15 +282,15 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
                     Highlighted Topics Only
                     {/* <div style={{margin: "5px 0 0 50px"}}> */}
                       {toggleIsHighlighted ?
-                        (<BsToggleOn size={25} onClick={() => commitToggleIsHighlighted(false)} id="toggle-highlighted-off"  style={{margin: "0px 15px 0 5px"}}/>) :
-                        (<BsToggleOff size={25} onClick={() => commitToggleIsHighlighted(true)} id="toggle-highlighted-on"  style={{margin: "0px 15px 0 5px"}}/>)
+                        (<BsToggleOn size={25} onClick={commitToggleIsHighlighted} id="toggle-highlighted-off"  style={{margin: "0px 15px 0 5px"}}/>) :
+                        (<BsToggleOff size={25} onClick={commitToggleIsHighlighted} id="toggle-highlighted-on"  style={{margin: "0px 15px 0 5px"}}/>)
                       }
                     {/* </div> */}
                     Show Example Panel
                     {/* <div style={{margin: "5px 0 0 50px", justifyContent: "auto"}}> */}
                       {toggleExamplePanel ?
-                        (<BsToggleOn size={25} onClick={() => commitToggleExamplePanel(false)} id="toggle-example-panel-off"  style={{margin: "0px 0 0 5px"}}/>) :
-                        (<BsToggleOff size={25} onClick={() => commitToggleExamplePanel(true)} id="toggle-example-panel-on" style={{margin: "0px 0 0 5px"}}/>)
+                        (<BsToggleOn size={25} onClick={commitToggleExamplePanel} id="toggle-example-panel-off"  style={{margin: "0px 0 0 5px"}}/>) :
+                        (<BsToggleOff size={25} onClick={commitToggleExamplePanel} id="toggle-example-panel-on" style={{margin: "0px 0 0 5px"}}/>)
                       }
                     {/* </div> */}
                   </div>
@@ -302,11 +307,12 @@ const Tree = ({ children, data, onNodeClick, onUpdate, setData}) => {
               <Col xs="auto"> 
                {/* style={{overflowY:"scroll", maxHeight:"calc(100vh - 100px)"}}> */}
                 <StyledTree>
-                  {isImparative ? (
+                  <TreeRecusive data={state} parentNode={state} root={true}/>
+                  {/* {isImparative ? (
                     <TreeRecusive data={state} parentNode={state} root={true}/>
                   ) : (
                     children
-                  )}
+                  )} */}
                 </StyledTree>
               </Col>
               {/* </Scroll> */}

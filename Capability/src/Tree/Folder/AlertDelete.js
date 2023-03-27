@@ -22,6 +22,7 @@ const AlertDelete = ({ node, onConfirm, setIsDeleting, isDeleting}) => {
         };
         document.addEventListener("keydown", handleEscape);
         return () => document.removeEventListener("keydown", handleEscape);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useLayoutEffect(() => {

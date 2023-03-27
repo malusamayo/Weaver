@@ -1,5 +1,3 @@
-import { useRef, useEffect } from "react";
-
 
 export const fetchAPIDATA = async (method, data={}, isPost=false) => {
   try {
@@ -15,7 +13,7 @@ export const fetchAPIDATA = async (method, data={}, isPost=false) => {
     } : null;
     
     let newData = null;
-    if (method == 'updateExample') {
+    if (method === 'updateExample') {
       newData = await fetch(process.env.REACT_APP_BACKEND_SERVER_URL + method, fetchData);
     } else if (queryString.length > 0) {
       newData = await fetch(process.env.REACT_APP_BACKEND_SERVER_URL + method + '?' + queryString, fetchData);
@@ -96,13 +94,13 @@ export const searchDFS = ({ data, cond, childPathKey = "children" }) => {
   };
 };
 
-export const useDidMountEffect = (func, deps) => {
-  const didMount = useRef(false);
+// export const useDidMountEffect = (func, deps) => {
+//   const didMount = useRef(false);
 
-  useEffect(() => {
-    if (didMount.current) func();
-    else didMount.current = true;
-  }, deps);
-};
+//   useEffect(() => {
+//     if (didMount.current) func();
+//     else didMount.current = true;
+//   }, deps);
+// };
 
 export const createFolder = ({ name }) => ({ name, type: "folder", files: [] });

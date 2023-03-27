@@ -21,6 +21,10 @@ const reducer = (state, action) => {
     case "SET_DATA":
       return action.payload;
 
+    // [TODO] - reduce cost of updating folder
+    case FOLDER.REFRESH:
+      return action.payload;
+
     case FOLDER.CREATE:
       node.files.push(createFolder({ name: action.payload.name }));
       return newState;

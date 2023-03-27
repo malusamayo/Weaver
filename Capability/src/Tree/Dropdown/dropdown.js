@@ -1,7 +1,7 @@
 import React, { useState, useLayoutEffect } from "react";
 import { useTreeContext } from "../state/TreeContext";
 import {fetchAPIDATA} from "../../utils";
-import { dropdown } from "./dropdown.css";
+import "./dropdown.css";
 
 // create a const array of relationships and map through it to create a dropdown item for each relationship
 const relationships = [

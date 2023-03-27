@@ -450,14 +450,14 @@ class Tree:
         with open(filename, 'w') as f:
             json.dump(master_JSON, f, indent=4)
     
-    def load_last_state(self, filename: str):
+    def load_last_state(self):
         (path, fname) = self.state.getLatestState()
         if fname == None:
             return
         self.number_of_topics = 0
         self.nodes = {}
         self.read_json(path + fname)
-        self.write_json(filename, updateState=False)
+        self.write_json(updateState=False)
         self.state.deleteLatestState()
     
     def is_back_available(self):

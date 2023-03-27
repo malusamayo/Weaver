@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { v4 } from "uuid";
-import { AiOutlineFile } from "react-icons/ai";
+// import { AiOutlineFile } from "react-icons/ai";
 import { FolderName } from "./Folder/TreeFolder";
 import { StyledFolder } from "./Folder/TreeFolder.style";
 
@@ -40,25 +40,38 @@ const PlaceholderInput = ({
   type,
   handleNodeClick
 }) => {
-  const [ext, setExt] = useState("");
+  // const [ext, setExt] = useState("");
   const inputRef = useRef();
 
-  const updateExt = (e) => {
-    let splitted = e.target.value.split(".");
-    let ext = splitted && splitted[splitted.length - 1];
-    setExt(ext);
-  };
+  // const updateExt = (e) => {
+  //   let splitted = e.target.value.split(".");
+  //   let ext = splitted && splitted[splitted.length - 1];
+  //   setExt(ext);
+  // };
 
   useEffect(() => {
     if (!inputRef.current) return;
     inputRef.current.focus();
     inputRef.current.addEventListener("keyup", (e) => {
-      if (e.key === "Enter") onSubmit(e.target.value);
+      if ((e.shiftKey) && e.key === "Enter") onSubmit(e.target.value);
       if (e.key === "Escape") {
         onCancel && onCancel();
       }
     });
-  }, [inputRef]);
+  }, [onCancel, onSubmit]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (isEditing && inputRef.current && !inputRef.current.contains(event.target)) {
+        onCancel && onCancel();
+      }
+    }
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isEditing, onCancel]);
 
   // console.log("PlaceholderInput", defaultValue, node, type)
   return (
