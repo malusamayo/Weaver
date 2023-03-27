@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { Tooltip } from 'react-tooltip';
 import {
   AiOutlineFolder,
@@ -93,7 +93,7 @@ const StyledRelation = ({node, nodeTag}) => {
   )
 }
 
-const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing, type, setNodeHighlighted}) => {
+const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighted, node, isEditing, setIsEditing, type, setNodeHighlighted}) => {
 
   if (type === "specialAddSuggestion") {
     return (
@@ -144,12 +144,14 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
           <RiCheckboxBlankCircleLine onClick={handleNodeHighlight} id="show-subtopic"/>
       }
       </div>
-      {!isEditing ? 
-        node.nl_tag.length > 0 ? node.nl_tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>) : null :
-        node.nl_tag.length ? (<Dropdown node={node}/>): null
+      {
+        node.nl_tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>)
+      // !isEditing ? 
+      //   node.nl_tag.length > 0 ? node.nl_tag.map((tag, index) => <StyledRelation node={node} nodeTag={tag} key={index}/>) : null :
+      //   node.nl_tag.length ? (<Dropdown node={node}/>): null
       }
       &nbsp;&nbsp;
-      <div id={anchor_id} st>
+      <div id={anchor_id} onDoubleClick={handleDoubleClick}>
         {name}
       </div>
       {/* <Tooltip place="top" anchorSelect={"#" + anchor_id} content={node.naturalLanguagePath} style={tooltip_style}/> */}
@@ -165,13 +167,29 @@ const FolderName = ({ isOpen, name, handleClick, isHighlighted, node, isEditing,
 
 const Folder = ({ id, name, children, node, root}) => {
   const { dispatch, onNodeClick, setIsLoading } = useTreeContext();
-  const [isEditing, setEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [isOpen, setIsOpen] = useState(node.isOpen);
   const [childs, setChilds] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Setting new const here
   const [tag, setTags] = useState(node.nl_tag);
+
+
+  const editTextBox = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (isEditing && editTextBox.current && !editTextBox.current.contains(event.target)) {
+        handleCancel();
+      }
+    }
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isEditing]);
 
   const setNodeOpen = async (open) => {
     try {
@@ -232,7 +250,7 @@ const Folder = ({ id, name, children, node, root}) => {
         "nodeTag": "RELATEDTO"
       }, true);
       dispatch({ type: "SET_DATA", payload: newData });
-      setEditing(false);
+      setIsEditing(false);
     } catch (error) {
       console.error(error);
     }
@@ -243,7 +261,7 @@ const Folder = ({ id, name, children, node, root}) => {
         "nodeId": node.id
       }, true);
       dispatch({ type: "SET_DATA", payload: newData });
-      setEditing(false);
+      setIsEditing(false);
     } catch (error) {
       console.error(error);
     }
@@ -263,14 +281,16 @@ const Folder = ({ id, name, children, node, root}) => {
     }
   };
 
-  const commitFolderEdit = async (name) => {
+  const commitFolderEdit = async (edit_name) => {
     try {
-      const newData = await fetchAPIDATA("editFolderName", {
-        "nodeId": node.id,
-        "newName": name
-      }, true);
-      dispatch({ type: "SET_DATA", payload: newData });
-      setEditing(false);
+      if (name !== edit_name) {
+        const newData = await fetchAPIDATA("editFolderName", {
+          "nodeId": node.id,
+          "newName": edit_name
+        }, true);
+        dispatch({ type: "SET_DATA", payload: newData });
+      }
+      setIsEditing(false);
     } catch (error) {
       console.error(error);
     }
@@ -284,7 +304,7 @@ const Folder = ({ id, name, children, node, root}) => {
         "nodeId": id
       });
       dispatch({ type: "SET_DATA", payload: newData });
-      setEditing(false);
+      setIsEditing(false);
       setIsLoading(false);
     } catch (error) {
       console.error(error);
@@ -292,7 +312,7 @@ const Folder = ({ id, name, children, node, root}) => {
   };
 
   const handleCancel = () => {
-    setEditing(false);
+    setIsEditing(false);
     setChilds([children]);
   };
 
@@ -322,8 +342,8 @@ const Folder = ({ id, name, children, node, root}) => {
   };
 
   const handleFolderRename = () => {
-    setNodeOpen(true)
-    setEditing(true);
+    // setNodeOpen(true)
+    setIsEditing(true);
   };
 
   // handle hover over className="AddFolder"
@@ -355,6 +375,7 @@ const Folder = ({ id, name, children, node, root}) => {
           <ActionsWrapper>
             {/* {root ? (<div style={{marginRight: "15px"}} >></div>) : null} */}
             {/* {node.tag.length ? (<Dropdown node={node}/>): null} */}
+            <div ref={editTextBox}>
             {isEditing ? (
               <PlaceholderInput
                 style={{ paddingLeft: 0}}
@@ -373,8 +394,10 @@ const Folder = ({ id, name, children, node, root}) => {
                 setNodeHighlighted={setNodeHighlighted}
                 node={node}
                 handleClick={() => setNodeOpen(!isOpen)}
+                handleDoubleClick={handleFolderRename}
               />
             )}
+            </div>
 
             <div className="actions">
               {/* {root ? null : node.isHighlighted ?

@@ -4,12 +4,12 @@ import { AiOutlineFile } from "react-icons/ai";
 import { FolderName } from "./Folder/TreeFolder";
 import { StyledFolder } from "./Folder/TreeFolder.style";
 
-const FolderEdit = ({ name, inputRef, defaultValue, style, isHighlighted, node, isEditing, type}) => {
-  console.log("FolderEdit", defaultValue, node, type)
+const FolderEdit = ({ name, inputRef, defaultValue, style, isHighlighted, node, isEditing, setIsEditing, type}) => {
+  // console.log("FolderEdit", defaultValue, node, type)
   return (
     <StyledFolder id={v4()} name={name} style={style}>
       <FolderName
-        isOpen={true}
+        isOpen={node.isOpen}
         handleClick={() => {}}
         isHighlighted={isHighlighted}
         name={
@@ -22,6 +22,7 @@ const FolderEdit = ({ name, inputRef, defaultValue, style, isHighlighted, node, 
         node={node}
         isEditing={isEditing}
         type={type}
+        setIsEditing={setIsEditing}
       />
     </StyledFolder>
   );
@@ -58,7 +59,7 @@ const PlaceholderInput = ({
     });
   }, [inputRef]);
 
-  console.log("PlaceholderInput", defaultValue, node, type)
+  // console.log("PlaceholderInput", defaultValue, node, type)
   return (
     <FolderEdit
       style={style}
