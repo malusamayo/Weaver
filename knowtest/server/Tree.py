@@ -54,7 +54,7 @@ class Tree:
     def reset_state(self):
         self.state = StateStack(self.stateDirectory)
 
-    def add_node(self, node: Node, addAfter: str=None, user_added: bool=False) -> bool:
+    def add_node(self, node: Node, addAfter: str=None, user_added: bool=False, init_pass: bool=False) -> bool:
         if self.number_of_topics == 0:
             self.number_of_topics += 1
 
@@ -76,7 +76,8 @@ class Tree:
         if node.parent_id in self.nodes:
             self.nodes[node.id] = node
 
-            self.nodes[node.parent_id].isOpen = True
+            if init_pass:
+                self.nodes[node.parent_id].isOpen = True
 
             if addAfter is None:
                 self.nodes[node.parent_id].children.append(node.id)
@@ -109,6 +110,7 @@ class Tree:
         tree = self.generate_tree_helper(self.root, sorting)
         tree["isHighlighted"] = True
         tree = [tree]
+        print('Generation complete.')
         return tree
 
     def generate_tree_helper(self, node: Node, sorting: bool=False) -> dict:
@@ -409,7 +411,7 @@ class Tree:
                     temp_node = Node(name=node_data['topic'], 
                                      parent_id=parent_id, 
                                      tags=[node_data['relation']])
-                    self.add_node(temp_node)
+                    self.add_node(temp_node, init_pass=True)
 
                     # self.kg.add_node(node_data["topic"], 
                     #                  node_data["parent"], 
@@ -419,6 +421,9 @@ class Tree:
 
     def read_json(self, filename: str):
         try:
+            # reset the tree
+            self.number_of_topics = 0
+            self.nodes = {}
             with open(filename, 'r') as f:
                 master_JSON = json.load(f)
                 for node in master_JSON:
