@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useCallback } from "react";
+import React, {useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { Tooltip } from 'react-tooltip';
 import {
   AiOutlineFolder,
@@ -173,8 +173,12 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
 //     <p onClick={commitSuggestions}>... Add Topics</p>
 //   );
 // }
+// function areEqual(prevProps, nextProps) {
+//   // Only update if the 'name' or 'age' prop has changed
+//   return prevProps.name === nextProps.name;
+// }
 
-const Folder = ({ id, name, children, node, root}) => {
+const Folder = React.memo(({ id, name, children, node, root}) => {
   const { dispatch, onNodeClick, setIsLoading } = useTreeContext();
   const [isEditing, setIsEditing] = useState(false);
   const [isOpen, setIsOpen] = useState(node.isOpen);
@@ -187,6 +191,7 @@ const Folder = ({ id, name, children, node, root}) => {
 
 
   useEffect(() => {
+    // console.log("updated")
     setChilds([children]);
   }, [children]);
 
@@ -206,10 +211,11 @@ const Folder = ({ id, name, children, node, root}) => {
 
   const setNodeOpen = async (open) => {
     try {
-      if (open) {
-        setIsLoading(true);
-      }
+      // if (open) {
+      setIsLoading(true);
+      // }
 
+      console.log("setNodeOpen", node.id, open)
       const newData = await fetchAPIDATA("setOpen", {
         "nodeId": node.id,
         "isOpen": open
@@ -217,9 +223,9 @@ const Folder = ({ id, name, children, node, root}) => {
       dispatch({ type: "SET_DATA", payload: newData });
       setIsOpen(open);
       
-      if (open) {
-        setIsLoading(false);
-      }
+      // if (open) {
+      setIsLoading(false);
+      // }
 
     } catch (error) {
       console.error(error);
@@ -430,6 +436,6 @@ const Folder = ({ id, name, children, node, root}) => {
         </VerticalLine>
     </StyledFolder>
   );
-};
+});
 
 export { Folder, FolderName };
