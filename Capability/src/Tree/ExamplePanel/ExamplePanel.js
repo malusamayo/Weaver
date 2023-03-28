@@ -40,7 +40,7 @@ const ExamplePanel = ({node}) => {
             setSelectedNode(node.node);
             commitGetExample();
         }
-    }, [node, setIsLoading]);
+    }, [node]);
 
     useLayoutEffect(() => {
 
@@ -66,7 +66,7 @@ const ExamplePanel = ({node}) => {
         if (selectedNode) {
             commitGetExample();
         }
-    }, [selectedNode, setIsLoading]);
+    }, [selectedNode]);
 
     useEffect(() => {
         const examplePanelContainer = divRef.current;

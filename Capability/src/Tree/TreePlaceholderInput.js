@@ -58,7 +58,7 @@ const PlaceholderInput = ({
         onCancel && onCancel();
       }
     });
-  }, [onCancel, onSubmit]);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -71,7 +71,7 @@ const PlaceholderInput = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isEditing, onCancel]);
+  }, [isEditing]);
 
   // console.log("PlaceholderInput", defaultValue, node, type)
   return (

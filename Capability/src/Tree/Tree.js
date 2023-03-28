@@ -29,7 +29,7 @@ const Tree = ({data}) => {
 
   useEffect(() => {
     commitBackAvailability();
-  });
+  }, [state]);
 
   // render exactly once on mount
   useEffect(() => {
@@ -86,7 +86,7 @@ const Tree = ({data}) => {
         parentContainer.removeEventListener("scroll", handleDivRefFloat);
       }
     };
-  });
+  }, []);
 
   const commitBackState = useCallback( async() => {
     try {
