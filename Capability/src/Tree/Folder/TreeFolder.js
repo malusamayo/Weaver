@@ -13,6 +13,10 @@ import {
   RiCheckboxCircleFill,
   RiCheckboxBlankCircleLine,
 } from "react-icons/ri";
+import {
+  VscTriangleRight,
+  VscTriangleDown
+} from "react-icons/vsc";
 
 import { MdDeleteForever } from "react-icons/md";
 import { FaFolderPlus } from "react-icons/fa";
@@ -36,6 +40,15 @@ import {fetchAPIDATA} from "../../utils";
 import "../Dropdown/dropdown.css";
 import { AlertDelete } from "./AlertDelete";
 // import { size } from "lodash";
+
+
+const tooltip_style= {
+  zIndex: 9999, 
+  position: "absolute", 
+  backgroundColor: "rgba(54, 54, 54, 1)",
+  padding : "5px",
+  fontSize: "80%",
+};
 
 const StyledRelation = ({node, nodeTag}) => {
 
@@ -141,14 +154,14 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
       {
         // isHighlighted ?
           // isOpen ? <AiFillFolderOpen onClick={handleNodeHighlight}/> : <AiFillFolder onClick={handleNodeHighlight}/> :
-          isOpen ? <AiOutlineFolderOpen onClick={handleClick}/> : <AiOutlineFolder onClick={handleClick}/>
+          isOpen ? <VscTriangleDown onClick={handleClick}/> : <VscTriangleRight onClick={handleClick}/>
       }
       </div>
       <div style={{cursor: "pointer"}} onClick={handleNodeClick}>
       {
         isHighlighted ? 
-          <RiCheckboxCircleFill onClick={handleNodeHighlight} id="hide-subtopic"/> :
-          <RiCheckboxBlankCircleLine onClick={handleNodeHighlight} id="show-subtopic"/>
+          <RiCheckboxCircleFill onClick={handleNodeHighlight} id="unhighlight-topic"/> :
+          <RiCheckboxBlankCircleLine onClick={handleNodeHighlight} id="highlight-topic"/>
       }
       </div >
       <div onClick={handleNodeClick}>
@@ -160,10 +173,11 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
       }
       </div>
       &nbsp;&nbsp;
-      <div id={anchor_id} onDoubleClick={handleDoubleClick} onClick={handleNodeClick}>
+      <div id={anchor_id} onDoubleClick={handleDoubleClick} onClick={handleNodeClick} style={{cursor: "pointer"}}>
         {name}
       </div>
-      {/* <Tooltip place="top" anchorSelect={"#" + anchor_id} content={node.naturalLanguagePath} style={tooltip_style}/> */}
+      <Tooltip place="bottom" anchorSelect="#highlight-topic" content="Highlight the Topic" style={tooltip_style}/>
+      <Tooltip place="bottom" anchorSelect="#unhighlight-topic" content="Unhighlight the Topic" style={tooltip_style}/>
     </StyledName>
   )
 };
@@ -178,7 +192,7 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
 //   return prevProps.name === nextProps.name;
 // }
 
-const Folder = React.memo(({ id, name, children, node, root}) => {
+const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted}) => {
   const { dispatch, onNodeClick, setIsLoading } = useTreeContext();
   const [isEditing, setIsEditing] = useState(false);
   const [isOpen, setIsOpen] = useState(node.isOpen);
@@ -215,7 +229,7 @@ const Folder = React.memo(({ id, name, children, node, root}) => {
       setIsLoading(true);
       // }
 
-      console.log("setNodeOpen", node.id, open)
+      // console.log("setNodeOpen", node.id, open)
       const newData = await fetchAPIDATA("setOpen", {
         "nodeId": node.id,
         "isOpen": open
@@ -356,13 +370,6 @@ const Folder = React.memo(({ id, name, children, node, root}) => {
     setIsEditing(true);
   };
 
-  const tooltip_style= {
-    zIndex: 9999, 
-    position: "absolute", 
-    backgroundColor: "rgba(54, 54, 54, 1)",
-    padding : "5px",
-    fontSize: "80%",
-  };
 
   return (
     <StyledFolder id={id} className="tree__folder">
@@ -406,31 +413,32 @@ const Folder = React.memo(({ id, name, children, node, root}) => {
               <AiFillEdit onClick={handleFolderRename} id="edit-topic"/>
               <FaFolderPlus onClick={handleFolderCreation} id="add-topic"/>
               {root ? null : <MdDeleteForever onClick={handleDeleteFolder} id="delete-topic"/>}
-              <Tooltip place="bottom" anchorSelect="#highlight-topic" content="Highlight the Topic" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#example-panel-explore" content="Explore Examples" style={tooltip_style}/>
-              <Tooltip place="bottom" anchorSelect="#unhighlight-topic" content="Unhighlight the Topic" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#refresh-suggestion" content="Refresh Suggestions" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#edit-topic" content="Edit Topic" style={tooltip_style}/>
-              <Tooltip place="bottom" anchorSelect="#add-topic" content="Add Subtopic" style={tooltip_style}/>
+              <Tooltip place="bottom" anchorSelect="#add-topic" content="Add Subtopic Manually" style={tooltip_style}/>
               <Tooltip place="bottom" anchorSelect="#delete-topic" content="Delete Topic" style={tooltip_style}/>
             </div>
           </ActionsWrapper>
           {(node.isOpen || isOpen) && (
             <Collapse className="tree__folder--collapsible" isOpen={isOpen}>
             {childs}
-            <StyledName onClick={commitSuggestions} 
-              style={{
-                paddingLeft: "22px",
-                fontSize: "90%",
-                color: "grey",
-                cursor: "pointer",
-              }}>
-              <BsFillPlusCircleFill style={{fontSize: "80%", opacity:"0.8"}}/> &nbsp;&nbsp; 
-              <div style={{
-                display: "inline-block",
-                // padding: "2px"
-              }}>Show more topics for "{name}"</div>
-            </StyledName>
+            {
+              toggleIsHighlighted? null:
+              <StyledName onClick={commitSuggestions} 
+                style={{
+                  paddingLeft: "22px",
+                  fontSize: "90%",
+                  color: "grey",
+                  cursor: "pointer",
+                }}>
+                <BsFillPlusCircleFill style={{fontSize: "80%", opacity:"0.8"}}/> &nbsp;&nbsp; 
+                <div style={{
+                  display: "inline-block",
+                  // padding: "2px"
+                }}>Show more topics for "{name}"</div>
+              </StyledName>
+            }
           </Collapse>
           )}
         </VerticalLine>

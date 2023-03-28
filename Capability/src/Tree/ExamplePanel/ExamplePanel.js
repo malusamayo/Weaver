@@ -28,7 +28,22 @@ const ExamplePanel = ({node}) => {
                     "nodeId": node.node.id
                 });
     
-                setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+                // Count the number of examples that are not suggested
+                let countNotSuggested = 0;
+                for (let i = 0; i < newDataExamples.length; i++) {
+                    if (newDataExamples[i].isSuggested === false) {
+                        countNotSuggested++;
+                    }
+                }
+
+                if (countNotSuggested === 0) {
+                    const blankRow = blankRowAdd("Click \"Add\" to add an example");
+                    // setSelectedNodeExamples([blankRow]);
+                    setSelectedNodeExamples([...newDataExamples, blankRow]);
+                } else {
+                    setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+                }
+
                 setIsLoading(false);
             } catch (error) {
                 console.log("Error: ", error);

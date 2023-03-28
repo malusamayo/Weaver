@@ -53,7 +53,7 @@ const PlaceholderInput = ({
     if (!inputRef.current) return;
     inputRef.current.focus();
     inputRef.current.addEventListener("keyup", (e) => {
-      if ((e.shiftKey) && e.key === "Enter") onSubmit(e.target.value);
+      if (e.key === "Enter") onSubmit(e.target.value);
       if (e.key === "Escape") {
         onCancel && onCancel();
       }

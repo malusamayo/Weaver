@@ -4,6 +4,7 @@ import { ThemeProvider } from "styled-components";
 import { AiFillHome } from "react-icons/ai";
 import { GoArrowLeft } from "react-icons/go";
 import { BsToggleOff, BsToggleOn } from "react-icons/bs";
+import { IoMdHelpCircle } from "react-icons/io";
 // import { useDidMountEffect } from "../utils";
 import { TreeContext, reducer } from "./state";
 import {fetchAPIDATA} from "../utils";
@@ -277,9 +278,10 @@ const Tree = ({data}) => {
                       (<GoArrowLeft size={30} style={{color: "grey", cursor: "pointer"}} id="go-back-state"/>)
                     }
                     <AiFillHome size={20} style={{cursor: "pointer"}} id="go-home"/>
+                    <IoMdHelpCircle size={25} style={{cursor: "pointer"}} id="go-help"/>
                   </div>
                   <div>
-                    Highlighted Topics Only
+                    Checked Topics Only
                     {/* <div style={{margin: "5px 0 0 50px"}}> */}
                       {toggleIsHighlighted ?
                         (<BsToggleOn size={25} onClick={commitToggleIsHighlighted} id="toggle-highlighted-off"  style={{margin: "0px 15px 0 5px"}}/>) :
@@ -307,7 +309,7 @@ const Tree = ({data}) => {
               <Col xs="auto"> 
                {/* style={{overflowY:"scroll", maxHeight:"calc(100vh - 100px)"}}> */}
                 <StyledTree>
-                  <TreeRecusive data={state} parentNode={state} root={true}/>
+                  <TreeRecusive data={state} parentNode={state} root={true} toggleIsHighlighted={toggleIsHighlighted}/>
                   {/* {isImparative ? (
                     <TreeRecusive data={state} parentNode={state} root={true}/>
                   ) : (
@@ -328,7 +330,7 @@ const Tree = ({data}) => {
   );
 };
 
-const TreeRecusive = ({ data, parentNode, root}) => {
+const TreeRecusive = ({ data, parentNode, root, toggleIsHighlighted}) => {
   data = Array.from(data);
   return data.map((item) => {
       try {
@@ -338,8 +340,8 @@ const TreeRecusive = ({ data, parentNode, root}) => {
         console.log(e)
       }
       return (
-        <Folder key={item.id} id={item.id} name={item.name} node={item} root={root}>
-          <TreeRecusive parentNode={item} data={item.children} root={false}/>
+        <Folder key={item.id} id={item.id} name={item.name} node={item} root={root} toggleIsHighlighted={toggleIsHighlighted}>
+          <TreeRecusive parentNode={item} data={item.children} root={false} toggleIsHighlighted={toggleIsHighlighted}/>
         </Folder>
       );
     });

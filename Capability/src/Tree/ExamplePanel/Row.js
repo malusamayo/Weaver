@@ -59,7 +59,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     // const { setIsLoading } = useTreeContext();
 
     useEffect(() => {
-        if (exampleOutput === examplePredicted) {
+        if (exampleOutput === examplePredicted || exampleOutput === "") {
             setPass(true);
             setFail(false);
             // setOffTopic(false);
@@ -111,8 +111,8 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     };
 
     const commitFail = () => {
-        setExampleOutput("");
-        commitUpdateRowOutput(exampleData, "");
+        setExampleOutput("UNKNOWN");
+        commitUpdateRowOutput(exampleData, "UNKNOWN");
     };
 
     const handleExampleTextClick = () => {
@@ -128,7 +128,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     }
 
     const handleExampleTextKeyDown = (event) => {
-        if (event.key === "Escape" || ((event.shiftKey) && event.key === 'Enter')) {
+        if (event.key === "Escape" || (event.key === 'Enter')) {
             console.log(exampleText)
             commitUpdateRowText(exampleData, exampleText);
             setIsEditingExampleText(false);
@@ -140,7 +140,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     }
 
     const handleExampleOutputKeyDown = (event) => {
-        if (event.key === "Escape" ||  ((event.shiftKey) && event.key === 'Enter')) {
+        if (event.key === "Escape" ||  (event.key === 'Enter')) {
             console.log(exampleOutput)
             commitUpdateRowOutput(exampleData, exampleOutput);
             setIsEditingExampleOutput(false);
@@ -220,7 +220,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     const editSpecialCSSText = {
         width: "100%", 
         height: "100%", 
-        border: "none", 
+        // border: "none", 
         backgroundColor: "rgb(247, 247, 247)", 
         textAlign: "right",
         outline: "none",
@@ -230,7 +230,8 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     const editSpecialCSSOutput = {
         width: "100%", 
         height: "100%", 
-        border: "none", 
+        // border: "none", 
+        borderWidth: "thin",
         backgroundColor: "rgb(247, 247, 247)", 
         textAlign: "left",
         outline: "none",
@@ -250,9 +251,11 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
             {
                 isEditingExampleText ?
                     <td><textarea name="text" value={exampleText} 
+                        className="tree__input"
                         onChange={handleExampleTextChange} 
                         onKeyDown={handleExampleTextKeyDown} 
-                        style={editSpecialCSSText} wrap="soft"/></td>:
+                        style={editSpecialCSSText} 
+                        wrap="soft"/></td>:
                     <td onClick={handleExampleTextClick}>{exampleText}</td>
             }
 
