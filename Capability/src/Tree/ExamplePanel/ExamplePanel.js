@@ -3,6 +3,8 @@ import { Tooltip } from 'react-tooltip';
 import {fetchAPIDATA} from "../../utils";
 import "./ExamplePanel.css";
 import { GoDiffAdded } from "react-icons/go";
+import { FaRedo } from "react-icons/fa";
+import { GrAddCircle } from "react-icons/gr";
 import { Row } from "./Row";
 import { v4 as uuidv4 } from "uuid";
 import { useTreeContext } from "../state/TreeContext";
@@ -38,8 +40,7 @@ const ExamplePanel = ({node}) => {
 
                 if (countNotSuggested === 0) {
                     const blankRow = blankRowAdd("Click \"Add\" to add an example");
-                    // setSelectedNodeExamples([blankRow]);
-                    setSelectedNodeExamples([...newDataExamples, blankRow]);
+                    commitAddBlankRow(blankRow);
                 } else {
                     setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
                 }
@@ -51,37 +52,37 @@ const ExamplePanel = ({node}) => {
         };
 
         if (node) {
-            setSelectedNodeExamples([]);
+            // setSelectedNodeExamples([]);
             setSelectedNode(node.node);
             commitGetExample();
         }
     }, [node]);
 
-    useLayoutEffect(() => {
+    // useLayoutEffect(() => {
 
-        const commitGetExample = async () => {
-            try {
-                setIsLoading(true);
+    //     const commitGetExample = async () => {
+    //         try {
+    //             setIsLoading(true);
                 
-                // [TODO] make sure they always equal
-                // if (node.node.id !== selectedNode.id) {
-                //     console.log("Getting examples for node", node, selectedNode);
-                // }
-                const newDataExamples = await fetchAPIDATA("getExampleList", {
-                    "nodeId": selectedNode.id
-                }); 
+    //             // [TODO] make sure they always equal
+    //             // if (node.node.id !== selectedNode.id) {
+    //             //     console.log("Getting examples for node", node, selectedNode);
+    //             // }
+    //             const newDataExamples = await fetchAPIDATA("getExampleList", {
+    //                 "nodeId": selectedNode.id
+    //             }); 
     
-                setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
-                setIsLoading(false);
-            } catch (error) {
-                console.log("Error: ", error);
-            }
-        };
+    //             setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+    //             setIsLoading(false);
+    //         } catch (error) {
+    //             console.log("Error: ", error);
+    //         }
+    //     };
 
-        if (selectedNode) {
-            commitGetExample();
-        }
-    }, [selectedNode]);
+    //     if (selectedNode) {
+    //         commitGetExample();
+    //     }
+    // }, [selectedNode]);
 
     useEffect(() => {
         const examplePanelContainer = divRef.current;
@@ -100,7 +101,6 @@ const ExamplePanel = ({node}) => {
             "id": uuidv4(),
             "exampleText": text,
             "exampleTrue": "",
-            "examplePredicted": "",
             "isSuggested": false,
             "exampleOffTopic": false,
         }
@@ -129,13 +129,13 @@ const ExamplePanel = ({node}) => {
             setIsLoading(true);
 
             const newDataExamples = await fetchAPIDATA("addExample", {
-                "nodeId": selectedNode.id,
+                "nodeId": node.node.id,
                 "exampleText": blankRow.exampleText,
                 "exampleTrue": blankRow.exampleTrue,
                 "isSuggested": blankRow.isSuggested,
                 "exampleOffTopic": blankRow.exampleOffTopic
             }, true);
-            setSelectedNodeExamples([]);
+            // setSelectedNodeExamples([]);
             setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
             setIsLoading(false);
         } catch (error) {
@@ -145,7 +145,7 @@ const ExamplePanel = ({node}) => {
 
 
     const handleAddBlankRow = () => {
-        const blankRow = blankRowAdd("Add an example");
+        const blankRow = blankRowAdd("New example");
         commitAddBlankRow(blankRow);
     };
 
@@ -366,7 +366,8 @@ const ExamplePanel = ({node}) => {
 
                 if (countNotSuggested === 0) {
                     const blankRow = blankRowAdd("Click \"Add\" to add an example");
-                    setSelectedNodeExamples([...newDataExamples, blankRow]);
+                    // setSelectedNodeExamples([...newDataExamples, blankRow]);
+                    commitAddBlankRow(blankRow);
                 }
 
                 // First set the selected row to new available row
@@ -399,33 +400,33 @@ const ExamplePanel = ({node}) => {
 
     // }
 
-    const SuggestedTable = ({selectedNodeExamples}) => {
-        return selectedNodeExamples.map((example, index) => {
-                // console.log("example: ", example);
-                if (example.isSuggested === true) {
-                    return (
-                        <Row 
-                            exampleData={example}
-                            key={index}
-                            setSelectedRow={setSelectedRow}
-                            selectedRow={selectedRow}
-                            nodeId={selectedNode.id}
-                            commitUpdateExample={commitUpdateExample}
-                            isSuggested={true}
-                            commitDeleteRow={commitDeleteRow}
-                            commitUpdateExampleSuggested={commitUpdateExampleSuggested}
-                        />
-                    )
-                } else {
-                    return null;
-                }
-        })
-    };
+    // const SuggestedTable = ({selectedNodeExamples}) => {
+    //     return selectedNodeExamples.map((example, index) => {
+    //             // console.log("example: ", example);
+    //             if (example.isSuggested === true) {
+    //                 return (
+    //                     <Row 
+    //                         exampleData={example}
+    //                         key={index}
+    //                         setSelectedRow={setSelectedRow}
+    //                         selectedRow={selectedRow}
+    //                         nodeId={selectedNode.id}
+    //                         commitUpdateExample={commitUpdateExample}
+    //                         isSuggested={true}
+    //                         commitDeleteRow={commitDeleteRow}
+    //                         commitUpdateExampleSuggested={commitUpdateExampleSuggested}
+    //                     />
+    //                 )
+    //             } else {
+    //                 return null;
+    //             }
+    //     })
+    // };
 
     const SelectedTable = ({selectedNodeExamples}) => {
         // console.log("SelectedTable: ", selectedNodeExamples);
         return selectedNodeExamples.map((example, index) => {
-            if (example.isSuggested === false) {
+            // if (example.isSuggested === false) {
                 return (
                     <Row 
                         exampleData={example}
@@ -434,14 +435,21 @@ const ExamplePanel = ({node}) => {
                         selectedRow={selectedRow}
                         nodeId={selectedNode.id}
                         commitUpdateExample={commitUpdateExample}
-                        isSuggested={false}
+                        isSuggested={example.isSuggested}
                         commitDeleteRow={commitDeleteRow}
                         commitUpdateExampleSuggested={commitUpdateExampleSuggested}
+                        rowStyle={
+                            selectedRow === example.id ?
+                                {backgroundColor: "rgb(247, 247, 247)"} : (
+                                    example.isSuggested ? {backgroundColor: "rgb(243, 248, 255)"} :
+                                    {backgroundColor: "rgb(255, 255, 255)"}
+                                )
+                        }
                     />
                 )
-            } else {
-                return null;
-            }
+            // } else {
+            //     return null;
+            // }
         })
     };
 
@@ -464,14 +472,27 @@ const ExamplePanel = ({node}) => {
                     <div>
                         <p>Topic: {selectedNode.name}</p> 
                         <p>Path: {selectedNode.naturalLanguagePath}</p>
-                        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                            <p><u>Suggested Examples</u></p>
+                        <div style={{display: "flex", justifyContent: "right", alignItems: "center"}}>
+                            {/* <p><u>Suggested Examples</u></p> */}
                             <div style={{display: "flex", alignItems: "top"}} onClick={handleMoreSuggestions}>
-                                <p style={{marginRight: "5px"}}>More</p>
-                                <GoDiffAdded style={{fontSize: "20px", opacity: "1", cursor: "pointer"}} id="suggest-examples"/>
+                                <FaRedo style={{fontSize: "16px", opacity: "1", cursor: "pointer", marginTop: "4px"}} id="suggest-examples"/>
+                                <p style={{marginLeft: "5px", marginRight: "20px"}}>Suggestions</p>
                                 <Tooltip place="bottom" anchorSelect="#suggest-examples" content="Suggest More Examples" style={tooltip_style}/>
                             </div>
+                            <div style={{display: "flex", alignItems: "top"}} onClick={handleAddBlankRow}>
+                                <GrAddCircle style={{fontSize: "20px", opacity: "1", cursor: "pointer", marginTop: "2px"}} id="add-example"/>
+                                <p style={{marginLeft: "5px"}}>Add Examples</p>
+                                <Tooltip place="bottom" anchorSelect="#add-example" content="Add Example" style={tooltip_style}/>
+                            </div>
                         </div>
+                        {/* <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                            <p><u>Selected Examples</u></p>
+                            <div style={{display: "flex", alignItems: "top"}} onClick={handleAddBlankRow}>
+                                <p style={{marginRight: "5px"}}>Add</p>
+                                <GoDiffAdded style={{fontSize: "20px", opacity: "1", cursor: "pointer"}} id="add-example"/>
+                                <Tooltip place="bottom" anchorSelect="#add-example" content="Add Example" style={tooltip_style}/>
+                            </div>
+                        </div> */}
                         <table className="example-panel-selected-table">
                             <thead>
                             <tr>
@@ -488,26 +509,18 @@ const ExamplePanel = ({node}) => {
                             </thead>
                             <tbody>
                             {
-                                <SuggestedTable selectedNodeExamples={selectedNodeExamples}/>
+                                <SelectedTable selectedNodeExamples={selectedNodeExamples}/>
                             }
                             </tbody>
                         </table>
-                        <br/>
-                        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                            <p><u>Selected Examples</u></p>
-                            <div style={{display: "flex", alignItems: "top"}} onClick={handleAddBlankRow}>
-                                <p style={{marginRight: "5px"}}>Add</p>
-                                <GoDiffAdded style={{fontSize: "20px", opacity: "1", cursor: "pointer"}} id="add-example"/>
-                                <Tooltip place="bottom" anchorSelect="#add-example" content="Add Example" style={tooltip_style}/>
-                            </div>
-                        </div>
+                        {/* <br/>
                         <table className="example-panel-selected-table">
                             <tbody>
                             {
                                 <SelectedTable selectedNodeExamples={selectedNodeExamples}/>
                             }
                             </tbody>
-                        </table>
+                        </table> */}
                     </div>
                 }
             </div>

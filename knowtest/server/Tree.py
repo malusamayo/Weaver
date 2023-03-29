@@ -324,6 +324,7 @@ class Tree:
             example.isSuggested = isSuggested
             example.exampleOffTopic = exampleOffTopic
             self.nodes[node_id].add_example(example)
+            return example
         
     def get_example_list(self, node_id: str):
         if node_id in self.nodes:

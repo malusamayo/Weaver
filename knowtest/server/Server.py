@@ -159,7 +159,7 @@ class CapabilityApp:
         def add_example(exampleRow: ExampleRow):
             nodeId, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
             example_predicted = "None"
-            self.t.add_example(nodeId, example_text, example_true, example_predicted, is_suggested, example_off_topic)
+            newRow = self.t.add_example(nodeId, example_text, example_true, example_predicted, is_suggested, example_off_topic)
             self.t.write_json()
             return self.t.get_example_list(nodeId)
         
@@ -176,7 +176,7 @@ class CapabilityApp:
         @self.app.post("/updateExample")
         def update_example(exampleRow: ExampleRow):
             nodeId, example_id, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
-            example_predicted = self.model.predict(example_text)
+            example_predicted = self.model.predict(example_text) # always predict when updating
             updatedRow = self.t.update_example(nodeId, example_id, example_text, example_true, example_predicted, is_suggested, example_off_topic)
             self.t.write_json()
             print("Setting example: ", example_text, " to ", is_suggested)

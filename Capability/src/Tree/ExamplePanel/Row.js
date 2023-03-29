@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 // import { FaBan } from "react-icons/fa";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { TiTick } from "react-icons/ti";
@@ -9,7 +9,9 @@ import {
 import {
     BiAddToQueue
 }   from "react-icons/bi";
-
+import {
+    AiOutlineLike
+}   from "react-icons/ai";
 // import { useTreeContext } from "../state/TreeContext";
 import {fetchAPIDATA} from "../../utils";
 // import { set } from "lodash";
@@ -40,7 +42,7 @@ const ExamplePanelFail = () => {
     );
 }
 
-const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, commitDeleteRow, commitUpdateExampleSuggested, commitUpdateExample}) => {
+const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, commitDeleteRow, commitUpdateExampleSuggested, commitUpdateExample, rowStyle}) => {
 
     // const [example, setExample] = useState(null);
 
@@ -54,12 +56,12 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     const [examplePredicted, setExamplePredicted] = useState(exampleData.examplePredicted);
 
     // const [offTopic, setOffTopic] = useState(exampleData.exampleOffTopic);
-    const [pass, setPass] = useState(exampleData.exampleTrue === exampleData.examplePredicted);
-    const [fail, setFail] = useState(exampleData.exampleTrue !== exampleData.examplePredicted);
+    const [pass, setPass] = useState((exampleData.exampleTrue === exampleData.examplePredicted) || (exampleData.exampleTrue === ""));
+    const [fail, setFail] = useState((exampleData.exampleTrue !== exampleData.examplePredicted) && (exampleData.exampleTrue !== ""));
     // const { setIsLoading } = useTreeContext();
 
     useEffect(() => {
-        if (exampleOutput === examplePredicted || exampleOutput === "") {
+        if ((exampleOutput === examplePredicted) || (exampleOutput === "")) {
             setPass(true);
             setFail(false);
             // setOffTopic(false);
@@ -242,12 +244,8 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
 
     return (
             <tr onClick={handleRowSelect}
-            
-                style={
-                    selectedRow === exampleData.id ?
-                        {backgroundColor: "rgb(247, 247, 247)"} :
-                        {backgroundColor: "rgb(255, 255, 255)"}
-            }>
+                style={rowStyle}
+            >
             {
                 isEditingExampleText ?
                     <td><textarea name="text" value={exampleText} 
@@ -309,8 +307,8 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
             <td>
                 {
                     isSuggested ?
-                        <BiAddToQueue onClick={handleAddSuggested} style={{fontSize: "20px", cursor: "pointer"}}/> :
-                        <BiAddToQueue style={{fontSize: "20px", opacity: "0"}}/>
+                        <AiOutlineLike onClick={handleAddSuggested} style={{fontSize: "20px", cursor: "pointer"}}/> :
+                        <AiOutlineLike style={{fontSize: "20px", opacity: "0"}}/>
                 }
             </td>
 
