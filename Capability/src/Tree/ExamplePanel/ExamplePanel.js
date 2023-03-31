@@ -11,11 +11,12 @@ import { useTreeContext } from "../state/TreeContext";
 
 const ExamplePanel = ({node}) => {
 
+    // console.log("ExamplePanel", node);
     // uddate the node state when the node prop changes
     const [selectedNodeExamples, setSelectedNodeExamples] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
-    const { setIsLoading } = useTreeContext();
+    const { setIsLoading, setNodeHighlighted } = useTreeContext();
 
     // Add blank row when the ExamplePanel is first rendered
     
@@ -161,6 +162,8 @@ const ExamplePanel = ({node}) => {
             });
             setSelectedNodeExamples([]);
             setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+            if (!node.node.isHighlighed)
+                setNodeHighlighted(node.node.id, true);
             setIsLoading(false);
         } catch (error) {
             console.log("Error: ", error);
@@ -295,6 +298,9 @@ const ExamplePanel = ({node}) => {
             const newDataExamples = selectedNodeExamples.map((example) => {
                 return example.id !== updatedExample.id ? example : updatedExample;
             });
+
+            if (!node.node.isHighlighed)
+                setNodeHighlighted(node.node.id, true);
 
             // console.log("New data examples: ", newDataExamples);
             setSelectedNodeExamples(newDataExamples);

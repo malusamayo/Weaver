@@ -118,7 +118,7 @@ const Tree = ({data}) => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [commitBackState]);
+  }, []);
 
   const commitToggleIsHighlighted = async() => {
     try {
@@ -134,6 +134,20 @@ const Tree = ({data}) => {
       dispatch({ type: "SET_DATA", payload: newData });
 
       setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const setNodeHighlighted = async (nodeId, highlighted) => {
+    try {
+      const newData = await fetchAPIDATA("setHighlighted", {
+        "nodeId": nodeId,
+        "isHighlighted": highlighted
+      }, true);
+      console.log("setNodeHighlighted", newData)
+      dispatch({ type: "SET_DATA", payload: newData });
+      // setHighlighted(highlighted);
     } catch (error) {
       console.error(error);
     }
@@ -265,6 +279,7 @@ const Tree = ({data}) => {
                     // onNodeClick && onNodeClick(node);
                     setSelectedNode(node);
                   },
+                  setNodeHighlighted: setNodeHighlighted,
                   selectedNode: selectedNode,
                 }}
                 >

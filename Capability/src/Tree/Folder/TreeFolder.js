@@ -1,8 +1,6 @@
 import React, {useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { Tooltip } from 'react-tooltip';
 import {
-  AiOutlineFolder,
-  AiOutlineFolderOpen,
   // AiOutlinePlus,
   AiFillEdit,
   // AiOutlineMinus,
@@ -114,9 +112,9 @@ const StyledRelation = ({node, nodeTag}) => {
   )
 }
 
-const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighted, node, isEditing, handleNodeClick, type, setNodeHighlighted}) => {
+const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighted, node, isEditing, handleNodeClick, type}) => {
 
-  const { selectedNode} = useTreeContext();
+  const { selectedNode, setNodeHighlighted} = useTreeContext();
   const [tag, setTags] = useState(node.nl_tag);
 
   useEffect(() => {
@@ -154,7 +152,8 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
 
   const handleNodeHighlight = (event) => {
     event.stopPropagation();
-    setNodeHighlighted(!isHighlighted)
+    setNodeHighlighted(node.id, !isHighlighted);
+    // handleNodeClick(event);
   }
     
   return (
@@ -219,10 +218,8 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
     setIsOpen(node.isOpen);
   }, [node.isOpen]);
 
-
   useEffect(() => {
-    // console.log("updated")
-    setChilds([children]);
+    setChilds(children);
   }, [children]);
 
   // // handle hover over className="AddFolder"
@@ -257,20 +254,6 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
       setIsLoading(false);
       // }
 
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const setNodeHighlighted = async (highlighted) => {
-    try {
-      const newData = await fetchAPIDATA("setHighlighted", {
-        "nodeId": node.id,
-        "isHighlighted": highlighted
-      }, true);
-      console.log("setNodeHighlighted", newData)
-      dispatch({ type: "SET_DATA", payload: newData });
-      // setHighlighted(highlighted);
     } catch (error) {
       console.error(error);
     }
@@ -411,7 +394,6 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
                 name={name}
                 isOpen={isOpen}
                 isHighlighted={node.isHighlighted}
-                setNodeHighlighted={setNodeHighlighted}
                 node={node}
                 handleClick={() => setNodeOpen(!isOpen)}
                 handleDoubleClick={handleFolderRename}
@@ -421,9 +403,6 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
             {/* </div> */}
 
             <div className="actions">
-              {/* {root ? null : node.isHighlighted ?
-                <AiOutlineMinus onClick={() => setNodeHighlighted(false)} id="unhighlight-topic"/> :
-                <AiOutlinePlus onClick={() => setNodeHighlighted(true)} id="highlight-topic"/> } */}
               <BsSearch  onClick={handleNodeClick} id="example-panel-explore"/>
               {/* <BiRefresh onClick={commitSuggestions} id="refresh-suggestion"/> */}
               <AiFillEdit onClick={handleFolderRename} id="edit-topic"/>
