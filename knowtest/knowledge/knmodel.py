@@ -106,11 +106,12 @@ class CurieModel(LanguageModel):
         return response["choices"][0]["text"]
 
 class ChatGPTModel(LanguageModel):
-    def __init__(self, sys_msg: str, api_key: str = None) -> None:
+    def __init__(self, sys_msg: str, api_key: str = None, temparature=1.0) -> None:
         super().__init__()
         openai.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         assert openai.api_key is not None, "Please provide an OpenAI API key"
         self.sys_msg = {"role": "system", "content": sys_msg}
+        self.temperature = temparature
 
     @retry(wait=wait_random_exponential(min=2, max=60), stop=stop_after_attempt(6))
     def __call__(self, messages):
@@ -118,7 +119,8 @@ class ChatGPTModel(LanguageModel):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=messages,
-            user="kgtest"
+            user="kgtest",
+            temperature=self.temperature,
         )
         message = response["choices"][0]["message"]
         return message

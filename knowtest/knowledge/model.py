@@ -11,7 +11,7 @@ from transformers.modeling_outputs import (
     SequenceClassifierOutputWithPast,
     TokenClassifierOutput,
 )
-
+from .knmodel import ChatGPTModel
 
 class MyGPT2LMHeadModel(GPT2LMHeadModel):
 
@@ -97,6 +97,10 @@ class Model(object):
 class ClassificationModel(Model):
     
     def __init__(self, path="") -> None:
+        self.translate_dict = {
+            'LABEL_0': 'NEGATIVE',
+            'LABEL_1': 'POSITIVE'
+        }
         if path != "":
             self.tokenizer = AutoTokenizer.from_pretrained(path)
             self.model = AutoModelForSequenceClassification.from_pretrained(path)
@@ -105,7 +109,15 @@ class ClassificationModel(Model):
             self.pipeline = pipeline("text-classification")
 
     def __call__(self, example):
-        return self.pipeline(example)
+        preds = self.pipeline(example)
+        for pred in preds:
+            pred['label'] = self.translate_label(pred['label'])
+        return preds
+
+    def translate_label(self, label):
+        if label in self.translate_dict:
+            return self.translate_dict[label]
+        return label
 
     def predict(self, example):
         '''
@@ -115,7 +127,7 @@ class ClassificationModel(Model):
         return: str
             The predicted label
         '''
-        return self(example)[0]['label']
+        return self(example)[0]['label'], self(example)[0]['score']
 
     def predict_batch(self, examples):
         '''
@@ -126,10 +138,43 @@ class ClassificationModel(Model):
             The predicted labels
         '''
         preds = self(examples)
-        return [pred['label'] for pred in preds]
+        return [(pred['label'], pred['score']) for pred in preds]
+    
+class GPTClassificationModel(Model):
+
+    def __init__(self, task="a sentence's sentiment", labels=['positive', 'negative']) -> None:
+        label_msg = '", "'.join(labels[:-1])
+        label_msg = '"' + label_msg + '" or "' + labels[-1] + '"'
+        self.task = task
+        self.labels = labels
+        self.sys_msg = f'''You are a classification model. You are classifying {task}.
+        The labels are {label_msg}. You should only keep the label as your answer.'''
+        self.model = ChatGPTModel(self.sys_msg, temparature=0)
+
+    def __call__(self, example):
+        prompts = [{"role": "user", "content": f"Sentence: {example}"}]
+        response = self.model(prompts)
+        response_lower = response['content'].lower()
+        label_in_response = [label for label in self.labels if label in response_lower]
+        if len(label_in_response) == 1:
+            return label_in_response[0]
+        elif len(label_in_response) > 1:
+            return 'FAILURE_MULTIPLE_LABELS'
+        else:
+            return 'FAILURE_NO_LABEL'
+    
+    def predict(self, example):
+        '''
+        example: str
+            The input example
+        ----------
+        return: str
+            The predicted label
+        '''
+        return self(example), 1
         
 
 if __name__ == "__main__":
-    model = ClassificationModel()
-    print(model.predict("I love you"))
-    print(model.predict_batch(["I love you", "I hate you"]))
+    model = GPTClassificationModel(task = "a sentence's stance on feminism", labels = ["favor", "against", "none"])
+    print(model.predict("I love you."))
+    # print(model.predict_batch(["I love you", "I hate you"]))
