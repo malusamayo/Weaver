@@ -15,6 +15,7 @@ class Example:
         self.exampleText = ""
         self.exampleTrue = ""
         self.examplePredicted = ""
+        self.exampleConfidence = 0.0
         self.isSuggested = False
         self.exampleOffTopic = False
 
@@ -27,6 +28,7 @@ class Example:
             "exampleText": self.exampleText,
             "exampleTrue": self.exampleTrue,  #Correct -> label
             "examplePredicted": self.examplePredicted,
+            "exampleConfidence": round(self.exampleConfidence, 3),
             "exampleOffTopic": self.exampleOffTopic,
             "isSuggested": self.isSuggested,
         }
@@ -95,6 +97,7 @@ class Node:
             temp_example.exampleText = example["exampleText"]
             temp_example.exampleTrue = example["exampleTrue"]
             temp_example.examplePredicted = example["examplePredicted"]
+            temp_example.exampleConfidence = example["exampleConfidence"]
             temp_example.isSuggested = example["isSuggested"]
             temp_example.exampleOffTopic = example["exampleOffTopic"]
 
@@ -121,6 +124,14 @@ class Node:
         if example_id in self.examples:
             del self.examples[example_id]
         elif example_id in self.suggested_examples:
+            del self.suggested_examples[example_id]
+
+    def switch_example(self, example_id: str) -> None:
+        if example_id in self.examples:
+            self.suggested_examples[example_id] = self.examples[example_id]
+            del self.examples[example_id]
+        elif example_id in self.suggested_examples:
+            self.examples[example_id] = self.suggested_examples[example_id]
             del self.suggested_examples[example_id]
 
     def get_Json_object(self) -> dict:

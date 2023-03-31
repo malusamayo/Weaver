@@ -315,12 +315,13 @@ class Tree:
 
         return cwd
     
-    def add_example(self, node_id: str, exampleText: str, exampleTrue: str, examplePredicted, isSuggested: bool, exampleOffTopic: bool):
+    def add_example(self, node_id: str, exampleText: str, exampleTrue: str, examplePredicted, exampleConfidence, isSuggested: bool, exampleOffTopic: bool):
         if node_id in self.nodes:
             example = Example(id=None)
             example.exampleText = exampleText
             example.exampleTrue = exampleTrue
             example.examplePredicted = examplePredicted
+            example.exampleConfidence = exampleConfidence
             example.isSuggested = isSuggested
             example.exampleOffTopic = exampleOffTopic
             self.nodes[node_id].add_example(example)
@@ -364,7 +365,7 @@ class Tree:
 
             return suggested_examples
     
-    def update_example(self, node_id: str, exampleID: str, exampleText: str, exampleTrue: str, examplePredicted: str, isSuggested: bool, exampleOffTopic: bool):
+    def update_example(self, node_id: str, exampleID: str, exampleText: str, exampleTrue: str, examplePredicted: str, exampleConfidence: float, isSuggested: bool, exampleOffTopic: bool):
         print("Updating example: ", node_id, exampleID, exampleText, exampleTrue, examplePredicted, isSuggested, exampleOffTopic)
         if node_id in self.nodes:
             if exampleID in self.nodes[node_id].examples:
@@ -377,8 +378,12 @@ class Tree:
             example.exampleText = exampleText
             example.exampleTrue = exampleTrue
             example.examplePredicted = examplePredicted
-            example.isSuggested = isSuggested
+            example.exampleConfidence = exampleConfidence
             example.exampleOffTopic = exampleOffTopic
+
+            if example.isSuggested != isSuggested:
+                example.isSuggested = isSuggested
+                self.nodes[node_id].switch_example(exampleID)
 
             print("Updated example: ", example.__JSON__())
             return example

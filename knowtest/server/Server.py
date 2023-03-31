@@ -158,8 +158,8 @@ class CapabilityApp:
         @self.app.post("/addExample")
         def add_example(exampleRow: ExampleRow):
             nodeId, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
-            example_predicted = "None"
-            newRow = self.t.add_example(nodeId, example_text, example_true, example_predicted, is_suggested, example_off_topic)
+            example_predicted, example_conf = "None", 0
+            newRow = self.t.add_example(nodeId, example_text, example_true, example_predicted, example_conf, is_suggested, example_off_topic)
             self.t.write_json()
             return self.t.get_example_list(nodeId)
         
@@ -176,8 +176,8 @@ class CapabilityApp:
         @self.app.post("/updateExample")
         def update_example(exampleRow: ExampleRow):
             nodeId, example_id, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
-            example_predicted = self.model.predict(example_text) # always predict when updating
-            updatedRow = self.t.update_example(nodeId, example_id, example_text, example_true, example_predicted, is_suggested, example_off_topic)
+            example_predicted, example_conf = self.model.predict(example_text) # always predict when updating
+            updatedRow = self.t.update_example(nodeId, example_id, example_text, example_true, example_predicted, example_conf, is_suggested, example_off_topic)
             self.t.write_json()
             print("Setting example: ", example_text, " to ", is_suggested)
             return updatedRow.__JSON__()
@@ -186,8 +186,8 @@ class CapabilityApp:
         def get_more_examples(nodeId: str):
             suggested_examples = self.t.suggest_examples(nodeId)
             for exampleText in suggested_examples:
-                example_predicted = self.model.predict(exampleText)
-                self.t.add_example(nodeId, exampleText, "", example_predicted, True, False)
+                example_predicted, example_conf = self.model.predict(exampleText)
+                self.t.add_example(nodeId, exampleText, "", example_predicted, example_conf, True, False)
             self.t.write_json()
             return self.t.get_example_list(nodeId)
         
@@ -228,6 +228,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--topic', type=str, default='hate speech', help='topic of the dataset')
     parser.add_argument('--file_directory', type=str, default='output/', help='directory of the dataset')
+    parser.add_argument('--model_dir', type=str, default='', help='directory of the model')
     parser.add_argument('--serverHost', type=str, default='172.24.20.95', help='host of the server')
     parser.add_argument('--serverPort', type=int, default=3001, help='port of the server')
     parser.add_argument('--uid', type=str, default='', help='uid of the user')
@@ -238,6 +239,7 @@ if __name__ == "__main__":
     server = CapabilityApp(
             topic=args.topic, 
             file_directory=args.file_directory,
+            model_dir=args.model_dir,
             serverHost=args.serverHost,
             serverPort=args.serverPort,
             uid=args.uid,
