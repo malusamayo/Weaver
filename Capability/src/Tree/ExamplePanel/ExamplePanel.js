@@ -39,7 +39,7 @@ const ExamplePanel = ({node}) => {
                 }
 
                 if (countNotSuggested === 0) {
-                    const blankRow = blankRowAdd("Click \"Add\" to add an example");
+                    const blankRow = blankRowAdd("Click here to add an example");
                     commitAddBlankRow(blankRow);
                 } else {
                     setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
@@ -365,7 +365,7 @@ const ExamplePanel = ({node}) => {
                 }
 
                 if (countNotSuggested === 0) {
-                    const blankRow = blankRowAdd("Click \"Add\" to add an example");
+                    const blankRow = blankRowAdd("Click here to add an example");
                     // setSelectedNodeExamples([...newDataExamples, blankRow]);
                     commitAddBlankRow(blankRow);
                 }
@@ -500,6 +500,7 @@ const ExamplePanel = ({node}) => {
                                 <td></td>
                                 <td>Output</td>
                                 <td>Predicted</td>
+                                <td>Confidence</td>
                                 {/* <td>Off-topic</td>  */}
                                 <td>Pass</td>
                                 <td>Fail</td>

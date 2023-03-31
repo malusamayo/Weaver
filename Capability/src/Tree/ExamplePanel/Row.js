@@ -274,6 +274,11 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
                     examplePredicted
                 }
             </td>
+            <td>
+                {
+                    exampleData.exampleConfidence
+                }
+            </td>
             {/* {
                 isSuggested ?
                     (
