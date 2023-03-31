@@ -97,6 +97,9 @@ const Tree = ({data}) => {
       dispatch({ type: "SET_DATA", payload: newData });
       // setData(newData);
       // console.log("going back to: ", newData);
+      const currentSelectedNode = selectedNode;
+      setSelectedNode(x => null);
+      setSelectedNode(x => currentSelectedNode);
 
       setIsLoading(false);
     } catch (error) {
