@@ -80,7 +80,7 @@ class CapabilityApp:
 
         @self.app.post("/setHighlighted")
         def set_highlight(nodeId: str, isHighlighted: bool):
-            self.t.set_highlight(nodeId, isHighlighted)
+            updatedNode = self.t.set_highlight(nodeId, isHighlighted)
             self.t.write_json()
             return self.t.generate_json()
 

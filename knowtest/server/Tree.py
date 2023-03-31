@@ -121,18 +121,23 @@ class Tree:
             
         children = [self.nodes[child_id] for child_id in self.nodes[node["id"]].children]
         
-        if sorting:
-            children = sorted(children, key=lambda x: x.name)
+        # if sorting:
+        #     children = sorted(children, key=lambda x: x.name)
         
         for child in children:
-            if self.only_highlighted and not child.isHighlighted:
-                continue
+            # if self.only_highlighted and not child.isHighlighted:
+            #     continue
             child_node = self.generate_tree_helper(child, sorting)
             if child_node is not None:
                 node["children"].append(child_node)
+
+        if len(node["children"]) == 0:
+            if self.only_highlighted and not node["isHighlighted"]:
+                return None
+            return node
         
-        if sorting:
-            node["children"] = sorted(node["children"], key=lambda x: (x["isHighlighted"]))
+        # if sorting:
+        #     node["children"] = sorted(node["children"], key=lambda x: (x["isHighlighted"]))
 
         return node
     
@@ -161,16 +166,19 @@ class Tree:
     
     def set_highlight(self, node_id: str, isHighlighted: bool):
         # print("Node ID: {}({}), isHighlighted: {}({})".format(node_id, type(node_id), isHighlighted, type(isHighlighted)))
-        if isHighlighted == True:
-            path = self.get_path(node_id)
-            # print("Path: ", path)
-            for parent_node_id, _ in path:
-                self.nodes[parent_node_id].isHighlighted = True
-        else:
-            if node_id in self.nodes:
-                self.nodes[node_id].isHighlighted = False
-                for child_id in self.nodes[node_id].children:
-                    self.set_highlight(child_id, False)
+        if node_id in self.nodes:
+            self.nodes[node_id].isHighlighted = isHighlighted
+            return self.nodes[node_id]
+        # if isHighlighted == True:
+        #     path = self.get_path(node_id)
+        #     # print("Path: ", path)
+        #     for parent_node_id, _ in path:
+        #         self.nodes[parent_node_id].isHighlighted = True
+        # else:
+        #     if node_id in self.nodes:
+        #         self.nodes[node_id].isHighlighted = False
+        #         for child_id in self.nodes[node_id].children:
+        #             self.set_highlight(child_id, False)
     
     def get_path(self, node_id: str):
         path = []
