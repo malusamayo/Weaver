@@ -50,6 +50,14 @@ const tooltip_style= {
   fontSize: "80%",
 };
 
+const selected_node_style = {
+  cursor: "pointer", 
+  background:" #ffef86", 
+  borderRadius: "6px", 
+  paddingLeft: "5px", 
+  paddingRight: "5px"
+}
+
 const StyledRelation = ({node, nodeTag}) => {
 
   // const { dispatch, setIsLoading } = useTreeContext();
@@ -108,6 +116,7 @@ const StyledRelation = ({node, nodeTag}) => {
 
 const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighted, node, isEditing, handleNodeClick, type, setNodeHighlighted}) => {
 
+  const { selectedNode} = useTreeContext();
   const [tag, setTags] = useState(node.nl_tag);
 
   useEffect(() => {
@@ -147,7 +156,7 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
     event.stopPropagation();
     setNodeHighlighted(!isHighlighted)
   }
-
+    
   return (
     <StyledName>
       <div style={{cursor: "pointer"}}>
@@ -173,9 +182,16 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
       }
       </div>
       &nbsp;&nbsp;
-      <div id={anchor_id} onDoubleClick={handleDoubleClick} onClick={handleNodeClick} style={{cursor: "pointer"}}>
-        {name}
-      </div>
+      {
+        selectedNode && (selectedNode.node.id === node.id) ? 
+        <div id={anchor_id} onDoubleClick={handleDoubleClick} onClick={handleNodeClick} style={selected_node_style}>
+          {name}
+        </div> :
+        <div id={anchor_id} onDoubleClick={handleDoubleClick} onClick={handleNodeClick} style={{cursor: "pointer"}}>
+          {name}
+        </div>
+      }
+      
       <Tooltip place="bottom" anchorSelect="#highlight-topic" content="Highlight the Topic" style={tooltip_style}/>
       <Tooltip place="bottom" anchorSelect="#unhighlight-topic" content="Unhighlight the Topic" style={tooltip_style}/>
     </StyledName>
