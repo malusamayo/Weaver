@@ -2,7 +2,6 @@ import json
 from os.path import exists
 from os import getenv
 import os
-# from revChatGPT.Official import Chatbot
 import openai
 import tiktoken
 

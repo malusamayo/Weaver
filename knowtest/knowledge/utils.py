@@ -9,6 +9,11 @@ from nltk.tokenize import word_tokenize
 from .relations import to_nl_description
 from .model import MyGPT2LMHeadModel
 
+# import nltk
+# nltk.download('punkt')
+# nltk.download('wordnet')
+# nltk.download('omw-1.4')
+
 class PerplexityScorer:
 
     def __init__(self):
