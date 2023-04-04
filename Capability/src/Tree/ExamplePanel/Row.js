@@ -109,12 +109,12 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
 
     const commitPass = () => {
         setExampleOutput(exampleData.examplePredicted);
-        commitUpdateRowOutput(exampleData, exampleData.examplePredicted);
+        commitUpdateRow(exampleData, {...exampleData, exampleTrue: exampleData.examplePredicted, isSuggested: false});
     };
 
     const commitFail = () => {
         setExampleOutput("UNKNOWN");
-        commitUpdateRowOutput(exampleData, "UNKNOWN");
+        commitUpdateRow(exampleData, {...exampleData, exampleTrue: "UNKNOWN", isSuggested: false});
     };
 
     const handleExampleTextClick = () => {
@@ -132,7 +132,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     const handleExampleTextKeyDown = (event) => {
         if (event.key === "Escape" || (event.key === 'Enter')) {
             console.log(exampleText)
-            commitUpdateRowText(exampleData, exampleText);
+            commitUpdateRow(exampleData, {...exampleData, exampleText: exampleText});
             setIsEditingExampleText(false);
         }
     }
@@ -144,7 +144,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     const handleExampleOutputKeyDown = (event) => {
         if (event.key === "Escape" ||  (event.key === 'Enter')) {
             console.log(exampleOutput)
-            commitUpdateRowOutput(exampleData, exampleOutput);
+            commitUpdateRow(exampleData, {...exampleData, exampleTrue: exampleOutput});
             setIsEditingExampleOutput(false);
         }
     }
@@ -175,38 +175,58 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     //     commitExampleStatus(false, false, true);
     // }
 
-    const commitUpdateRowText = async (example, text) => {
+    const commitUpdateRow = async (example, updatedExample) => {
         try {
             const newExampleData = await fetchAPIDATA("updateExample", {
                 "nodeId": nodeId,
-                "exampleId": example.id,
-                "exampleText": text,
-                "exampleTrue": example.exampleTrue,
-                "isSuggested": example.isSuggested,
-                "exampleOffTopic": example.exampleOffTopic
+                "exampleId": updatedExample.id,
+                "exampleText": updatedExample.exampleText,
+                "exampleTrue": updatedExample.exampleTrue,
+                "isSuggested": updatedExample.isSuggested,
+                "exampleOffTopic": updatedExample.exampleOffTopic
             }, true);
-            setExamplePredicted(newExampleData.examplePredicted);
-            commitUpdateExample(newExampleData);
+            // update predicted if text has changed
+            console.log("example: ", newExampleData);
+            if (example.exampleText !== updatedExample.exampleText)
+                setExamplePredicted(newExampleData.examplePredicted);
+            commitUpdateExample(newExampleData, example.isSuggested !== updatedExample.isSuggested);
         } catch (error) {
             console.log("Error: ", error);
         }
     };
 
-    const commitUpdateRowOutput = async (example, text) => {
-        try {
-            const newExampleData = await fetchAPIDATA("updateExample",{
-                "nodeId": nodeId,
-                "exampleId": example.id,
-                "exampleText": example.exampleText,
-                "exampleTrue": text,
-                "isSuggested": example.isSuggested,
-                "exampleOffTopic": example.exampleOffTopic
-            }, true);
-            commitUpdateExample(newExampleData);
-        } catch (error) {
-            console.log("Error: ", error);
-        }
-    };
+    // const commitUpdateRowText = async (example, text) => {
+    //     try {
+    //         const newExampleData = await fetchAPIDATA("updateExample", {
+    //             "nodeId": nodeId,
+    //             "exampleId": example.id,
+    //             "exampleText": text,
+    //             "exampleTrue": example.exampleTrue,
+    //             "isSuggested": example.isSuggested,
+    //             "exampleOffTopic": example.exampleOffTopic
+    //         }, true);
+    //         setExamplePredicted(newExampleData.examplePredicted);
+    //         commitUpdateExample(newExampleData);
+    //     } catch (error) {
+    //         console.log("Error: ", error);
+    //     }
+    // };
+
+    // const commitUpdateRowOutput = async (example, text) => {
+    //     try {
+    //         const newExampleData = await fetchAPIDATA("updateExample",{
+    //             "nodeId": nodeId,
+    //             "exampleId": example.id,
+    //             "exampleText": example.exampleText,
+    //             "exampleTrue": text,
+    //             "isSuggested": example.isSuggested,
+    //             "exampleOffTopic": example.exampleOffTopic
+    //         }, true);
+    //         commitUpdateExample(newExampleData);
+    //     } catch (error) {
+    //         console.log("Error: ", error);
+    //     }
+    // };
 
     // const commitExampleStatus = async (example, offTopicSelection) => {
     //     try {
@@ -250,6 +270,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     return (
             <tr onClick={handleRowSelect}
                 style={rowStyle}
+                draggable
             >
             {
                 isEditingExampleText ?

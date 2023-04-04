@@ -114,7 +114,10 @@ const ExamplePanel = ({node}) => {
         // Sort the example by isSuggested put all suggested examples at the top
         const sortedSelectedNodeExamples = selectedNodeExamples.sort((a, b) => {
             if (a.isSuggested === b.isSuggested) {
-                return a.exampleConfidence - b.exampleConfidence;
+                if (a.isSuggested === true)
+                    return a.exampleConfidence - b.exampleConfidence;
+                else
+                    return 0;
             } else if (a.isSuggested === true) {
                 return -1;
             } else {
@@ -158,10 +161,13 @@ const ExamplePanel = ({node}) => {
     const commitMoreSuggestions = async () => {
         try {
             setIsLoading(true);
+            const filteredNodeExamples = selectedNodeExamples.filter((example) => {
+                return !example.isSuggested;
+            });
+            setSelectedNodeExamples(filteredNodeExamples);
             const newDataExamples = await fetchAPIDATA("getMoreExamples", {
                 "nodeId": selectedNode.id
             });
-            setSelectedNodeExamples([]);
             setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
             if (!node.node.isHighlighed)
                 setNodeHighlighted(node.node.id, true);
@@ -293,18 +299,30 @@ const ExamplePanel = ({node}) => {
     //     return () => document.removeEventListener("keydown", handleCMDMinusPress);
     // });
 
-    const commitUpdateExample = (updatedExample) => {
+    const commitUpdateExample = (updatedExample, suggestionAdded) => {
         try {
 
-            const newDataExamples = selectedNodeExamples.map((example) => {
-                return example.id !== updatedExample.id ? example : updatedExample;
-            });
+            let newDataExamples;
 
             if (!node.node.isHighlighed)
                 setNodeHighlighted(node.node.id, true);
 
             // console.log("New data examples: ", newDataExamples);
-            setSelectedNodeExamples(newDataExamples);
+
+            if (suggestionAdded === true) {
+                const filteredNodeExamples = selectedNodeExamples.filter((example) => {
+                    return example.id !== updatedExample.id;
+                });
+                newDataExamples = [...filteredNodeExamples, updatedExample];
+            } else {
+                newDataExamples = selectedNodeExamples.map((example) => {
+                    return example.id !== updatedExample.id ? example : updatedExample;
+                });
+            }
+
+            const sortedSelectedNodeExamples = sortSelectedNodeExamples(newDataExamples);
+
+            setSelectedNodeExamples(sortedSelectedNodeExamples);
             // setIsLoading(false);
         } catch (error) {
             console.log("Error: ", error);
