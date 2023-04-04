@@ -137,7 +137,7 @@ class Prompter(object):
         prompt = ""
         prompt += context
         prompt += "\n"
-        prompt += f"Write {N + len(examples)} comments on the topic '{topic}' in {domain}. Pay attention to the context above.\n"
+        prompt += f"Write {N + len(examples)} comments on the topic '{topic}' in {domain}. Pay attention to both the context above and the comments below.\n"
         for i, example in enumerate(examples):
             prompt += f"{i+1}. {example}\n"
         prompt += f"{len(examples) + 1}. "
