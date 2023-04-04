@@ -324,6 +324,10 @@ class Tree:
 
         return cwd
     
+    def clear_suggested_examples(self, node_id: str):
+        if node_id in self.nodes:
+            self.nodes[node_id].suggested_examples.clear()
+    
     def add_example(self, node_id: str, exampleText: str, exampleTrue: str, examplePredicted, exampleConfidence, isSuggested: bool, exampleOffTopic: bool):
         if node_id in self.nodes:
             example = Example(id=None)

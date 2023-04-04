@@ -185,6 +185,7 @@ class CapabilityApp:
         @self.app.get("/getMoreExamples")
         def get_more_examples(nodeId: str):
             suggested_examples = self.t.suggest_examples(nodeId)
+            self.t.clear_suggested_examples(nodeId)
             for exampleText in suggested_examples:
                 example_predicted, example_conf = self.model.predict(exampleText)
                 self.t.add_example(nodeId, exampleText, "", example_predicted, example_conf, True, False)
