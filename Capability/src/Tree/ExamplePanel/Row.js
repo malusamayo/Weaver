@@ -6,12 +6,7 @@ import { ImCross } from "react-icons/im";
 import {
     RiDeleteBin2Line
 }   from "react-icons/ri";
-import {
-    BiAddToQueue
-}   from "react-icons/bi";
-import {
-    AiOutlineLike
-}   from "react-icons/ai";
+import { GrAddCircle } from "react-icons/gr";
 // import { useTreeContext } from "../state/TreeContext";
 import {fetchAPIDATA} from "../../utils";
 // import { set } from "lodash";
@@ -312,8 +307,8 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
             <td>
                 {
                     isSuggested ?
-                        <AiOutlineLike onClick={handleAddSuggested} style={{fontSize: "20px", cursor: "pointer"}}/> :
-                        <AiOutlineLike style={{fontSize: "20px", opacity: "0"}}/>
+                        <GrAddCircle onClick={handleAddSuggested} style={{fontSize: "20px", cursor: "pointer"}}/> :
+                        <GrAddCircle style={{fontSize: "20px", opacity: "0"}}/>
                 }
             </td>
 

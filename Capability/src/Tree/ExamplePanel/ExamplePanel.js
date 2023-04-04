@@ -3,6 +3,7 @@ import { Tooltip } from 'react-tooltip';
 import {fetchAPIDATA} from "../../utils";
 import "./ExamplePanel.css";
 import { GoDiffAdded } from "react-icons/go";
+import { BsArrow90DegDown, BsArrow90DegRight } from "react-icons/bs";
 import { FaRedo } from "react-icons/fa";
 import { GrAddCircle } from "react-icons/gr";
 import { Row } from "./Row";
@@ -32,19 +33,19 @@ const ExamplePanel = ({node}) => {
                 });
     
                 // Count the number of examples that are not suggested
-                let countNotSuggested = 0;
-                for (let i = 0; i < newDataExamples.length; i++) {
-                    if (newDataExamples[i].isSuggested === false) {
-                        countNotSuggested++;
-                    }
-                }
+                // let countNotSuggested = 0;
+                // for (let i = 0; i < newDataExamples.length; i++) {
+                //     if (newDataExamples[i].isSuggested === false) {
+                //         countNotSuggested++;
+                //     }
+                // }
 
-                if (countNotSuggested === 0) {
-                    const blankRow = blankRowAdd("Click here to add an example");
-                    commitAddBlankRow(blankRow);
-                } else {
-                    setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
-                }
+                // if (countNotSuggested === 0) {
+                //     const blankRow = blankRowAdd("Click here to add an example");
+                //     commitAddBlankRow(blankRow);
+                // } else {
+                setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+                // }
 
                 setIsLoading(false);
             } catch (error) {
@@ -363,18 +364,18 @@ const ExamplePanel = ({node}) => {
                 setSelectedNodeExamples(newDataExamples);
                 setIsLoading(false);
 
-                let countNotSuggested = 0;
-                for (let i = 0; i < newDataExamples.length; i++) {
-                    if (newDataExamples[i].isSuggested === false) {
-                        countNotSuggested++;
-                    }
-                }
+                // let countNotSuggested = 0;
+                // for (let i = 0; i < newDataExamples.length; i++) {
+                //     if (newDataExamples[i].isSuggested === false) {
+                //         countNotSuggested++;
+                //     }
+                // }
 
-                if (countNotSuggested === 0) {
-                    const blankRow = blankRowAdd("Click here to add an example");
-                    // setSelectedNodeExamples([...newDataExamples, blankRow]);
-                    commitAddBlankRow(blankRow);
-                }
+                // if (countNotSuggested === 0) {
+                //     const blankRow = blankRowAdd("Click here to add an example");
+                //     // setSelectedNodeExamples([...newDataExamples, blankRow]);
+                //     commitAddBlankRow(blankRow);
+                // }
 
                 // First set the selected row to new available row
                 let nextRowPosition = 0;
@@ -478,15 +479,24 @@ const ExamplePanel = ({node}) => {
                     <div>
                         <p>Topic: {selectedNode.name}</p> 
                         <p>Path: {selectedNode.naturalLanguagePath}</p>
+                        {
+                            selectedNodeExamples.length === 0 ? 
+                            <div style={{display: "flex", justifyContent: "right", alignItems: "center"}}>
+                                <BsArrow90DegDown style={{fontSize: "20px", opacity: "1"}} id="prompt"/>
+                                <p style={{marginLeft: "5px", fontStyle:"italic", fontSize:"15px"}}>Click to add/suggest examples</p>
+                                <BsArrow90DegRight style={{fontSize: "20px", opacity: "1", marginLeft: "6px", transform: 'rotate(90deg)'}} id="prompt"/>
+                            </div> :
+                            null
+                        }
                         <div style={{display: "flex", justifyContent: "right", alignItems: "center"}}>
                             {/* <p><u>Suggested Examples</u></p> */}
-                            <div style={{display: "flex", alignItems: "top"}} onClick={handleMoreSuggestions}>
-                                <FaRedo style={{fontSize: "16px", opacity: "1", cursor: "pointer", marginTop: "4px"}} id="suggest-examples"/>
+                            <div style={{display: "flex", alignItems: "top", cursor: "pointer"}} onClick={handleMoreSuggestions}>
+                                <FaRedo style={{fontSize: "16px", opacity: "1", marginTop: "4px"}} id="suggest-examples"/>
                                 <p style={{marginLeft: "5px", marginRight: "20px"}}>Suggestions</p>
                                 <Tooltip place="bottom" anchorSelect="#suggest-examples" content="Suggest More Examples" style={tooltip_style}/>
                             </div>
-                            <div style={{display: "flex", alignItems: "top"}} onClick={handleAddBlankRow}>
-                                <GrAddCircle style={{fontSize: "20px", opacity: "1", cursor: "pointer", marginTop: "2px"}} id="add-example"/>
+                            <div style={{display: "flex", alignItems: "top", cursor: "pointer"}} onClick={handleAddBlankRow}>
+                                <GrAddCircle style={{fontSize: "20px", opacity: "1", marginTop: "2px"}} id="add-example"/>
                                 <p style={{marginLeft: "5px"}}>Add Examples</p>
                                 <Tooltip place="bottom" anchorSelect="#add-example" content="Add Example" style={tooltip_style}/>
                             </div>

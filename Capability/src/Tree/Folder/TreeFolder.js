@@ -352,7 +352,7 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
     setIsOpen(true);
     // console.log("handleFolderCreation");
     setChilds([
-      ...childs,
+      childs,
       <PlaceholderInput
         type="folderCreation"
         onSubmit={commitFolderCreation}
@@ -360,6 +360,7 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
         defaultValue="New Topic"
         node={node}
         isEditing={false}
+        key={node.id}
       />,
     ]);
   };
