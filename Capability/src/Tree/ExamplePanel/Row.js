@@ -9,6 +9,8 @@ import {
 import { GrAddCircle } from "react-icons/gr";
 // import { useTreeContext } from "../state/TreeContext";
 import {fetchAPIDATA} from "../../utils";
+
+import { AlertDelete } from "../Folder/AlertDelete";
 // import { set } from "lodash";
 
 // const ExamplePanelOff = () => {
@@ -54,6 +56,9 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     const [pass, setPass] = useState((exampleData.exampleTrue === exampleData.examplePredicted) || (exampleData.exampleTrue === ""));
     const [fail, setFail] = useState((exampleData.exampleTrue !== exampleData.examplePredicted) && (exampleData.exampleTrue !== ""));
     // const { setIsLoading } = useTreeContext();
+
+
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         if ((exampleOutput === examplePredicted) || (exampleOutput === "")) {
@@ -145,7 +150,12 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     }
 
     const handleDeleteRow = () => {
-        commitDeleteRow(exampleData.id);
+        if (!isSuggested) {
+            setIsDeleting(true);
+            console.log("isDeleting: ", isDeleting);
+        } else {
+            commitDeleteRow(exampleData.id);
+        }
     }
 
     const handleAddSuggested = () => {
@@ -308,14 +318,15 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
                 {
                     isSuggested ?
                         <GrAddCircle onClick={handleAddSuggested} style={{fontSize: "20px", cursor: "pointer"}}/> :
-                        <GrAddCircle style={{fontSize: "20px", opacity: "0"}}/>
+                        <RiDeleteBin2Line onClick={handleDeleteRow} style={{fontSize: "20px", cursor: "pointer"}}/>
                 }
             </td>
 
-            <td onClick={handleDeleteRow} >
+            {/* <td onClick={handleDeleteRow} >
                 <RiDeleteBin2Line style={{fontSize: "20px", cursor: "pointer"}}/>
-            </td>
+            </td> */}
 
+            <AlertDelete node={exampleData} onConfirm={commitDeleteRow} isDeleting={isDeleting} setIsDeleting={setIsDeleting}/>
             </tr>
     );
 }

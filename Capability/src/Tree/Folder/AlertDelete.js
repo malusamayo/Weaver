@@ -5,7 +5,11 @@ const AlertDelete = ({ node, onConfirm, setIsDeleting, isDeleting}) => {
     
     const handleConfirm = () => {
         console.log("Confirming")
-        onConfirm();
+        if (node.exampleText) {
+            onConfirm(node.id); // delete example
+        } else {
+            onConfirm(); // delete folder
+        }
         setIsDeleting(false);
     };
     
@@ -39,22 +43,22 @@ const AlertDelete = ({ node, onConfirm, setIsDeleting, isDeleting}) => {
         }
     }, [isDeleting]);
 
+    const nodeName = node.exampleText ? "the example" : "\"" + node.name  + "\"";
+
     return (
-        <div>
-        {isDeleting && (
-            <div className="alert-delete-container">
-                    <div className="alert-delete">
-                        <div className="alert-delete__content">
-                        <p>Are you sure you want to delete "{node.name}"?</p>
-                        <div className="alert-delete__actions">
-                            <button onClick={handleCancel}>Cancel</button> 
-                            <button onClick={handleConfirm} autoFocus>Delete</button>
-                        </div>
+        isDeleting ?
+        <div className="alert-delete-container">
+                <div className="alert-delete">
+                    <div className="alert-delete__content">
+                    <p>Are you sure you want to delete {nodeName}?</p>
+                    <div className="alert-delete__actions">
+                        <button onClick={handleCancel}>Cancel</button> 
+                        <button onClick={handleConfirm} autoFocus>Delete</button>
                     </div>
                 </div>
             </div>
-        )}
-        </div>
+        </div> :
+        null
     );
 };
 

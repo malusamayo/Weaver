@@ -114,7 +114,7 @@ const ExamplePanel = ({node}) => {
         // Sort the example by isSuggested put all suggested examples at the top
         const sortedSelectedNodeExamples = selectedNodeExamples.sort((a, b) => {
             if (a.isSuggested === b.isSuggested) {
-                return 0;
+                return a.exampleConfidence - b.exampleConfidence;
             } else if (a.isSuggested === true) {
                 return -1;
             } else {
@@ -341,20 +341,20 @@ const ExamplePanel = ({node}) => {
         }
     };
 
-    const commitDeleteRow = async(selectedRow) => {
-        if (selectedRow !== null) {
+    const commitDeleteRow = async(row) => {
+        if (row !== null) {
             try {
                 setIsLoading(true);
 
                 await fetchAPIDATA("removeExample", {
                     "nodeId": selectedNode.id,
-                    "exampleId": selectedRow
+                    "exampleId": row
                 }, true);
 
-                console.log("removeExample: ", selectedRow);
+                console.log("removeExample: ", row);
 
                 const filteredNodeExamples = selectedNodeExamples.filter((example) => {
-                    return example.id !== selectedRow;
+                    return example.id !== row;
                 });
 
                 const newDataExamples = sortSelectedNodeExamples(filteredNodeExamples);
@@ -380,7 +380,7 @@ const ExamplePanel = ({node}) => {
                 // First set the selected row to new available row
                 let nextRowPosition = 0;
                 for (let i = 0; i < selectedNodeExamples.length; i++) {
-                    if (selectedNodeExamples[i].id === selectedRow) {
+                    if (selectedNodeExamples[i].id === row) {
                         nextRowPosition = i;
                     }
                 }
@@ -389,7 +389,7 @@ const ExamplePanel = ({node}) => {
                 console.log("nextRowPosition: ", nextRowPosition);
                 try {
                     setSelectedRow(newDataExamples[nextRowPosition].id);
-                    console.log("Selected new row: ", selectedRow);
+                    console.log("Selected new row: ", row);
                 } catch (error) {
                     console.log("Error: ", error);
                 }
@@ -520,7 +520,6 @@ const ExamplePanel = ({node}) => {
                                 {/* <td>Off-topic</td>  */}
                                 <td>Pass</td>
                                 <td>Fail</td>
-                                <td></td>
                                 <td></td>
                             </tr>
                             </thead>
