@@ -150,12 +150,12 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     }
 
     const handleDeleteRow = () => {
-        if (!isSuggested) {
-            setIsDeleting(true);
-            console.log("isDeleting: ", isDeleting);
-        } else {
-            commitDeleteRow(exampleData.id);
-        }
+        // if (!isSuggested) {
+        //     setIsDeleting(true);
+        //     console.log("isDeleting: ", isDeleting);
+        // } else {
+        commitDeleteRow(exampleData.id);
+        // }
     }
 
     const handleAddSuggested = () => {
@@ -363,7 +363,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
                 <RiDeleteBin2Line style={{fontSize: "20px", cursor: "pointer"}}/>
             </td> */}
 
-            <AlertDelete node={exampleData} onConfirm={commitDeleteRow} isDeleting={isDeleting} setIsDeleting={setIsDeleting}/>
+            {/* <AlertDelete node={exampleData} onConfirm={commitDeleteRow} isDeleting={isDeleting} setIsDeleting={setIsDeleting}/> */}
             </tr>
     );
 }
