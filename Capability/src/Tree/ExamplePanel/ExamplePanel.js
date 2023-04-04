@@ -407,33 +407,37 @@ const ExamplePanel = ({node}) => {
 
     // }
 
-    // const SuggestedTable = ({selectedNodeExamples}) => {
-    //     return selectedNodeExamples.map((example, index) => {
-    //             // console.log("example: ", example);
-    //             if (example.isSuggested === true) {
-    //                 return (
-    //                     <Row 
-    //                         exampleData={example}
-    //                         key={index}
-    //                         setSelectedRow={setSelectedRow}
-    //                         selectedRow={selectedRow}
-    //                         nodeId={selectedNode.id}
-    //                         commitUpdateExample={commitUpdateExample}
-    //                         isSuggested={true}
-    //                         commitDeleteRow={commitDeleteRow}
-    //                         commitUpdateExampleSuggested={commitUpdateExampleSuggested}
-    //                     />
-    //                 )
-    //             } else {
-    //                 return null;
-    //             }
-    //     })
-    // };
+    const SuggestedTable = ({selectedNodeExamples}) => {
+        return selectedNodeExamples.map((example, index) => {
+                // console.log("example: ", example);
+                if (example.isSuggested === true) {
+                    return (
+                        <Row 
+                            exampleData={example}
+                            key={index}
+                            setSelectedRow={setSelectedRow}
+                            selectedRow={selectedRow}
+                            nodeId={selectedNode.id}
+                            commitUpdateExample={commitUpdateExample}
+                            isSuggested={true}
+                            commitDeleteRow={commitDeleteRow}
+                            commitUpdateExampleSuggested={commitUpdateExampleSuggested}
+                            rowStyle={
+                                selectedRow === example.id ?
+                                    {backgroundColor: "rgb(247, 247, 247)"} : {backgroundColor: "rgb(243, 248, 255)"}
+                            }
+                        />
+                    )
+                } else {
+                    return null;
+                }
+        })
+    };
 
     const SelectedTable = ({selectedNodeExamples}) => {
         // console.log("SelectedTable: ", selectedNodeExamples);
         return selectedNodeExamples.map((example, index) => {
-            // if (example.isSuggested === false) {
+            if (example.isSuggested === false) {
                 return (
                     <Row 
                         exampleData={example}
@@ -442,21 +446,18 @@ const ExamplePanel = ({node}) => {
                         selectedRow={selectedRow}
                         nodeId={selectedNode.id}
                         commitUpdateExample={commitUpdateExample}
-                        isSuggested={example.isSuggested}
+                        isSuggested={false}
                         commitDeleteRow={commitDeleteRow}
                         commitUpdateExampleSuggested={commitUpdateExampleSuggested}
                         rowStyle={
                             selectedRow === example.id ?
-                                {backgroundColor: "rgb(247, 247, 247)"} : (
-                                    example.isSuggested ? {backgroundColor: "rgb(243, 248, 255)"} :
-                                    {backgroundColor: "rgb(255, 255, 255)"}
-                                )
+                                {backgroundColor: "rgb(247, 247, 247)"} : {backgroundColor: "rgb(255, 255, 255)"}
                         }
                     />
                 )
-            // } else {
-            //     return null;
-            // }
+            } else {
+                return null;
+            }
         })
     };
 
@@ -509,6 +510,17 @@ const ExamplePanel = ({node}) => {
                                 <Tooltip place="bottom" anchorSelect="#add-example" content="Add Example" style={tooltip_style}/>
                             </div>
                         </div> */}
+
+
+                        <table className="example-panel-selected-table">
+                            <tbody>
+                            {
+                                <SuggestedTable selectedNodeExamples={selectedNodeExamples}/>
+                            }
+                            </tbody>
+                        </table>
+                        <br/>
+
                         <table className="example-panel-selected-table">
                             <thead>
                             <tr>
@@ -523,20 +535,15 @@ const ExamplePanel = ({node}) => {
                                 <td></td>
                             </tr>
                             </thead>
-                            <tbody>
-                            {
-                                <SelectedTable selectedNodeExamples={selectedNodeExamples}/>
-                            }
-                            </tbody>
                         </table>
-                        {/* <br/>
+
                         <table className="example-panel-selected-table">
                             <tbody>
                             {
                                 <SelectedTable selectedNodeExamples={selectedNodeExamples}/>
                             }
                             </tbody>
-                        </table> */}
+                        </table>
                     </div>
                 }
             </div>
