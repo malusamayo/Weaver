@@ -267,9 +267,25 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     }
 
 
+    const dragStart = (e) => {
+        e.dataTransfer.setData('exampleId', exampleData.id);
+        e.dataTransfer.setData('nodeId', nodeId);
+        e.dataTransfer.setData('isSuggested', exampleData.isSuggested);
+        e.dataTransfer.setData('exampleText', exampleData.exampleText);
+        e.dataTransfer.setData('exampleTrue', exampleData.exampleTrue);
+        e.dataTransfer.setData('exampleOffTopic', exampleData.exampleOffTopic);
+      };
+
+    const dragEnd = (e) => {
+        e.dataTransfer.clearData();
+        // commitGetExample();
+    };
+
     return (
             <tr onClick={handleRowSelect}
                 style={rowStyle}
+                onDragStart={dragStart}
+                onDragEnd={dragEnd}
                 draggable
             >
             {

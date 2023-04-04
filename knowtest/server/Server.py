@@ -158,8 +158,14 @@ class CapabilityApp:
         @self.app.post("/addExample")
         def add_example(exampleRow: ExampleRow):
             nodeId, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
-            example_predicted, example_conf = "None", 0
+            example_predicted, example_conf = "NONE", 0
             newRow = self.t.add_example(nodeId, example_text, example_true, example_predicted, example_conf, is_suggested, example_off_topic)
+            self.t.write_json()
+            return self.t.get_example_list(nodeId)
+        
+        @self.app.post("/moveExample")
+        def drag_example(nodeId: str, exampleId: str, newNodeId: str):
+            self.t.switch_example_node(nodeId, exampleId, newNodeId)
             self.t.write_json()
             return self.t.get_example_list(nodeId)
         

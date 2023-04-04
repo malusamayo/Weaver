@@ -370,6 +370,31 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
     setIsEditing(true);
   };
 
+  const commitDragRow = async (nodeId, exampleId) => {
+    try {
+        await fetchAPIDATA("moveExample", {
+            "nodeId": nodeId,
+            "exampleId": exampleId,
+            "newNodeId": node.id
+        }, true);
+        onNodeClick({ node });
+    } catch (error) {
+        console.log("Error: ", error);
+    }
+  };   
+
+  const dragOver = (e) => {
+    e.preventDefault();
+  };
+ 
+  const dragEnter = (e) => {
+    e.preventDefault();
+  };
+
+  const drop = (e) => {
+    e.preventDefault();
+    commitDragRow(e.dataTransfer.getData("nodeId"), e.dataTransfer.getData("exampleId"));
+  };
 
   return (
     <StyledFolder id={id} className="tree__folder">
@@ -379,28 +404,34 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
             {/* {root ? (<div style={{marginRight: "15px"}} >></div>) : null} */}
             {/* {node.tag.length ? (<Dropdown node={node}/>): null} */}
             {/* <div ref={editTextBox}> */}
-            {isEditing ? (
-              <PlaceholderInput
-                style={{ paddingLeft: 0}}
-                isHighlighted={node.isHighlighted}
-                defaultValue={name}
-                node={node}
-                onCancel={handleCancel}
-                onSubmit={commitFolderEdit}
-                isEditing={true}
-                handleNodeClick={handleNodeClick}
-              />
-            ) : (
-              <FolderName
-                name={name}
-                isOpen={isOpen}
-                isHighlighted={node.isHighlighted}
-                node={node}
-                handleClick={() => setNodeOpen(!isOpen)}
-                handleDoubleClick={handleFolderRename}
-                handleNodeClick={handleNodeClick}
-              />
-            )}
+            <div 
+                onDrop={drop}
+                onDragEnter={dragEnter}
+                onDragOver={dragOver}
+            >
+                  {isEditing ? (
+                    <PlaceholderInput
+                      style={{ paddingLeft: 0}}
+                      isHighlighted={node.isHighlighted}
+                      defaultValue={name}
+                      node={node}
+                      onCancel={handleCancel}
+                      onSubmit={commitFolderEdit}
+                      isEditing={true}
+                      handleNodeClick={handleNodeClick}
+                    />
+                  ) : (
+                    <FolderName
+                      name={name}
+                      isOpen={isOpen}
+                      isHighlighted={node.isHighlighted}
+                      node={node}
+                      handleClick={() => setNodeOpen(!isOpen)}
+                      handleDoubleClick={handleFolderRename}
+                      handleNodeClick={handleNodeClick}
+                    />
+                  )}
+            </div>
             {/* </div> */}
 
             <div className="actions">

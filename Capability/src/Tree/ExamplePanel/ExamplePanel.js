@@ -12,7 +12,6 @@ import { useTreeContext } from "../state/TreeContext";
 
 const ExamplePanel = ({node}) => {
 
-    // console.log("ExamplePanel", node);
     // uddate the node state when the node prop changes
     const [selectedNodeExamples, setSelectedNodeExamples] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
@@ -20,71 +19,46 @@ const ExamplePanel = ({node}) => {
     const { setIsLoading, setNodeHighlighted } = useTreeContext();
 
     // Add blank row when the ExamplePanel is first rendered
-    
 
-    useEffect(() => {
+    const commitGetExample = async () => {
+        try {
+            setIsLoading(true);
+            // console.log("Getting examples for node");
+            const newDataExamples = await fetchAPIDATA("getExampleList", {
+                "nodeId": node.node.id
+            });
 
-        const commitGetExample = async () => {
-            try {
-                setIsLoading(true);
-                // console.log("Getting examples for node");
-                const newDataExamples = await fetchAPIDATA("getExampleList", {
-                    "nodeId": node.node.id
-                });
-    
-                // Count the number of examples that are not suggested
-                // let countNotSuggested = 0;
-                // for (let i = 0; i < newDataExamples.length; i++) {
-                //     if (newDataExamples[i].isSuggested === false) {
-                //         countNotSuggested++;
-                //     }
-                // }
+            // Count the number of examples that are not suggested
+            // let countNotSuggested = 0;
+            // for (let i = 0; i < newDataExamples.length; i++) {
+            //     if (newDataExamples[i].isSuggested === false) {
+            //         countNotSuggested++;
+            //     }
+            // }
 
-                // if (countNotSuggested === 0) {
-                //     const blankRow = blankRowAdd("Click here to add an example");
-                //     commitAddBlankRow(blankRow);
-                // } else {
-                setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
-                // }
+            // if (countNotSuggested === 0) {
+            //     const blankRow = blankRowAdd("Click here to add an example");
+            //     commitAddBlankRow(blankRow);
+            // } else {
+            setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
+            // }
 
-                setIsLoading(false);
-            } catch (error) {
-                console.log("Error: ", error);
-            }
-        };
+            setIsLoading(false);
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    };
 
+    useEffect(() => {    
         if (node) {
             // setSelectedNodeExamples([]);
             setSelectedNode(node.node);
             commitGetExample();
+        } else {
+            setSelectedNode(null);
+            setSelectedNodeExamples([]);
         }
     }, [node]);
-
-    // useLayoutEffect(() => {
-
-    //     const commitGetExample = async () => {
-    //         try {
-    //             setIsLoading(true);
-                
-    //             // [TODO] make sure they always equal
-    //             // if (node.node.id !== selectedNode.id) {
-    //             //     console.log("Getting examples for node", node, selectedNode);
-    //             // }
-    //             const newDataExamples = await fetchAPIDATA("getExampleList", {
-    //                 "nodeId": selectedNode.id
-    //             }); 
-    
-    //             setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
-    //             setIsLoading(false);
-    //         } catch (error) {
-    //             console.log("Error: ", error);
-    //         }
-    //     };
-
-    //     if (selectedNode) {
-    //         commitGetExample();
-    //     }
-    // }, [selectedNode]);
 
     useEffect(() => {
         const examplePanelContainer = divRef.current;
@@ -440,6 +414,7 @@ const ExamplePanel = ({node}) => {
                             isSuggested={true}
                             commitDeleteRow={commitDeleteRow}
                             commitUpdateExampleSuggested={commitUpdateExampleSuggested}
+                            commitGetExample={commitGetExample}
                             rowStyle={
                                 selectedRow === example.id ?
                                     {backgroundColor: "rgb(247, 247, 247)"} : {backgroundColor: "rgb(243, 248, 255)"}
@@ -467,6 +442,7 @@ const ExamplePanel = ({node}) => {
                         isSuggested={false}
                         commitDeleteRow={commitDeleteRow}
                         commitUpdateExampleSuggested={commitUpdateExampleSuggested}
+                        commitGetExample={commitGetExample}
                         rowStyle={
                             selectedRow === example.id ?
                                 {backgroundColor: "rgb(247, 247, 247)"} : {backgroundColor: "rgb(255, 255, 255)"}
@@ -478,6 +454,27 @@ const ExamplePanel = ({node}) => {
             }
         })
     };
+
+    const dragOver = (e) => {
+        e.preventDefault();
+    };
+     
+    const dragEnter = (e) => {
+        e.preventDefault();
+    };
+
+    const drop = (e) => {
+        e.preventDefault();
+        console.log("drop", e);
+        const example = {
+            "id": e.dataTransfer.getData("exampleId"),
+            "exampleText": e.dataTransfer.getData("exampleText"),
+            "exampleTrue": e.dataTransfer.getData("exampleTrue"),
+            "isSuggested": false,
+            "exampleOffTopic": e.dataTransfer.getData("exampleOffTopic")
+        }
+        commitUpdateExampleSuggested(example, false);
+    }
 
 
     const divRef = useRef(null);
@@ -555,7 +552,11 @@ const ExamplePanel = ({node}) => {
                             </thead>
                         </table>
 
-                        <table className="example-panel-selected-table">
+                        <table className="example-panel-selected-table"
+                                onDrop={drop}
+                                onDragEnter={dragEnter}
+                                onDragOver={dragOver}
+                        >
                             <tbody>
                             {
                                 <SelectedTable selectedNodeExamples={selectedNodeExamples}/>
