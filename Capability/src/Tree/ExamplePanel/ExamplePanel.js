@@ -472,7 +472,9 @@ const ExamplePanel = ({node}) => {
             "exampleText": e.dataTransfer.getData("exampleText"),
             "exampleTrue": e.dataTransfer.getData("exampleTrue"),
             "isSuggested": false,
-            "exampleOffTopic": e.dataTransfer.getData("exampleOffTopic")
+            "exampleOffTopic": e.dataTransfer.getData("exampleOffTopic"),
+            "examplePredicted": e.dataTransfer.getData("examplePredicted"),
+            "exampleConfidence": e.dataTransfer.getData("exampleConfidence"),            
         }
         commitUpdateExampleSuggested(example, false);
     }

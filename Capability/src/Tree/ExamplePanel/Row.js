@@ -274,6 +274,8 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
         e.dataTransfer.setData('exampleText', exampleData.exampleText);
         e.dataTransfer.setData('exampleTrue', exampleData.exampleTrue);
         e.dataTransfer.setData('exampleOffTopic', exampleData.exampleOffTopic);
+        e.dataTransfer.setData('examplePredicted', exampleData.examplePredicted);
+        e.dataTransfer.setData('exampleConfidence', exampleData.exampleConfidence);
       };
 
     const dragEnd = (e) => {
