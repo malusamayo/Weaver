@@ -176,6 +176,10 @@ const Tree = ({data}) => {
     setToggleExamplePanel(toggleExamplePanel => !toggleExamplePanel);
   };
 
+  const handleHelperClick = async () => {
+    setSelectedNode(null);
+  }
+
 
   // const isImparative = data && !children;
 
@@ -295,8 +299,8 @@ const Tree = ({data}) => {
                       (<GoArrowLeft size={30} onClick={commitBackState} style={{cursor: "pointer"}} id="go-back-state"/>) :
                       (<GoArrowLeft size={30} style={{color: "grey", cursor: "pointer"}} id="go-back-state"/>)
                     }
-                    <AiFillHome size={20} style={{cursor: "pointer"}} id="go-home"/>
-                    <IoMdHelpCircle size={25} style={{cursor: "pointer"}} id="go-help"/>
+                    {/* <AiFillHome size={20} style={{cursor: "pointer"}} id="go-home"/> */}
+                    <IoMdHelpCircle size={25} onClick={handleHelperClick} style={{cursor: "pointer"}} id="go-help"/>
                   </div>
                   <div>
                     Checked Topics Only
@@ -316,6 +320,7 @@ const Tree = ({data}) => {
                   </div>
                     <Tooltip place="bottom" anchorSelect="#go-back-state" content="Back" style={tooltip_style}/>
                     <Tooltip place="bottom" anchorSelect="#go-home" content="Home" style={tooltip_style}/>
+                    <Tooltip place="bottom" anchorSelect="#go-help" content="Show helper page" style={tooltip_style}/>
                     <Tooltip place="bottom" anchorSelect="#toggle-highlighted-off" content="Show all topics" style={tooltip_style}/>
                     <Tooltip place="bottom" anchorSelect="#toggle-highlighted-on" content="Show only highlighted topics" style={tooltip_style}/>
                     <Tooltip place="bottom" anchorSelect="#toggle-example-panel-off" content="Hide example panel" style={tooltip_style}/>
@@ -337,7 +342,7 @@ const Tree = ({data}) => {
               </Col>
               {/* </Scroll> */}
               {/* <Scroll Down> */}
-              <Col>
+              <Col style={{overflowY:"scroll", maxHeight:"calc(100vh - 100px)"}}>
                   {toggleExamplePanel && <ExamplePanel node={selectedNode}/>}
               </Col>
               {/* </Scroll> */}

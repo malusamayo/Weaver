@@ -9,6 +9,7 @@ import { GrAddCircle } from "react-icons/gr";
 import { Row } from "./Row";
 import { v4 as uuidv4 } from "uuid";
 import { useTreeContext } from "../state/TreeContext";
+import { HelperPage } from "./HelperPage";
 
 const ExamplePanel = ({node}) => {
 
@@ -490,9 +491,9 @@ const ExamplePanel = ({node}) => {
     return (
         <div className="example-panel" ref={divRef}>
             <div className="example-panel__content">
-                <h4>Example Panel</h4>
-                {selectedNode &&
+                {selectedNode ?
                     <div>
+                        <h4>Example Panel</h4>
                         <p>Topic: {selectedNode.name}</p> 
                         <p>Path: {selectedNode.naturalLanguagePath}</p>
                         {
@@ -545,8 +546,8 @@ const ExamplePanel = ({node}) => {
                                 <td>Predicted</td>
                                 <td>Confidence</td>
                                 {/* <td>Off-topic</td>  */}
-                                <td>Pass</td>
-                                <td>Fail</td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                             </tr>
                             </thead>
@@ -563,7 +564,8 @@ const ExamplePanel = ({node}) => {
                             }
                             </tbody>
                         </table>
-                    </div>
+                    </div> :
+                    <HelperPage />
                 }
             </div>
         </div>

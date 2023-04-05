@@ -358,7 +358,7 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
         onSubmit={commitFolderCreation}
         onCancel={handleCancel}
         defaultValue="New Topic"
-        node={node}
+        node={{...node, nl_tag: ["related to"]}}
         isEditing={false}
         key={node.id}
       />,
@@ -463,7 +463,7 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
                 <div style={{
                   display: "inline-block",
                   // padding: "2px"
-                }}>Show more topics for "{name}"</div>
+                }}>Show more subtopics for "{name}"</div>
               </StyledName>
             }
           </Collapse>
