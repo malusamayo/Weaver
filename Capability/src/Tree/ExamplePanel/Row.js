@@ -34,7 +34,7 @@ const ExamplePanelPass = () => {
 const ExamplePanelFail = () => {
     return (
         <div>
-            <ImCross style={{fontSize: "12px", opacity: "1", color: "rgb(190, 53, 53", cursor: "pointer"}}/>
+            <ImCross style={{fontSize: "12px", opacity: "1", color: "rgb(190, 53, 53)", cursor: "pointer"}}/>
         </div>
     );
 }

@@ -457,7 +457,8 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
                   paddingLeft: "22px",
                   fontSize: "90%",
                   color: "grey",
-                  cursor: "pointer",
+                  cursor: "pointer", 
+                  alignItems: "center"
                 }}>
                 <BsFillPlusCircleFill style={{fontSize: "80%", opacity:"0.8"}}/> &nbsp;&nbsp; 
                 <div style={{
