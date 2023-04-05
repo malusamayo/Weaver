@@ -28,7 +28,7 @@ See [next section](#crafting-examples) for details on using the Example Panel.
 After you run out of interesting topics to explore, you could always expand a topic by clicking on 
 ![image](icons/triangle.svg). Relevant sub-topics will show up.
 
-If you want to see more sub-topics for a given topic, just click on the line ![image](icons/more-topic.svg) <span style="color: grey">Show more topics for "topic"</span>.
+If you want to see more sub-topics for a given topic, just click on the line ![image](icons/more-topic.svg) $\textcolor{grey}{\textsf{Show more subtopics for "topic"}}$.
 
 ### Adding/Deleting Topics Manually
 Alternatively, you could also add manual topics you find interesting by clicking on ![image](icons/add-topic.svg).
