@@ -32,7 +32,8 @@ class Tree:
         usr_dir = os.path.join(file_directory, "usr", uid)
         if not os.path.exists(usr_dir):
             os.makedirs(usr_dir)
-        self.path_to_json = os.path.join(usr_dir, self.taskid + ".json")
+        baseline_str = "_baseline" if self.is_baseline_mode else ""
+        self.path_to_json = os.path.join(usr_dir, self.taskid + baseline_str + ".json")
 
         self.stateDirectory = usr_dir
         self.state = StateStack(self.stateDirectory)
