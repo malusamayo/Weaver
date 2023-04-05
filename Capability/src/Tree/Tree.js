@@ -329,7 +329,7 @@ const Tree = ({data}) => {
               </div>
             <Row>
               {/* <Scroll Down> */}
-              <Col xs="auto"> 
+              <Col xs="auto" style={{maxWidth: "40%"}}> 
                {/* style={{overflowY:"scroll", maxHeight:"calc(100vh - 100px)"}}> */}
                 <StyledTree>
                   <TreeRecusive data={state} parentNode={state} root={true} toggleIsHighlighted={toggleIsHighlighted}/>

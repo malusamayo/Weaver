@@ -99,7 +99,7 @@ export const TreeActionsWrapper = styled.div`
 export const StyledName = styled.div`
   background-color: white;
   display: flex;
-  align-items: center;
+  align-items: top;
 `;
 
 export const StyledAddTopic = styled.div`
@@ -112,8 +112,9 @@ export const StyledAddTopic = styled.div`
 export const StyledTag = styled.div`
   background-color: white;
   display: flex;
-  align-items: center;
+  align-items: top;
   margin-left: 4px;
+  margin-top: 5px;
   font-size: 11px;
   color: rgb(54, 54, 54);
   border-radius: 4px;
