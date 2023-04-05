@@ -38,7 +38,7 @@ class CapabilityApp:
         if not os.path.exists(os.path.join(self.file_directory, "kg")):
             os.makedirs(os.path.join(self.file_directory, "kg"))
 
-        self.model = ClassificationModel(path=model_dir)
+        self.model = ClassificationModel.create(path=model_dir)
         self.change_topic(topic, overwrite=overwrite)
 
         self.serverHost = serverHost

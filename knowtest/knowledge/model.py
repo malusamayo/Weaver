@@ -1,4 +1,5 @@
 import numpy as np
+import json
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from transformers import pipeline
@@ -95,6 +96,22 @@ class Model(object):
         pass
 
 class ClassificationModel(Model):
+    def __init__(self):
+        pass
+
+    def __call__(self, example):
+        pass
+    
+    @staticmethod
+    def create(path="") -> None:
+        if path.endswith(".json"):
+            with open(path, 'r') as f:
+                specs = json.load(f)
+            return GPTClassificationModel(specs['task'], specs['labels'])
+        else:
+            return HuggingfaceClassificationModel(path)
+
+class HuggingfaceClassificationModel(ClassificationModel):
     
     def __init__(self, path="") -> None:
         self.translate_dict = {
@@ -140,7 +157,7 @@ class ClassificationModel(Model):
         preds = self(examples)
         return [(pred['label'], pred['score']) for pred in preds]
     
-class GPTClassificationModel(Model):
+class GPTClassificationModel(ClassificationModel):
 
     def __init__(self, task="a sentence's sentiment", labels=['positive', 'negative']) -> None:
         label_msg = '", "'.join(labels[:-1])
@@ -171,7 +188,7 @@ class GPTClassificationModel(Model):
         return: str
             The predicted label
         '''
-        return self(example), 1
+        return self(example), 1 # Alternatively, sample multiple times and compute frequency
         
 
 if __name__ == "__main__":
