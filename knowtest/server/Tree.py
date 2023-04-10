@@ -3,6 +3,7 @@ import uuid
 import os
 import json
 import sys
+import logging
 from ..knowledge.knbase import KnowledgeBase
 from ..knowledge.knbase import run_kb_contruction
 from .StateStack import StateStack
@@ -34,6 +35,7 @@ class Tree:
             os.makedirs(usr_dir)
         baseline_str = "_baseline" if self.is_baseline_mode else ""
         self.path_to_json = os.path.join(usr_dir, self.taskid + baseline_str + ".json")
+        logging.basicConfig(filename=os.path.join(usr_dir, self.taskid + baseline_str + ".log"), level=logging.INFO)
 
         self.stateDirectory = usr_dir
         self.state = StateStack(self.stateDirectory)
