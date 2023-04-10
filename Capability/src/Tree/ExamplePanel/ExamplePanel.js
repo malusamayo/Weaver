@@ -279,7 +279,7 @@ const ExamplePanel = ({node}) => {
 
             let newDataExamples;
 
-            if (!node.node.isHighlighed)
+            if (!node.node.isHighlighted)
                 setNodeHighlighted(node.node.id, true);
 
             // console.log("New data examples: ", newDataExamples);
