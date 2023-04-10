@@ -107,18 +107,18 @@ const Tree = ({data}) => {
     }
   }, []);
 
-  // handle cmd + z ctrl + z to go back
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === "z") {
-        commitBackState();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
+  // // handle cmd + z ctrl + z to go back
+  // useEffect(() => {
+  //   const handleKeyDown = (event) => {
+  //     if ((event.ctrlKey || event.metaKey) && event.key === "z") {
+  //       commitBackState();
+  //     }
+  //   };
+  //   window.addEventListener("keydown", handleKeyDown);
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeyDown);
+  //   };
+  // }, []);
 
   const commitToggleIsHighlighted = async() => {
     try {
