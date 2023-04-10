@@ -1,6 +1,7 @@
 import json
 import os
 import threading
+import random
 import pandas as pd
 from .prompt import Prompter
 from .relations import RELATIONS, path_to_nl_description
@@ -365,6 +366,12 @@ class KnowledgeBase(object):
         '''
 
         context = "Context: " + path_to_nl_description(path)
+        
+        # sample 7 examples from the existing examples
+        # [TODO] sample examples based on failure and diversity
+        if len(examples) > 7:
+            examples = random.sample(examples, 7)
+        
         new_examples = self.prompter.suggest_examples(topic, self.domain, self.input_type, context=context, examples=examples, N=N)
         return new_examples
 

@@ -119,7 +119,6 @@ class Prompter(object):
         self.lock.release()
         return topic_list
 
-    # [TODO] more engineering needed
     def suggest_examples(self, topic, domain, input_type, context="", examples=[], N=5):
         ''' Query the model of examples.
         Parameters
@@ -317,29 +316,6 @@ class Prompter(object):
             topics.append(response) 
         topics = [normalize(word.lower()) for word in topics]
         return topics
-
-    # [TODO] more engineering needed
-    def query_relations(self, topic, related_topic):
-        prompt = ""
-        prompt += f"What is the relation between {related_topic} and {topic}?\n"
-        prompt += f"Select from the following relations: \"{', '.join(self.relations)}\"."
-        response = self.model(prompt)
-        response = response.strip().rstrip('.')
-        return response
-
-    def recommend_relation(self, topic):
-        prompts = []
-        for relation in self.relations:
-            prompt = self.generate_prompt(topic, relation)
-            prompts.append(prompt)
-        ## ranking [TODO]
-        
-
-    def generate_relation(self, topic):
-        pass
-
-    def extract_relation(self, data):
-        pass
 
 if __name__ == "__main__":
     prompter = Prompter("hate_speech")
