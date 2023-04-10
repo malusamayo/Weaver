@@ -130,9 +130,11 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     }
 
     const handleExampleTextKeyDown = (event) => {
-        if (event.key === "Escape" || (event.key === 'Enter')) {
+        if ((event.key === 'Enter')) {
             console.log(exampleText)
             commitUpdateRow(exampleData, {...exampleData, exampleText: exampleText});
+            setIsEditingExampleText(false);
+        } else if (event.key === "Escape") {
             setIsEditingExampleText(false);
         }
     }
@@ -318,11 +320,11 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
                     examplePredicted
                 }
             </td>
-            <td>
+            {/* <td>
                 {
                     exampleData.exampleConfidence
                 }
-            </td>
+            </td> */}
             {/* {
                 isSuggested ?
                     (

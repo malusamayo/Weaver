@@ -12,3 +12,16 @@ export const StyledFolder = styled.section`
   }
 `;
 
+export const NumberCircle = styled.div`
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  // padding: 8px;
+
+  background: #fff;
+  border: 2px solid #666;
+  color: #666;
+  text-align: center;
+
+  // font: 32px Arial, sans-serif;
+`

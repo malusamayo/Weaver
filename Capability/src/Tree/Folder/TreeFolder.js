@@ -20,6 +20,8 @@ import { MdDeleteForever } from "react-icons/md";
 import { FaFolderPlus } from "react-icons/fa";
 // import { BiRefresh } from "react-icons/bi";
 import { BsSearch, BsFillPlusCircleFill } from "react-icons/bs";
+import { TiTick } from "react-icons/ti";
+import { ImCross } from "react-icons/im";
 // import { ImPlus, ImCross } from "react-icons/im";
 
 import {
@@ -30,7 +32,7 @@ import {
   StyledTag,
   // StyledAddTopic,
 } from "../Tree.style";
-import { StyledFolder } from "./TreeFolder.style";
+import { StyledFolder, NumberCircle } from "./TreeFolder.style";
 
 import { useTreeContext } from "../state/TreeContext";
 import { PlaceholderInput } from "../TreePlaceholderInput";
@@ -214,6 +216,9 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
   const [childs, setChilds] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // const [numPass, setNumPass] = useState(0);
+  // const [numFail, setNumFail] = useState(0);
+
   useLayoutEffect(() => {
     setIsOpen(node.isOpen);
   }, [node.isOpen]);
@@ -221,6 +226,14 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
   useEffect(() => {
     setChilds(children);
   }, [children]);
+
+  // useEffect(() => {
+  //   let userExample = node.examples.filter((example) => !example.isSuggested)
+  //   let nPass = userExample.filter((example) => (example.exampleTrue === example.examplePredicted) || (example.exampleTrue === "")).length;
+  //   let nFail = userExample.filter((example) => (example.exampleTrue !== example.examplePredicted) && (example.exampleTrue !== "")).length;
+  //   setNumPass(nPass);
+  //   setNumFail(nFail);
+  // }, [node.examples]);
 
   // // handle hover over className="AddFolder"
   // useEffect(() => {
@@ -433,6 +446,16 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
                   )}
             </div>
             {/* </div> */}
+
+            {/* <div>
+              {/* <TiTick style={{fontSize: "25px", opacity: "1", color: "rgb(61, 125, 68)", cursor: "pointer"}}/> */}
+              {/* &nbsp; */}
+              {/* <span style={{color: "rgb(61, 125, 68)"}}>{numPass}</span>  */}
+              {/* <ImCross style={{fontSize: "12px", opacity: "1", color: "rgb(190, 53, 53", cursor: "pointer"}}/> */}
+              {/* &nbsp;
+              <span style={{color: "rgb(190, 53, 53)"}}>{numFail}</span> 
+              <NumberCircle> {numFail} </NumberCircle>
+            </div> */}
 
             <div className="actions">
               <BsSearch  onClick={handleNodeClick} id="example-panel-explore"/>
