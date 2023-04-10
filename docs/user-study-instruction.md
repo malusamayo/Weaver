@@ -19,7 +19,12 @@ You will find more details on our tool [here](tool-walkthrough.md).
 Before you start the actual user tasks, you will first try our tool on an example task. 
 You will learn how to use the tool and what you should do in the user tasks.
 
-**Example Task**: Given a sentence about climate change, the model will classify the sentence's stance as 'favor', 'against', or 'none'.
+**Example Task**: Given a restaurant review, the model will classify the review's sentiment as 'POSITIVE' or 'NEGATIVE'.
+
+- Input: "I had a great experience at the restaurant! The food was delicious. Highly recommend!"
+    - Output: 'POSITIVE'
+- Input: "The service was slow and the waitstaff was unhelpful."
+    - Output: 'NEGATIVE'
 
 ### User Study Overview
 
@@ -28,24 +33,33 @@ You will learn how to use the tool and what you should do in the user tasks.
 **Task 1**:
 Given a sentence about feminism, the model will classify the sentence's stance as 'favor', 'against', or 'none'.
 
+- Input: "Feminism is about creating a world where everyone is respected and valued."
+    - Output: 'favor'
+- Input: "Feminism is a distraction from real issues. #NoFeminism"
+    - Output: 'against'
+- Input: "Feminism has been a source of debate and discussion in many circles."
+    - Output: 'none'
+
 **Task 2**:
-[TBD]
+Given a fact-checking question about nutrition, the model will provide a concise answer.
+
+- Input: "Are low-fat foods healthier than high-fat foods?"
+    - Output: "No, low-fat foods are not necessarily healthier than high-fat foods."
+- Input: "Is there strong evidence that drinking wine moderately is good for your health?"
+    - Output: "No, the scientific evidence that moderate wine consumption is good for health is not strong"
+- Input: "What happens if you eat after 8pm?"
+    - Output: "Eating after 8pm does not have any impact on weight gain"
 
 #### Models
-
-**Model 1**:
-A fine-tuned model on the task-related dataset from Huggingface.
-
-**Model 2**:
-A language model instructed to perform the target task, with few-shot prompting. 
+A language model instructed to perform the target tasks. 
 
 #### Setups
 
-**Setup 1**:
-Knowledge graph mode: The topic tree will be built from a knowledge graph. It will guide you find important topics.
+**Setup 1 (Knowledge graph mode)**:
+The topic tree will be built from a knowledge graph. It will guide you find important topics.
 
-**Setup 1**:
-Manual mode: You mostly need to create your own topics manually, but you are still able to ask for related topics.
+**Setup 2 (Manual mode)**:
+You create examples and discover topics (possibly from examples) on your own. You may still be able to query related topics.
 
 
 
