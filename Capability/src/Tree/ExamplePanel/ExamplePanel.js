@@ -546,7 +546,7 @@ const ExamplePanel = ({node}) => {
                                 <td></td>
                                 <td>Output</td>
                                 <td>Predicted</td>
-                                <td>Confidence</td>
+                                {/* <td>Conf</td> */}
                                 {/* <td>Off-topic</td>  */}
                                 <td></td>
                                 <td></td>
