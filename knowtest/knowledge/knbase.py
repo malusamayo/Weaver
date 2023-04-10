@@ -9,11 +9,20 @@ from .utils import normalize, recommend_topics, PScorer
 
 class KnowledgeBase(object):
 
-    def __init__(self, path: str, taskid: str, domain: str="", uid: str="", is_baseline_mode: bool=False) -> None:
+    def __init__(self, path: str, taskid: str, uid: str="", is_baseline_mode: bool=False) -> None:
         self.dir = os.path.join(path, taskid)
         self.path_to_nodes = os.path.join(self.dir, "nodes.csv")
         self.path_to_edges = os.path.join(self.dir, "edges.csv")
-        self.domain = "online platform" if domain == "" else domain # setting domain to "online platform" by default
+        self.path_to_specs = os.path.join(self.dir, "specs.json")
+
+        self.domain = "online platform" # setting domain to "online platform" by default
+        self.input_type = "comments" 
+        if os.path.exists(self.path_to_specs):
+            with open(self.path_to_specs, 'r') as f:
+                specs = json.load(f)
+                self.domain = specs["domain"]
+                self.input_type = specs["input_type"]
+            print("Specs loaded: ", specs)
         print("Path: ", path, "OS Path: ", os.getcwd())
         self.lock = threading.Lock() # for multi-threading
         print(normalize("Initializing wordnet"))
@@ -356,7 +365,7 @@ class KnowledgeBase(object):
         '''
 
         context = "Context: " + path_to_nl_description(path)
-        new_examples = self.prompter.suggest_examples(self.domain, topic, context=context, examples=examples, N=N)
+        new_examples = self.prompter.suggest_examples(topic, self.domain, self.input_type, context=context, examples=examples, N=N)
         return new_examples
 
     def add_node(self, topic, parent_topic, relation, path=[]):
