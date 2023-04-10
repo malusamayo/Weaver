@@ -11,7 +11,7 @@ from .Tree import Tree, Node
 import logging
 from pydantic import BaseModel
 from typing import Optional
-from ..knowledge.model import ClassificationModel
+from ..knowledge.model import Model
 import argparse
 
 class ExampleRow(BaseModel):
@@ -38,7 +38,7 @@ class CapabilityApp:
         if not os.path.exists(os.path.join(self.file_directory, "kg")):
             os.makedirs(os.path.join(self.file_directory, "kg"))
 
-        self.model = ClassificationModel.create(path=model_dir)
+        self.model = Model.create(path=model_dir)
         self.change_topic(topic, overwrite=overwrite)
 
         self.serverHost = serverHost
@@ -182,7 +182,10 @@ class CapabilityApp:
         @self.app.post("/updateExample")
         def update_example(exampleRow: ExampleRow):
             nodeId, example_id, example_text, example_true, is_suggested, example_off_topic = exampleRow.nodeId, exampleRow.exampleId, exampleRow.exampleText, exampleRow.exampleTrue, exampleRow.isSuggested, exampleRow.exampleOffTopic
-            example_predicted, example_conf = self.model.predict(example_text) # always predict when updating
+            old_example = self.t.get_example(nodeId, example_id)
+            example_predicted, example_conf = old_example.examplePredicted, old_example.exampleConfidence
+            if example_text != old_example.exampleText:
+                example_predicted, example_conf = self.model.predict(example_text) # always predict when updating
             updatedRow = self.t.update_example(nodeId, example_id, example_text, example_true, example_predicted, example_conf, is_suggested, example_off_topic)
             self.t.write_json()
             print("Setting example: ", example_text, " to ", is_suggested)

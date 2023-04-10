@@ -378,6 +378,14 @@ class Tree:
             )
 
             return suggested_examples
+        
+    def get_example(self, node_id, exampleID):
+        if node_id in self.nodes:
+            if exampleID in self.nodes[node_id].examples:
+                return self.nodes[node_id].examples[exampleID]
+            elif exampleID in self.nodes[node_id].suggested_examples:
+                return self.nodes[node_id].suggested_examples[exampleID]
+        return None
     
     def update_example(self, node_id: str, exampleID: str, exampleText: str, exampleTrue: str, examplePredicted: str, exampleConfidence: float, isSuggested: bool, exampleOffTopic: bool):
         print("Updating example: ", node_id, exampleID, exampleText, exampleTrue, examplePredicted, isSuggested, exampleOffTopic)

@@ -95,21 +95,25 @@ class Model(object):
     def __call__(self, example):
         pass
 
+    @staticmethod
+    def create(path="") -> None:
+        if path.endswith("classification.json"):
+            with open(path, 'r') as f:
+                specs = json.load(f)
+            return GPTClassificationModel(specs['task'], specs['labels'])
+        elif path.endswith(".json"):
+            with open(path, 'r') as f:
+                specs = json.load(f)
+            return GPTGenerationModel(specs['role'], specs["answer_style"])
+        else:
+            return HuggingfaceClassificationModel(path)
+
 class ClassificationModel(Model):
     def __init__(self):
         pass
 
     def __call__(self, example):
         pass
-    
-    @staticmethod
-    def create(path="") -> None:
-        if path.endswith(".json"):
-            with open(path, 'r') as f:
-                specs = json.load(f)
-            return GPTClassificationModel(specs['task'], specs['labels'])
-        else:
-            return HuggingfaceClassificationModel(path)
 
 class HuggingfaceClassificationModel(ClassificationModel):
     
@@ -189,9 +193,27 @@ class GPTClassificationModel(ClassificationModel):
             The predicted label
         '''
         return self(example), 1 # Alternatively, sample multiple times and compute frequency
+    
+class GPTGenerationModel(Model):
+    
+    def __init__(self, role="expert", answer_style="") -> None:
+        self.answer_style = answer_style
+        self.sys_msg = f'''You are an {role}.'''
+        self.model = ChatGPTModel(self.sys_msg, temparature=0.7)
+
+    def __call__(self, example):
+        prompts = [{"role": "user", "content": f"Question: {example} {self.answer_style}"}]
+        print(prompts)
+        response = self.model(prompts)
+        return response['content']
+    
+    def predict(self, example):
+        return self(example), 1
         
 
 if __name__ == "__main__":
     model = GPTClassificationModel(task = "a sentence's stance on feminism", labels = ["favor", "against", "none"])
     print(model.predict("I love you."))
+    model = GPTGenerationModel(role = "nutrition expert")
+    print(model.predict("How does banana help your health?"))
     # print(model.predict_batch(["I love you", "I hate you"]))

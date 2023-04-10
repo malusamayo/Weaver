@@ -12,6 +12,7 @@ class Prompter(object):
     
     def __init__(self, taskid):
         self.taskid = taskid
+        self.seed_topic = ' '.join(taskid.split("_")) 
         self.model = GPT3Model()
         self.curie_model = CurieModel()
         self.cache = Cache(taskid)
@@ -119,7 +120,7 @@ class Prompter(object):
         return topic_list
 
     # [TODO] more engineering needed
-    def suggest_examples(self, domain, topic, context="", examples=[], N=5):
+    def suggest_examples(self, topic, domain, input_type, context="", examples=[], N=5):
         ''' Query the model of examples.
         Parameters
         ----------
@@ -135,11 +136,16 @@ class Prompter(object):
             The desired number of examples.
         '''
         prompt = ""
-        prompt += context
-        prompt += "\n"
-        prompt += f"Write {N + len(examples)} comments on the topic '{topic}' in {domain}. Pay attention to both the context above and the comments below.\n"
+        seed = self.seed_topic
+
+        if len(examples) == 0:
+            prompt += context
+            prompt += "\n"
+            prompt += f"Write {N + len(examples)} {input_type} on the topic '{topic}' relevant to '{seed}' in {domain}. Pay attention to the context above.\n"
+        else:
+            prompt += f"Write {N + len(examples)} {input_type} relevant to '{seed}'.\n" # minimal instructions when there are examples
         for i, example in enumerate(examples):
-            prompt += f"{i+1}. {example}\n"
+            prompt += f"{i+1}. {example}\n" # [TODO] add label to the examples???
         prompt += f"{len(examples) + 1}. "
         
         print(prompt)
