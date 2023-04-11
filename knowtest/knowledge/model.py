@@ -203,7 +203,6 @@ class GPTGenerationModel(Model):
 
     def __call__(self, example):
         prompts = [{"role": "user", "content": f"Question: {example} {self.answer_style}"}]
-        print(prompts)
         response = self.model(prompts)
         return response['content']
     

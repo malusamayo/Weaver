@@ -497,7 +497,11 @@ const ExamplePanel = ({node}) => {
                     <div>
                         <h4>Example Panel</h4>
                         <p>Topic: {selectedNode.name}</p> 
-                        <p>Path: {selectedNode.naturalLanguagePath}</p>
+                        {
+                            selectedNode.naturalLanguagePath !== "" ?
+                            <p>Path: {selectedNode.naturalLanguagePath}</p> :
+                            null
+                        }
                         {
                             selectedNodeExamples.length === 0 ? 
                             <div style={{display: "flex", justifyContent: "right", alignItems: "center"}}>

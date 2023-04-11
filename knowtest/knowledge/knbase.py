@@ -33,6 +33,7 @@ class KnowledgeBase(object):
             uid = 0
         self.upath = path + f"/user_{uid}_history.csv"
 
+        self.is_baseline_mode = is_baseline_mode
         if is_baseline_mode:
             self.nodes = pd.DataFrame(columns=['id', 'weight'])
             self.edges = pd.DataFrame(columns=['from', 'to', 'relation', 'score'])
@@ -215,23 +216,23 @@ class KnowledgeBase(object):
             known_topics = existing_children['topic'].to_list()
             children = children[~children['to'].isin(known_topics)]
 
-        # prefetch children if there are not enough fresh children
-        threshold = 2*n_expand
-        if len(children) <= threshold:
-            print("Prefetching extra children...")
-            t = threading.Thread(target=self.prefech_new_children, args=(topic, known_topics, threshold, context), name=f"prefetch_c_{topic}")
-            t.start()
+        # # prefetch children if there are not enough fresh children
+        # threshold = 2*n_expand
+        # if len(children) <= threshold:
+        #     print("Prefetching extra children...")
+        #     t = threading.Thread(target=self.prefech_new_children, args=(topic, known_topics, threshold, context), name=f"prefetch_c_{topic}")
+        #     t.start()
             
         print("Recommending children...")
         items = children[['to', 'relation', 'score']].to_dict('records')
         recommended_items = recommend_topics(items, topic, known_items, K=n_expand)
         # self.recommended |= set([item['to'] for item in recommended_items])
 
-        # prefetch children of the recommended topics
-        print("Prefetching grandchildren...")
-        recommended_topics = [item['to'] for item in recommended_items]
-        t = threading.Thread(target=self.prefech_init_children, args=(recommended_topics, context), name=f"prefetch_gc_{topic}")
-        t.start()
+        # # prefetch children of the recommended topics
+        # print("Prefetching grandchildren...")
+        # recommended_topics = [item['to'] for item in recommended_items]
+        # t = threading.Thread(target=self.prefech_init_children, args=(recommended_topics, context), name=f"prefetch_gc_{topic}")
+        # t.start()
                 
         print(f"Done with expanding node {topic}.")
         return recommended_items
@@ -365,7 +366,9 @@ class KnowledgeBase(object):
             The suggested examples.
         '''
 
-        context = "Context: " + path_to_nl_description(path)
+        context = ""
+        if not self.is_baseline_mode:
+            context += "Context: " + path_to_nl_description(path)
         
         # sample 7 examples from the existing examples
         # [TODO] sample examples based on failure and diversity
@@ -381,13 +384,13 @@ class KnowledgeBase(object):
 
         self.edges = self.edges.append({"from": parent_topic, "to": topic, "relation": relation}, ignore_index=True)
         
-        # prefetch children when none exists
-        children = self.find_children(topic) 
-        if len(children) == 0:
-            print("Prefetching children...")
-            context = "Context: " + path_to_nl_description(path)
-            t = threading.Thread(target=self.prefech_init_children, args=([topic], context), name=f"prefetch_gc_{topic}")
-            t.start()
+        # # prefetch children when none exists
+        # children = self.find_children(topic) 
+        # if len(children) == 0:
+        #     print("Prefetching children...")
+        #     context = "Context: " + path_to_nl_description(path)
+        #     t = threading.Thread(target=self.prefech_init_children, args=([topic], context), name=f"prefetch_gc_{topic}")
+        #     t.start()
         self.save()
 
 
