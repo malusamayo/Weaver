@@ -2,29 +2,24 @@
 
 In the study, you will test two different ML models using our tool, with two different setups.
 
-Your goal is to
-1. Find important topics that you think the model should handle, and then
-2. Try to craft failing examples for the model under testing.
+Your goal is to find important bugs for topics that you think the model should handle.
 
-You are expected to find 3 failing examples for a tested topic before claiming there is a 'bug'.  
-
-Our tool consists of two main components to assist your task. 
-1. The topic tree panel (left) guides you to find important topics
-2. The example panel (right) helps you craft examples
-
-You will find more details on our tool [here](tool-walkthrough.md).
+You are expected to find 3 failing examples for a tested topic before claiming there is a 'bug'. 
+ML models often fail at similar examples under the same topic -- try to exploit this when you create examples!
 
 ### Tutorial Session
 
 Before you start the actual user tasks, you will first try our tool on an example task. 
-You will learn how to use the tool and what you should do in the user tasks.
+You will learn how to use the tool ([docs here](tool-walkthrough.md)) and what you should do in the user tasks.
 
-**Example Task**: Given a restaurant review, the model will classify the review's sentiment as 'POSITIVE' or 'NEGATIVE'.
+**Example Task**: Given a restaurant review, the model will classify the review's sentiment as 'positive', 'negative', or 'neutral'.
 
 - Input: "I had a great experience at the restaurant! The food was delicious. Highly recommend!"
-    - Output: 'POSITIVE'
+    - Output: 'positive'
 - Input: "The service was slow and the waitstaff was unhelpful."
-    - Output: 'NEGATIVE'
+    - Output: 'negative'
+- Input: "The food at the restaurant was average. The service was friendly and the atmosphere was pleasant."
+    - Output: 'neutral'
 
 ### User Study Overview
 
