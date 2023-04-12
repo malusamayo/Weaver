@@ -1,0 +1,4 @@
+{
+    "task": "a sentence's stance on combating climate change", 
+    "labels": ["favor", "against", "none"]
+}

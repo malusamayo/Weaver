@@ -1,0 +1,4 @@
+{
+    "task": "a restaurant review's sentiment", 
+    "labels": ["positive", "negative", "neutral"]
+}
