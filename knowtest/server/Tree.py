@@ -139,6 +139,9 @@ class Tree:
             if self.only_highlighted and not node["isHighlighted"]:
                 return None
             return node
+        else:
+            if self.only_highlighted:
+                node["isOpen"] = True
         
         # if sorting:
         #     node["children"] = sorted(node["children"], key=lambda x: (x["isHighlighted"]))
@@ -420,6 +423,9 @@ class Tree:
         if new_node_id in self.nodes and node_id in self.nodes:
             if exampleID in self.nodes[node_id].examples:
                 self.nodes[new_node_id].add_example(self.nodes[node_id].examples[exampleID])
+                self.nodes[node_id].remove_example(exampleID)
+            elif exampleID in self.nodes[node_id].suggested_examples:
+                self.nodes[new_node_id].add_example(self.nodes[node_id].suggested_examples[exampleID])
                 self.nodes[node_id].remove_example(exampleID)
 
     def remove_all_tags_from_filter(self):
