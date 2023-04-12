@@ -64,6 +64,13 @@ class CapabilityApp:
         def get_tree():
             # t.reset_state()
             return self.t.generate_json()
+        
+        @self.app.get("/getLabels")
+        def get_labels():
+            # t.reset_state()
+            if hasattr(self.model, "labels"):
+                return self.model.labels
+            return ""
 
         @self.app.post("/addNode")
         @log_timestamped_calls

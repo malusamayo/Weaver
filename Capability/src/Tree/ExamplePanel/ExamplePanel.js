@@ -498,7 +498,7 @@ const ExamplePanel = ({node}) => {
                         <h4>Example Panel</h4>
                         <p>Topic: {selectedNode.name}</p> 
                         {
-                            selectedNode.naturalLanguagePath !== "" ?
+                            selectedNode.naturalLanguagePath !== null ?
                             <p>Path: {selectedNode.naturalLanguagePath}</p> :
                             null
                         }
@@ -552,8 +552,8 @@ const ExamplePanel = ({node}) => {
                                 <td>Predicted</td>
                                 {/* <td>Conf</td> */}
                                 {/* <td>Off-topic</td>  */}
-                                <td></td>
-                                <td></td>
+                                <td>Pass</td>
+                                <td>Fail</td>
                                 <td></td>
                             </tr>
                             </thead>

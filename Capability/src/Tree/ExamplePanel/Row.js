@@ -60,6 +60,16 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
 
     const [isDeleting, setIsDeleting] = useState(false);
 
+    const [labels, setLabels] = useState([]);
+
+    useEffect(() => {
+        const fetchLabels = async () => {
+            const taskLabels = await fetchAPIDATA("getLabels");
+            setLabels(taskLabels);
+        }
+        fetchLabels();
+    }, []);
+
     useEffect(() => {
         if ((exampleOutput === examplePredicted) || (exampleOutput === "")) {
             setPass(true);
@@ -307,12 +317,22 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
             
             {
                 isEditingExampleOutput ?
-                    <td><input name="text" value={exampleOutput} 
+                    <td><input list="output" name="output" value={exampleOutput} 
                         onChange={handleExampleOutputChange} 
                         onKeyDown={handleExampleOutputKeyDown} 
                         style={editSpecialCSSOutput} wrap="soft"/></td> :
                     <td onClick={handleExampleOutputClick}>{exampleOutput}</td>
 
+            }
+
+            {
+                <datalist id="output">
+                    {
+                        labels.map((label, index) => {
+                            return <option value={label} key={index}></option>
+                        })
+                    }
+                </datalist>
             }
             
             <td>
