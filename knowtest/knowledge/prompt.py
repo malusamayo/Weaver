@@ -142,7 +142,7 @@ class Prompter(object):
             prompt += "\n"
             prompt += f"Write {N + len(examples)} {input_type} on the topic '{topic}' relevant to '{seed}' in {domain}. Pay attention to the context above.\n"
         else:
-            prompt += f"Write {N + len(examples)} {input_type} relevant to '{seed}'.\n" # minimal instructions when there are examples
+            prompt += f"Write {N + len(examples)} {input_type}.\n" # minimal instructions when there are examples
         for i, example in enumerate(examples):
             prompt += f"{i+1}. {example}\n" # [TODO] add label to the examples???
         prompt += f"{len(examples) + 1}. "
