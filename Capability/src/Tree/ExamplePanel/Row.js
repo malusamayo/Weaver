@@ -317,22 +317,21 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
             
             {
                 isEditingExampleOutput ?
-                    <td><input list="output" name="output" value={exampleOutput} 
+                    <td>
+                        <input list="output" name="output" value={exampleOutput} 
                         onChange={handleExampleOutputChange} 
                         onKeyDown={handleExampleOutputKeyDown} 
-                        style={editSpecialCSSOutput} wrap="soft"/></td> :
+                        style={editSpecialCSSOutput} wrap="soft"/>
+                        <datalist id="output">
+                            {
+                                labels.map((label, index) => {
+                                    return <option value={label} key={index}></option>
+                                })
+                            }
+                        </datalist>
+                    </td> :
                     <td onClick={handleExampleOutputClick}>{exampleOutput}</td>
 
-            }
-
-            {
-                <datalist id="output">
-                    {
-                        labels.map((label, index) => {
-                            return <option value={label} key={index}></option>
-                        })
-                    }
-                </datalist>
             }
             
             <td>
