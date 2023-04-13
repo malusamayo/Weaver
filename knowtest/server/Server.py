@@ -294,6 +294,7 @@ if __name__ == "__main__":
     parser.add_argument('--uid', type=str, default='', help='uid of the user')
     parser.add_argument('--baseline', action='store_true', help='whether to use baseline mode')
     parser.add_argument('--overwrite', action='store_true', help='whether to overwrite the existing history')
+    parser.add_argument('--no_server', action='store_true', help='whether to start the server')
     args = parser.parse_args()
 
     server = CapabilityApp(
@@ -306,4 +307,5 @@ if __name__ == "__main__":
             is_baseline_mode=args.baseline,
             overwrite=args.overwrite
         )
-    server.initializeServer()
+    if not args.no_server:
+        server.initializeServer()
