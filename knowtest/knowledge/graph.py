@@ -88,17 +88,15 @@ def print_tree(tree_pre_order, taskid):
     with open(os.path.join("output", taskid, "tree.txt"), "w") as file:
         file.write(tree_string)
 
-def run_graph_construction(seed, taskid, max_depth = 3):
+def run_graph_construction(seed, taskid, task_path, max_depth = 3):
     prompter = Prompter(taskid=taskid)
     graph = build_graph(seed, prompter, max_depth = max_depth)
 
-    if not os.path.exists(os.path.join("output", taskid)):
-        os.makedirs(os.path.join("output", taskid))
-    with open(os.path.join("output", taskid, "graph.json"), "w") as file:
+    with open(os.path.join(task_path, "graph.json"), "w") as file:
         json.dump(graph, file)
     return graph
 
 if __name__ == "__main__":
     seed = "sarcasm"
     taskid = "_".join(seed.split())
-    run_graph_construction(seed, taskid, max_depth = 1)
+    run_graph_construction(seed, taskid, os.path.join("output", "kg", taskid) , max_depth = 1)

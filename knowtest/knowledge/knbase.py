@@ -62,8 +62,9 @@ class KnowledgeBase(object):
         #     self.recommended = {node["name"] for node in master_JSON}
 
     def save(self):
-        self.nodes.to_csv(self.path_to_nodes, index=False)
-        self.edges.to_csv(self.path_to_edges, index=False)
+        if not self.is_baseline_mode:
+            self.nodes.to_csv(self.path_to_nodes, index=False)
+            self.edges.to_csv(self.path_to_edges, index=False)
         # self.user_history.to_csv(self.upath, index=False)
 
     # def update_user_history(self, recommended=None, existing_children=None):
@@ -197,11 +198,9 @@ class KnowledgeBase(object):
         children = self.find_children(topic)
         # if the node has no children, extend the node
         if len(children) == 0:
-            print("Initializing children...") # SHOULD NOT BE HERE: ALL children should be prefetched
+            print("Initializing children...")
             self.extend_node_all_relation(topic, context=context)
             children = self.find_children(topic)
-
-            #[TODO] fix the bug in this branch
         
         # remove the ancesters of the current node
         ancesters = [item['topic'] for item in path]
@@ -224,6 +223,7 @@ class KnowledgeBase(object):
         #     t.start()
             
         print("Recommending children...")
+        children = children.dropna() # in case there are empty pre-computed scores
         items = children[['to', 'relation', 'score']].to_dict('records')
         recommended_items = recommend_topics(items, topic, known_items, K=n_expand)
         # self.recommended |= set([item['to'] for item in recommended_items])
@@ -370,6 +370,10 @@ class KnowledgeBase(object):
         if not self.is_baseline_mode:
             context += "Context: " + path_to_nl_description(path)
         
+        # remove the "New example" and empty examples
+        examples = [example for example in examples 
+                    if example.strip() not in ["New example", ""]]
+
         # sample 7 examples from the existing examples
         # [TODO] sample examples based on failure and diversity
         if len(examples) > 7:
@@ -382,7 +386,8 @@ class KnowledgeBase(object):
         if topic not in self.nodes['id'].values:
             self.nodes = self.nodes.append({"id": topic, "weight":1}, ignore_index=True)
 
-        self.edges = self.edges.append({"from": parent_topic, "to": topic, "relation": relation}, ignore_index=True)
+        score = PScorer.score_topics([topic], parent_topic).tolist()[0]
+        self.edges = self.edges.append({"from": parent_topic, "to": topic, "relation": relation, "score": score}, ignore_index=True)
         
         # # prefetch children when none exists
         # children = self.find_children(topic) 
@@ -429,10 +434,11 @@ def run_kb_contruction(seed, max_depth=1, KGOutput="./output"):
 
     taskid = "_".join(seed.split())
 
-    if not os.path.exists(os.path.join(KGOutput, taskid)):
-        os.makedirs(os.path.join(KGOutput, taskid))
+    task_path = os.path.join(KGOutput, taskid)
+    if not os.path.exists(task_path):
+        os.makedirs(task_path)
 
-    graph = run_graph_construction(seed, taskid, max_depth=max_depth)
+    graph = run_graph_construction(seed, taskid, task_path=task_path, max_depth=max_depth)
     knbase = graph_to_knbase(graph)
     store_kb(knbase, os.path.join(KGOutput, taskid))
 
