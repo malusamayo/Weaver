@@ -1,18 +1,20 @@
 ## Instructions
 
-In the study, you will test two different ML models using our tool, with two different setups.
+In the study, your goal is to **find important bugs in ML models**.
 
-Your goal is to find important bugs for topics that you think the model should handle.
+Not every failing prediction is a bug. To consider something a bug, we expect 2 conditions:
+- We can find multiple related inputs for which the model fails
+- The inputs are important enough to the task that the model should be fixed. 
 
-You are expected to find 3 failing examples for a tested topic before claiming there is a 'bug'. 
-ML models often fail at similar examples under the same topic -- try to exploit this when you create examples!
+To facilitate finding bugs, we recommend exploring the model in terms of **topics**, that is, different kinds of concepts that the model should cover or support. To declare something a bug, you will need **3** failing inputs that are related to a topic.
 
 ### Tutorial Session
 
-Before you start the actual user tasks, you will first try our tool on an example task. 
-You will learn how to use the tool ([docs here](tool-walkthrough.md)) and what you should do in the user tasks.
+During this interactive tutorial session, we will provide you guidance on how to effectively utilize our tool to test the example model. 
 
-**Example Task**: Given a restaurant review, the model will classify the review's sentiment as 'positive', 'negative', or 'neutral'.
+Your objective remains focused on identifying significant bugs in the model and thoroughly exploring the functionalities of the tool.
+
+**Example Model**: Given a restaurant review, the model will classify the review's sentiment as 'positive', 'negative', or 'neutral'.
 
 - Input: "I had a great experience at the restaurant! The food was delicious. Highly recommend!"
     - Output: 'positive'
@@ -23,10 +25,16 @@ You will learn how to use the tool ([docs here](tool-walkthrough.md)) and what y
 
 ### User Study Overview
 
-#### Tasks
+During the user study session, you will be tasked with testing two distinct models. For each model, you will have a designated timeframe of 25 minutes to identify bugs. We will ask you to stop when the time is up. All your findings will be automatically saved. 
 
-**Task 1**:
-Given a sentence about feminism, the model will classify the sentence's stance as 'favor', 'against', or 'none'.
+For one of the models, we will grant you access to the topic knowledge graph provided by our tool. For the other model, you will need to create examples and brainstorm topics on your own.
+
+For both tasks, you should try to find as many bugs as possible and cover a broad range of topics. For each bug, you are expected to find three failing examples and group them under the most relevant topic.
+
+#### Models
+
+**Model 1**:
+Given a sentence, the model will classify the sentence's stance on feminism as 'favor', 'against', or 'none'.
 
 - Input: "Feminism is about creating a world where everyone is respected and valued."
     - Output: 'favor'
@@ -35,26 +43,12 @@ Given a sentence about feminism, the model will classify the sentence's stance a
 - Input: "Feminism has been a source of debate and discussion in many circles."
     - Output: 'none'
 
-**Task 2**:
-Given a fact-checking question about nutrition, the model will provide a concise answer.
+**Model 2**:
+Given a sentence, the model will classify the sentence's stance on combating climate change as 'favor', 'against', or 'none'.
 
-- Input: "Are low-fat foods healthier than high-fat foods?"
-    - Output: "No, low-fat foods are not necessarily healthier than high-fat foods."
-- Input: "Is there strong evidence that drinking wine moderately is good for your health?"
-    - Output: "No, the scientific evidence that moderate wine consumption is good for health is not strong"
-- Input: "What happens if you eat after 8pm?"
-    - Output: "Eating after 8pm does not have any impact on weight gain"
-
-#### Models
-A language model instructed to perform the target tasks. 
-
-#### Setups
-
-**Setup 1 (Knowledge graph mode)**:
-The topic tree will be built from a knowledge graph. It will guide you find important topics.
-
-**Setup 2 (Manual mode)**:
-You create examples and discover topics (possibly from examples) on your own. You may still be able to query related topics.
-
-
-
+- Input: "Let's work together to create a sustainable future for generations to come!"
+    - Output: 'favor'
+- Input: "Climate change is a natural phenomenon and not caused by human activity."
+    - Output: 'against'
+- Input: "My area may not be experiencing the severe effects of climate change."
+    - Output: 'none'
