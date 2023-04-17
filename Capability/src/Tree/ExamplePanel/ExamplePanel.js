@@ -6,7 +6,8 @@ import { GoDiffAdded } from "react-icons/go";
 import { BsArrow90DegDown, BsArrow90DegRight } from "react-icons/bs";
 import { FaRedo } from "react-icons/fa";
 import { GrAddCircle } from "react-icons/gr";
-import { Row } from "./Row";
+import { TiTick } from "react-icons/ti";
+import { Row, ExamplePanelPass } from "./Row";
 import { v4 as uuidv4 } from "uuid";
 import { useTreeContext } from "../state/TreeContext";
 import { HelperPage } from "./HelperPage";
@@ -18,6 +19,8 @@ const ExamplePanel = ({node}) => {
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedRow, setSelectedRow] = useState(null);
     const { setIsLoading, setNodeHighlighted } = useTreeContext();
+
+    const [numFail, setNumFail] = useState(0);
 
     // Add blank row when the ExamplePanel is first rendered
 
@@ -70,7 +73,8 @@ const ExamplePanel = ({node}) => {
     }, []);
 
     useEffect(() => {
-        console.log(selectedNodeExamples);
+        let nFail = selectedNodeExamples.filter((example) => (example.exampleTrue !== example.examplePredicted) && (example.exampleTrue !== "")).length;
+        setNumFail(nFail);
     }, [selectedNodeExamples]);  
 
     const blankRowAdd = (text) => {
@@ -511,6 +515,14 @@ const ExamplePanel = ({node}) => {
                             </div> :
                             null
                         }
+                        {/* For user study only */ }
+                        <p>Failing examples found: <b>{numFail}/3 </b>
+                            {
+                                numFail >= 3 ?
+                                    <TiTick style={{fontSize: "25px", opacity: "1", color: "rgb(61, 125, 68)", marginBottom: "6px"}}/> :
+                                    <TiTick style={{fontSize: "25px", opacity: "0.2", marginBottom: "6px"}}/>
+                            }
+                        </p>
                         <div style={{display: "flex", justifyContent: "right", alignItems: "center"}}>
                             {/* <p><u>Suggested Examples</u></p> */}
                             <div style={{display: "flex", alignItems: "top", cursor: "pointer"}} onClick={handleMoreSuggestions}>
