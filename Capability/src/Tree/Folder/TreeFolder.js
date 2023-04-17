@@ -210,7 +210,7 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
 // }
 
 const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted}) => {
-  const { dispatch, onNodeClick, setIsLoading } = useTreeContext();
+  const { dispatch, onNodeClick, setIsLoading, setNodeHighlighted } = useTreeContext();
   const [isEditing, setIsEditing] = useState(false);
   const [isOpen, setIsOpen] = useState(node.isOpen);
   const [childs, setChilds] = useState([]);
@@ -390,6 +390,8 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
             "exampleId": exampleId,
             "newNodeId": node.id
         }, true);
+        if (!node.isHighlighed)
+            setNodeHighlighted(node.id, true);
         onNodeClick({ node });
     } catch (error) {
         console.log("Error: ", error);
