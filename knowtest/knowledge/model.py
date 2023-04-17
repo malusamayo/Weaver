@@ -168,12 +168,14 @@ class GPTClassificationModel(ClassificationModel):
         label_msg = '"' + label_msg + '" or "' + labels[-1] + '"'
         self.task = task
         self.labels = labels
-        self.sys_msg = f'''You are a classification model. You are classifying {task}.
-        The labels are {label_msg}. You should only keep the label as your answer.'''
+        self.sys_msg = '' 
+        # f'''You are a classification model. You are classifying {task}.
+        # The labels are {label_msg}. You should only keep the label as your answer.'''
+        self.prompt_msg = f'''Carefully classify {task}. The labels are {label_msg}. Only reply with the label.\n'''
         self.model = ChatGPTModel(self.sys_msg, temparature=0)
 
     def __call__(self, example):
-        prompts = [{"role": "user", "content": f"Sentence: {example}"}]
+        prompts = [{"role": "user", "content": self.prompt_msg + f"Sentence: {example}"}]
         response = self.model(prompts)
         response_lower = response['content'].lower()
         label_in_response = [label for label in self.labels if label in response_lower]
@@ -212,7 +214,7 @@ class GPTGenerationModel(Model):
 
 if __name__ == "__main__":
     model = GPTClassificationModel(task = "a sentence's stance on feminism", labels = ["favor", "against", "none"])
-    print(model.predict("I love you."))
+    print(model.predict("Gender-based violence is an issue that must be addressed."))
     model = GPTGenerationModel(role = "nutrition expert")
     print(model.predict("How does banana help your health?"))
     # print(model.predict_batch(["I love you", "I hate you"]))

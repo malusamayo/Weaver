@@ -123,7 +123,7 @@ class SimilarityScorer:
         return scores
 
     def similarity_matrix(self, topics):
-        sentence_embeddings = sentence_embeddings = self.get_embeddings(topics)
+        sentence_embeddings = self.get_embeddings(topics)
         scores = pairwise_cosine_similarity(sentence_embeddings, sentence_embeddings)
         return scores
 
