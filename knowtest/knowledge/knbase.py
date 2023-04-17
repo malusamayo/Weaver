@@ -171,7 +171,7 @@ class KnowledgeBase(object):
         if len(new_topics) < threshold:
             return
 
-    def expand_node(self, topic, path=[], existing_children=[], n_expand=5):
+    def expand_node(self, topic, path=[], existing_children=[], known_topics=[], n_expand=5):
         ''' Expand a node to find related topics.
         Parameters
         ----------
@@ -181,6 +181,8 @@ class KnowledgeBase(object):
             The path from the root to the current node.
         existing_children : list of dict {topic, relation, is_highlighted}
             The existing children of the current node.
+        known_topics : list of str
+            The topics that are already known to the user.
         n_expand : int
             The number of children returned.
         Returns
@@ -205,6 +207,7 @@ class KnowledgeBase(object):
         # remove the ancesters of the current node
         ancesters = [item['topic'] for item in path]
         children = children[~children['to'].isin(ancesters)]
+        children = children[~children['to'].isin(known_topics)] # and all known topics in the tree
 
         if len(existing_children) > 0:
             # remove existing children
@@ -385,6 +388,9 @@ class KnowledgeBase(object):
     def add_node(self, topic, parent_topic, relation, path=[]):
         if topic not in self.nodes['id'].values:
             self.nodes = self.nodes.append({"id": topic, "weight":1}, ignore_index=True)
+
+        if len(self.edges[(self.edges['from'] == parent_topic) & (self.edges['to'] == topic) & (self.edges['relation'] == relation)]) > 0:
+            return
 
         score = PScorer.score_topics([topic], parent_topic).tolist()[0]
         self.edges = self.edges.append({"from": parent_topic, "to": topic, "relation": relation, "score": score}, ignore_index=True)

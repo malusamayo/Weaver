@@ -247,7 +247,8 @@ class Tree:
                 
                 # self.remove_non_highlighted_nodes(node_id) # DISABLED
                 
-                suggestions = self.kg.expand_node(topic=self.nodes[node_id].name.lower(), path=path, existing_children=existing_children)
+                known_topics = [node.name for node in self.nodes.values()]
+                suggestions = self.kg.expand_node(topic=self.nodes[node_id].name.lower(), path=path, existing_children=existing_children, known_topics=known_topics)
 
             for dic in suggestions:
                 (suggestion, relation) = dic["to"], dic["relation"]
@@ -288,6 +289,27 @@ class Tree:
             if node.parent_id in self.nodes:
                 path = self.get_path(node.id)
                 path = [{"topic": self.nodes[parent_node_id].name, "relation": relation} for parent_node_id, relation in path]
+                for tag in node.tags:
+                    self.kg.add_node(node.name, self.nodes[node.parent_id].name, tag)
+
+    def move_node(self, node_id: str, new_parent_id: str):
+        if node_id in self.nodes and new_parent_id in self.nodes:
+            node = self.nodes[node_id]
+            if len(node.children) > 0:
+                print("Cannot move node with children")
+                return
+            if node_id == new_parent_id:
+                print("Cannot move node to itself")
+                return
+            if node.parent_id == new_parent_id:
+                print("Node already in parent")
+                return
+            self.remove_node_with_id(node_id)
+            node.parent_id = new_parent_id
+            self.add_node(node, init_pass=True)
+            if not self.is_baseline_mode:
+                node.natural_language_path = self.get_nl_path(node.id)
+            if node.parent_id in self.nodes:
                 for tag in node.tags:
                     self.kg.add_node(node.name, self.nodes[node.parent_id].name, tag)
     

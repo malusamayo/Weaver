@@ -396,7 +396,24 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
     } catch (error) {
         console.log("Error: ", error);
     }
-  };   
+  };
+
+  const commitMoveTopic = async (nodeId, newParentId) => {
+    try {
+        await fetchAPIDATA("moveNode", {
+            "nodeId": nodeId,
+            "newParentId": newParentId
+        }, true);
+        setIsLoading(true);
+
+        const newData = await fetchAPIDATA("");
+        dispatch({ type: "SET_DATA", payload: newData });
+  
+        setIsLoading(false);
+      } catch (error) {
+        console.log("Error: ", error);
+    }
+  };
 
   const dragOver = (e) => {
     e.preventDefault();
@@ -408,7 +425,21 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
 
   const drop = (e) => {
     e.preventDefault();
-    commitDragRow(e.dataTransfer.getData("nodeId"), e.dataTransfer.getData("exampleId"));
+    let nodeId = e.dataTransfer.getData("nodeId");
+    let exampleId = e.dataTransfer.getData("exampleId");
+    if (exampleId !== "") {
+        commitDragRow(nodeId, exampleId);
+    } else {
+        commitMoveTopic(nodeId, node.id);
+    }
+  };
+
+  const dragStart = (e) => {
+    e.dataTransfer.setData('nodeId', node.id);
+  };
+
+  const dragEnd = (e) => {
+      e.dataTransfer.clearData();
   };
 
   return (
@@ -420,9 +451,12 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
             {/* {node.tag.length ? (<Dropdown node={node}/>): null} */}
             {/* <div ref={editTextBox}> */}
             <div 
+                onDragStart={dragStart}
+                onDragEnd={dragEnd}
                 onDrop={drop}
                 onDragEnter={dragEnter}
                 onDragOver={dragOver}
+                draggable
             >
                   {isEditing ? (
                     <PlaceholderInput

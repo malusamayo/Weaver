@@ -94,6 +94,13 @@ class CapabilityApp:
             self.t.remove_node_with_id(nodeId)
             self.t.write_json()
             return self.t.generate_json()
+        
+        @self.app.post("/moveNode")
+        @log_timestamped_calls
+        def move_node(nodeId: str, newParentId: str):
+            self.t.move_node(nodeId, newParentId)
+            self.t.write_json()
+            return self.t.generate_json()
 
         @self.app.post("/setOpen")
         @log_timestamped_calls

@@ -65,6 +65,7 @@ const HelperPage = () => {
 
       <HelperItem icons={[<GoArrowLeft size={30}/>]} text={"Undo changes"} detailText={"Click the top-left icon to undo changes. Alternatively, you could also use keyboard shortcuts Ctrl/Cmd +Z."} />
       <HelperItem icons={[<BsToggleOn  size={25}/>]} text={"Checked topics only"} detailText={"Use the toggle to show only the checked topics. You could use it to view all topics you have explored."} />
+      <HelperItem icons={[]} text={"Organizing topics/examples"} detailText={"Drag and drop topics/examples to the most relevant (parent) topic."} />
 
       <br></br>
       {/* <p>Welcome to the Helper Page!</p> */}
