@@ -47,6 +47,7 @@ class Node:
         self.nl_tags = [to_nl_tags(tag) for tag in self.tags]
         self.isOpen = isOpen
         self.isHighlighted = isHighlighted
+        self.isHidden = False
         self.children = []
         self.process_node()
         self.natural_language_path = None
@@ -148,6 +149,7 @@ class Node:
             "nl_tag": self.nl_tags,
             "isOpen": self.isOpen,
             "isHighlighted": self.isHighlighted,
+            "isHidden": self.isHidden,
             "naturalLanguagePath": self.natural_language_path,
             "children": [],
             "examples": examples

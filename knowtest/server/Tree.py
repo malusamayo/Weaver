@@ -123,6 +123,9 @@ class Tree:
             if not any(tag in self.tag_filters for tag in node["tag"]):
                 return None
             
+        if node["isHidden"]:
+            return None
+            
         children = [self.nodes[child_id] for child_id in self.nodes[node["id"]].children]
         
         # if sorting:
@@ -150,12 +153,13 @@ class Tree:
     
     def remove_node_with_id(self, node_id: str):
         if node_id in self.nodes:
-            parent_id = self.nodes[node_id].parent_id
+            # parent_id = self.nodes[node_id].parent_id
+            self.nodes[node_id].isHidden = True
             children_ids = self.nodes[node_id].children
-            self.nodes[parent_id].children.remove(node_id)
+            # self.nodes[parent_id].children.remove(node_id)
             for child_id in children_ids:
                 self.remove_node_with_id(child_id)
-            del self.nodes[node_id]
+            # del self.nodes[node_id]
     
     def set_open(self, node_id: str, isOpen: bool):
         # To open all nodes in the path to the selected node
