@@ -506,23 +506,25 @@ const ExamplePanel = ({node}) => {
                             <p>Path: {selectedNode.naturalLanguagePath}</p> :
                             null
                         }
+                        {/* For user study only */ }
+                        {
+                            <p>Failing examples found: <b>{numFail}/3 </b>
+                                {
+                                    numFail >= 3 ?
+                                        <TiTick style={{fontSize: "25px", opacity: "1", color: "rgb(61, 125, 68)", marginBottom: "6px"}}/> :
+                                        <TiTick style={{fontSize: "25px", opacity: "0.2", marginBottom: "6px"}}/>
+                                }
+                            </p>
+                        }
                         {
                             selectedNodeExamples.length === 0 ? 
                             <div style={{display: "flex", justifyContent: "right", alignItems: "center"}}>
-                                <BsArrow90DegDown style={{fontSize: "20px", opacity: "1"}} id="prompt"/>
-                                <p style={{marginLeft: "5px", fontStyle:"italic", fontSize:"15px"}}>Click to add/suggest examples</p>
+                                {/* <BsArrow90DegDown style={{fontSize: "20px", opacity: "1"}} id="prompt"/> */}
+                                <p style={{marginLeft: "5px", fontStyle:"italic", fontSize:"15px"}}>Click to add examples first</p>
                                 <BsArrow90DegRight style={{fontSize: "20px", opacity: "1", marginLeft: "6px", transform: 'rotate(90deg)'}} id="prompt"/>
                             </div> :
                             null
                         }
-                        {/* For user study only */ }
-                        <p>Failing examples found: <b>{numFail}/3 </b>
-                            {
-                                numFail >= 3 ?
-                                    <TiTick style={{fontSize: "25px", opacity: "1", color: "rgb(61, 125, 68)", marginBottom: "6px"}}/> :
-                                    <TiTick style={{fontSize: "25px", opacity: "0.2", marginBottom: "6px"}}/>
-                            }
-                        </p>
                         <div style={{display: "flex", justifyContent: "right", alignItems: "center"}}>
                             {/* <p><u>Suggested Examples</u></p> */}
                             <div style={{display: "flex", alignItems: "top", cursor: "pointer"}} onClick={handleMoreSuggestions}>

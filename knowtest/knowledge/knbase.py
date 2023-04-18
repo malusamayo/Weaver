@@ -381,6 +381,10 @@ class KnowledgeBase(object):
         # [TODO] sample examples based on failure and diversity
         if len(examples) > 7:
             examples = random.sample(examples, 7)
+
+        if len(examples) == 0:
+            print("Zero-shot example suggestion disabled. No examples provided.")
+            return []
         
         new_examples = self.prompter.suggest_examples(topic, self.domain, self.input_type, context=context, examples=examples, N=N)
         return new_examples
