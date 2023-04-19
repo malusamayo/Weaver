@@ -292,7 +292,7 @@ const ExamplePanel = ({node}) => {
                 const filteredNodeExamples = selectedNodeExamples.filter((example) => {
                     return example.id !== updatedExample.id;
                 });
-                newDataExamples = [...filteredNodeExamples, updatedExample];
+                newDataExamples = [updatedExample, ...filteredNodeExamples];
             } else {
                 newDataExamples = selectedNodeExamples.map((example) => {
                     return example.id !== updatedExample.id ? example : updatedExample;
