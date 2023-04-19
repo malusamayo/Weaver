@@ -1,5 +1,5 @@
 from .prompt import Prompter
-from .relations import RELATIONS, NL_DESCRIPTIONS
+from .relations import RELATIONS, NL_DESCRIPTIONS, path_to_nl_description
 from .utils import normalize
 from collections import defaultdict
 import os
@@ -13,30 +13,33 @@ def build_graph(init_topic, prompter, max_depth = 3):
     topic_queue = queue.Queue()
 
     init_topic = normalize(init_topic)
-    topic_queue.put((init_topic, 0))
+    topic_queue.put((init_topic, [{"topic": init_topic, "relation": ""}], 0))
     known_topics.add(init_topic)
 
     while not topic_queue.empty():
-        (topic, d) = topic_queue.get()
+        (topic, path, d) = topic_queue.get()
         if d >= max_depth:
             continue
         
         for relation in RELATIONS.relations:
             
-            topic_list = prompter.query_topics(topic, relation)
+            context = ""
+            if len(path) > 1:
+                context += "Context: " + path_to_nl_description(path)
+            topic_list = prompter.query_topics(topic, relation, context=context)
             # remove self-loop edge
             if topic in topic_list:
                 topic_list.remove(topic) 
-            known_topics |= set(topic_list)
             if topic_list != []:
                 print(topic, relation, topic_list)
 
             graph[topic][relation] = topic_list
 
             # filter known topics 
-            topic_list = [topic for topic in topic_list if topic not in known_topics]   
+            topic_list = [topic for topic in topic_list if topic not in known_topics] 
+            known_topics |= set(topic_list)  
             for new_topic in topic_list:
-                topic_queue.put((new_topic, d + 1))
+                topic_queue.put((new_topic, path + [{"topic": new_topic, "relation": relation}], d + 1))
     
     return graph
 
