@@ -40,9 +40,9 @@ For both tasks, you should try to **find as many bugs as possible** and **cover 
 **Model 1**:
 Given a sentence, the model will classify the sentence's stance on feminism as 'favor', 'against', or 'none'.
 
-- Input: "Feminism is about creating a world where everyone is respected and valued."
+- Input: "Women are often underrepresented in leadership positions."
     - Output: 'favor'
-- Input: "Feminism is a distraction from real issues. #NoFeminism"
+- Input: "Women's earning potentials are simply less than men's."
     - Output: 'against'
 - Input: "Feminism has been a source of debate and discussion in many circles."
     - Output: 'none'
@@ -50,9 +50,9 @@ Given a sentence, the model will classify the sentence's stance on feminism as '
 **Model 2**:
 Given a sentence, the model will classify the sentence's stance on combating climate change as 'favor', 'against', or 'none'.
 
-- Input: "Let's work together to create a sustainable future for generations to come!"
+- Input: "Air pollution is causing respiratory illnesses."
     - Output: 'favor'
-- Input: "Climate change is a natural phenomenon and not caused by human activity."
+- Input: "Littering has no impact on the environment."
     - Output: 'against'
-- Input: "My area may not be experiencing the severe effects of climate change."
+- Input: "Climate change is hard to solve by research"
     - Output: 'none'
