@@ -254,7 +254,7 @@ class CapabilityApp:
             self.t.clear_suggested_examples(nodeId)
             for exampleText in suggested_examples:
                 example_predicted, example_conf = self.model.predict(exampleText)
-                self.t.add_example(nodeId, exampleText, "", example_predicted, example_conf, True, False)
+                self.t.add_example(nodeId, exampleText, "", example_predicted, example_conf, isSuggested=True, exampleOffTopic=False)
             self.t.write_json()
             return self.t.get_example_list(nodeId)
         

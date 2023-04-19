@@ -327,7 +327,7 @@ const ExamplePanel = ({node}) => {
                 return example.id !== updatedExample.id;
             });
 
-            const newDataExamples = sortSelectedNodeExamples([...filteredNodeExamples, updatedExample]);
+            const newDataExamples = sortSelectedNodeExamples([updatedExample, ...filteredNodeExamples]);
 
             // setSelectedNodeExamples([]);
             console.log("New data examples: ", newDataExamples);

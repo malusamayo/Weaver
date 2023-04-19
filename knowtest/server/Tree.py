@@ -84,7 +84,10 @@ class Tree:
                 self.nodes[node.parent_id].isOpen = True
 
             if addAfter is None:
-                self.nodes[node.parent_id].children.append(node.id)
+                if user_added:
+                    self.nodes[node.parent_id].children.insert(0, node.id)
+                else:
+                    self.nodes[node.parent_id].children.append(node.id)
             else:
                 # position_to_add = self.nodes[node.parent_id].children.index(addAfter)
                 self.nodes[node.parent_id].children.insert(
@@ -393,6 +396,7 @@ class Tree:
 
             example_list = [ex.__JSON__() for ex in self.nodes[node_id].examples.values()]
             example_list.extend([ex.__JSON__() for ex in self.nodes[node_id].suggested_examples.values()])
+            example_list = example_list[::-1]
             return example_list
         return []
     

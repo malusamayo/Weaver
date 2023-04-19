@@ -140,6 +140,7 @@ class Node:
         examples = []
         examples.extend([example.__JSON__() for example in self.examples.values()])
         examples.extend([example.__JSON__() for example in self.suggested_examples.values()])
+        examples = examples[::-1]
 
         return {
             "name": self.name,
