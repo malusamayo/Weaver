@@ -25,6 +25,7 @@ const Tree = ({data}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBackButtonActive, setIsBackButtonActive] = useState(true);
   const [toggleIsHighlighted, setToggleIsHighlighted] = useState(false);
+  const [isBaselineMode, setIsBaselineMode] = useState(false);
   const [toggleExamplePanel, setToggleExamplePanel] = useState(true);
   const [selectedNode, setSelectedNode] = useState(null);
 
@@ -43,6 +44,19 @@ const Tree = ({data}) => {
       }
     };
     commitToggleIsHighlightedSelection();
+  }, []);
+
+  // render exactly once on mount
+  useEffect(() => {
+    const commitIsBaselineMode = async () => {
+      try {
+        const initIsBaselineMode = await fetchAPIDATA("isBaselineMode");
+        setIsBaselineMode(initIsBaselineMode);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    commitIsBaselineMode();
   }, []);
 
   // render exactly once on mount
@@ -285,6 +299,7 @@ const Tree = ({data}) => {
                   },
                   setNodeHighlighted: setNodeHighlighted,
                   selectedNode: selectedNode,
+                  isBaselineMode: isBaselineMode,
                 }}
                 >
               <div style={{position: "sticky", top: "0", zIndex: "9998", backgroundColor: "rgb(245, 245, 245)", padding: "10px", 

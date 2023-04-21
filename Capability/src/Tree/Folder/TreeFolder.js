@@ -210,7 +210,7 @@ const FolderName = ({ isOpen, name, handleClick, handleDoubleClick, isHighlighte
 // }
 
 const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted}) => {
-  const { dispatch, onNodeClick, setIsLoading, setNodeHighlighted } = useTreeContext();
+  const { dispatch, onNodeClick, setIsLoading, setNodeHighlighted, isBaselineMode } = useTreeContext();
   const [isEditing, setIsEditing] = useState(false);
   const [isOpen, setIsOpen] = useState(node.isOpen);
   const [childs, setChilds] = useState([]);
@@ -510,7 +510,7 @@ const Folder = React.memo(({ id, name, children, node, root, toggleIsHighlighted
             <Collapse className="tree__folder--collapsible" isOpen={isOpen}>
             {childs}
             {
-              toggleIsHighlighted? null:
+              isBaselineMode || toggleIsHighlighted? null:
               <StyledName onClick={commitSuggestions} 
                 style={{
                   paddingLeft: "22px",

@@ -175,7 +175,7 @@ class Tree:
         #         self.nodes[node_id].isOpen = isOpen
         if node_id in self.nodes:
             self.nodes[node_id].isOpen = isOpen
-            if isOpen and len(self.nodes[node_id].children) == 0:
+            if isOpen and len(self.nodes[node_id].children) == 0 and not self.is_baseline_mode:
                 self.refresh_suggestions(node_id)
     
     def set_highlight(self, node_id: str, isHighlighted: bool):

@@ -20,8 +20,8 @@ def log_timestamped_calls(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         # Log timestamp and function name
-        arg_str = ', '.join([repr(arg) for arg in args] + [f'{key}={repr(value)}' for key, value in kwargs.items()])
-        logging.info(f'{datetime.now()}: {func.__name__}, {arg_str}')
+        arg_str = ' |#| '.join([repr(arg) for arg in args] + [f'{key}={repr(value)}' for key, value in kwargs.items()])
+        logging.info(f'{datetime.now()} |#| {func.__name__} |#| {arg_str}')
         # Call the function
         return func(*args, **kwargs)
     return wrapper
@@ -196,6 +196,10 @@ class CapabilityApp:
         @self.app.get("/toggleIsHighlightedSelection")
         def toggle_is_highlighted_selection():
             return self.t.only_highlighted
+        
+        @self.app.get("/isBaselineMode")
+        def toggle_is_highlighted_selection():
+            return self.t.is_baseline_mode
         
         @self.app.post("/addExample")
         @log_timestamped_calls
