@@ -237,14 +237,14 @@ class CapabilityApp:
             old_example = self.t.get_example(nodeId, example_id)
             example_predicted, example_conf = old_example.examplePredicted, old_example.exampleConfidence
             if example_text != old_example.exampleText:
-                logging.info(f'{datetime.now()}: update_example, EXAMPLE TEXT CHANGED')
+                logging.info(f'{datetime.now()} |#| update_example |#| EXAMPLE TEXT CHANGED')
                 example_predicted, example_conf = self.model.predict(example_text) # always predict when updating
 
             # logging stuffs
             if is_suggested != old_example.isSuggested:
-                logging.info(f'{datetime.now()}: update_example, EXAMPLE MOVED FROM SUGGESTED')
+                logging.info(f'{datetime.now()} |#| update_example |#| EXAMPLE MOVED FROM SUGGESTED')
             if example_true != old_example.exampleTrue:
-                logging.info(f'{datetime.now()}: update_example, EXAMPLE GROUND TRUTH CHANGED')
+                logging.info(f'{datetime.now()} |#| update_example |#| EXAMPLE GROUND TRUTH CHANGED')
             
             updatedRow = self.t.update_example(nodeId, example_id, example_text, example_true, example_predicted, example_conf, is_suggested, example_off_topic)
             self.t.write_json()

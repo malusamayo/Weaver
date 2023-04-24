@@ -376,11 +376,15 @@ class KnowledgeBase(object):
         # remove the "New example" and empty examples
         examples = [example for example in examples 
                     if example.strip() not in ["New example", ""]]
+        
+        # examples = examples[::-1]
 
         # sample 7 examples from the existing examples
         # [TODO] sample examples based on failure and diversity
         if len(examples) > 7:
-            examples = random.sample(examples, 7)
+            examples = [
+                examples[i] for i in sorted(random.sample(range(len(examples)), 7))
+            ]
 
         if len(examples) == 0:
             print("Zero-shot example suggestion disabled. No examples provided.")
