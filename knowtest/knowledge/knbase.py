@@ -386,9 +386,9 @@ class KnowledgeBase(object):
                 examples[i] for i in sorted(random.sample(range(len(examples)), 7))
             ]
 
-        if len(examples) == 0:
-            print("Zero-shot example suggestion disabled. No examples provided.")
-            return []
+        # if len(examples) == 0:
+        #     print("Zero-shot example suggestion disabled. No examples provided.")
+        #     return []
         
         new_examples = self.prompter.suggest_examples(topic, self.domain, self.input_type, context=context, examples=examples, N=N)
         return new_examples
