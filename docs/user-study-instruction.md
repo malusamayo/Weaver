@@ -2,21 +2,20 @@
 
 In the study, your goal is to **find important bugs in ML models**.
 
-Not every failing prediction is a bug. To consider something a bug, we expect 2 conditions:
-- We can find multiple related inputs for which the model fails
-- The inputs are important enough to the task that the model should be fixed. 
+To find bugs, we recommend exploring the model in terms of **topics**, that is, different kinds of topics that the model should cover or support. For example, a sentiment analysis model on restaurant reviews might do well on reviews on *take-out food* but struggle with reviews on *background music*. You should explore a diverse range of topics and test the model comprehensively.
 
-To facilitate finding bugs, we recommend exploring the model in terms of **topics**, that is, different kinds of topics that the model should cover or support. To declare something a bug, you will need **3** failing inputs that are related to a topic.
+To declare there is a bug, we expect 2 conditions:
+- You find at least **3** failing inputs on a topic.
+- The inputs are **important** enough to the task that the model should be fixed. 
 
 ### Tutorial Session
 
-During this interactive tutorial session, we will provide you guidance on how to effectively utilize our tool to test the example model. 
+During this interactive tutorial session, you will get familiar with what you will do in the user study, as well as explore different functionalities of the tool.
 
-The tutorial session has a similar struture to the actual user study sessions. The session consists of two parts:
-- In the first part, your objective is to identify significant bugs in the model, covering a broad range of topics.
-- In the second part, you will be asked to identify interesting topics for future testing.
+The tutorial session has the same struture as the actual user study sessions. The session consists of two parts:
+- Task 1: Identify **significant bugs** in the model, covering a broad range of topics.
+- Task 2: Identify **important topics** for future testing (imagine you will spend another day testing the model).
 
-You will get familiar with what you will do in the user study, as well as explore different functionalities of the tool.
 
 **Example Model**: Given a restaurant review, the model will classify the review's sentiment as 'positive', 'negative', or 'neutral'.
 
@@ -29,11 +28,22 @@ You will get familiar with what you will do in the user study, as well as explor
 
 ### User Study Overview
 
-During the user study session, you will be tasked with testing two distinct models. For each model, you will have a designated timeframe of 30 minutes. You will spend first 25 minutes to identify bugs and the final 5 minutes to identify topics for future testing. We will ask you to stop when the time is up for each subsession. All your findings will be automatically saved. 
+The user study session is of the same structure as the tutorial session you have completed. You will test two different models for two 30-minute sessions. Each session consists of two parts:
+- Task 1 (25 mins): Identify **significant bugs** in the model, covering a broad range of topics.
+- Task 2 (5 mins): Identify **important topics** for future testing (imagine you will spend another day testing the model).
+
+For both tasks, you should try to **find as many bugs as possible** and **cover a broad range of topics**. For each bug, you are expected to find **3** failing examples under the most relevant topic.
+We will ask you to stop when the time is up for each task. 
 
 For one of the models, we will grant you access to the topic knowledge graph provided by our tool. For the other model, you will need to create examples and brainstorm topics on your own.
 
-For both tasks, you should try to **find as many bugs as possible** and **cover a broad range of topics**. For each bug, you are expected to find **three** failing examples and group them under the most relevant topic.
+Continue by clicking on the group you are assigned to:
+[Group 1](#group-1),
+[Group 2](#group-2),
+[Group 3](#group-3),
+[Group 4](#group-4).
+
+---
 
 #### Group 1
 
