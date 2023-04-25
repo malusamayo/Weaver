@@ -38,7 +38,7 @@ class Tree:
         logging.basicConfig(filename=os.path.join(usr_dir, self.taskid + baseline_str + ".log"), level=logging.INFO)
 
         self.stateDirectory = usr_dir
-        self.state = StateStack(self.stateDirectory)
+        self.state = StateStack(self.stateDirectory, stateSaveDirectory = self.taskid + baseline_str + "_states/")
 
         if os.path.exists(self.path_to_json) and not overwrite:
             self.read_json(self.path_to_json)
@@ -302,23 +302,29 @@ class Tree:
     def move_node(self, node_id: str, new_parent_id: str):
         if node_id in self.nodes and new_parent_id in self.nodes:
             node = self.nodes[node_id]
-            if len(node.children) > 0:
-                print("Cannot move node with children")
-                return
             if node_id == new_parent_id:
                 print("Cannot move node to itself")
                 return
             if node.parent_id == new_parent_id:
                 print("Node already in parent")
                 return
-            self.remove_node_with_id(node_id)
-            node.parent_id = new_parent_id
-            self.add_node(node, init_pass=True)
             if not self.is_baseline_mode:
-                node.natural_language_path = self.get_nl_path(node.id)
-            if node.parent_id in self.nodes:
-                for tag in node.tags:
-                    self.kg.add_node(node.name, self.nodes[node.parent_id].name, tag)
+                print("Cannot move node in KG mode")
+                return
+            
+            # hard remove node from old parent
+            parent_id = self.nodes[node_id].parent_id
+            self.nodes[parent_id].children.remove(node_id)
+            node.parent_id = new_parent_id
+            
+            # add node to new parent
+            self.nodes[node.parent_id].isOpen = True
+            self.nodes[node.parent_id].children.append(node.id)
+            # if not self.is_baseline_mode:
+            #     node.natural_language_path = self.get_nl_path(node.id)
+            
+            for tag in node.tags:
+                self.kg.add_node(node.name, self.nodes[node.parent_id].name, tag)
     
     def add_tag_to_node(self, node_id: str, tag: str):
         if node_id in self.nodes:

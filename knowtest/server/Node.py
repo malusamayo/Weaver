@@ -56,14 +56,14 @@ class Node:
         self.suggested_examples = defaultdict(Example)
         self.add_examples(examples)
 
-    def load_examples(self) -> None:
+    # def load_examples(self) -> None:
 
-        # Check if self.nodePath exists and if it does, load the examples
-        if os.path.exists(self.nodePath):
-            with open(self.nodePath, "r") as f:
-                data = json.load(f)
-                self.examples = set([Example(example["id"]) for example in data["examples"]])
-                self.suggested_examples = set([Example(example["id"]) for example in data["suggested_examples"]])
+    #     # Check if self.nodePath exists and if it does, load the examples
+    #     if os.path.exists(self.nodePath):
+    #         with open(self.nodePath, "r") as f:
+    #             data = json.load(f)
+    #             self.examples = set([Example(example["id"]) for example in data["examples"]])
+    #             self.suggested_examples = set([Example(example["id"]) for example in data["suggested_examples"]])
 
     
     def process_node(self) -> None:
@@ -86,8 +86,8 @@ class Node:
 
     def generate_new_id(self) -> None:
         self.id = str(uuid.uuid4())
-        self.nodeName = "{}.json".format(self.id)
-        self.nodePath = "{}/{}".format(self.nodeDirectory, self.nodeName)
+        # self.nodeName = "{}.json".format(self.id)
+        # self.nodePath = "{}/{}".format(self.nodeDirectory, self.nodeName)
 
     def __repr__(self) -> str:
         return "Node({}, {})".format(self.name, self.tags)
