@@ -54,7 +54,7 @@ Given a sentence, the model will classify the sentence's stance on feminism as '
 
 - Input: "Women are often underrepresented in leadership positions."
     - Output: 'favor'
-- Input: "Women's earning potentials are simply less than men's."
+- Input: "Men should work out more than women"
     - Output: 'against'
 - Input: "Feminism has been a source of debate and discussion in many circles."
     - Output: 'none'
@@ -64,9 +64,9 @@ You have access to topic knowledge graph when testing this model.
 
 Given a sentence, the model will classify the sentence's stance on combating climate change as 'favor', 'against', or 'none'.
 
-- Input: "Air pollution is causing respiratory illnesses."
+- Input: "Polar bears are sad because the ice caps are melting"
     - Output: 'favor'
-- Input: "Littering has no impact on the environment."
+- Input: "The education system is setup against the truth of the "climate change""
     - Output: 'against'
 - Input: "Climate change is a pressing issue but it is hard to solve by research"
     - Output: 'none'
@@ -81,7 +81,7 @@ Given a sentence, the model will classify the sentence's stance on feminism as '
 
 - Input: "Women are often underrepresented in leadership positions."
     - Output: 'favor'
-- Input: "Women's earning potentials are simply less than men's."
+- Input: "Men should work out more than women"
     - Output: 'against'
 - Input: "Feminism has been a source of debate and discussion in many circles."
     - Output: 'none'
@@ -91,9 +91,9 @@ You do NOT have access to topic knowledge graph when testing this model.
 
 Given a sentence, the model will classify the sentence's stance on combating climate change as 'favor', 'against', or 'none'.
 
-- Input: "Air pollution is causing respiratory illnesses."
+- Input: "Polar bears are sad because the ice caps are melting"
     - Output: 'favor'
-- Input: "Littering has no impact on the environment."
+- Input: "The education system is setup against the truth of the "climate change""
     - Output: 'against'
 - Input: "Climate change is a pressing issue but it is hard to solve by research"
     - Output: 'none'
@@ -105,9 +105,9 @@ You do NOT have access to topic knowledge graph when testing this model.
 
 Given a sentence, the model will classify the sentence's stance on combating climate change as 'favor', 'against', or 'none'.
 
-- Input: "Air pollution is causing respiratory illnesses."
+- Input: "Polar bears are sad because the ice caps are melting"
     - Output: 'favor'
-- Input: "Littering has no impact on the environment."
+- Input: "The education system is setup against the truth of the "climate change""
     - Output: 'against'
 - Input: "Climate change is a pressing issue but it is hard to solve by research"
     - Output: 'none'
@@ -119,7 +119,7 @@ Given a sentence, the model will classify the sentence's stance on feminism as '
 
 - Input: "Women are often underrepresented in leadership positions."
     - Output: 'favor'
-- Input: "Women's earning potentials are simply less than men's."
+- Input: "Men should work out more than women"
     - Output: 'against'
 - Input: "Feminism has been a source of debate and discussion in many circles."
     - Output: 'none'
@@ -132,9 +132,9 @@ You have access to topic knowledge graph when testing this model.
 
 Given a sentence, the model will classify the sentence's stance on combating climate change as 'favor', 'against', or 'none'.
 
-- Input: "Air pollution is causing respiratory illnesses."
+- Input: "Polar bears are sad because the ice caps are melting"
     - Output: 'favor'
-- Input: "Littering has no impact on the environment."
+- Input: "The education system is setup against the truth of the "climate change""
     - Output: 'against'
 - Input: "Climate change is a pressing issue but it is hard to solve by research"
     - Output: 'none'
@@ -146,7 +146,7 @@ Given a sentence, the model will classify the sentence's stance on feminism as '
 
 - Input: "Women are often underrepresented in leadership positions."
     - Output: 'favor'
-- Input: "Women's earning potentials are simply less than men's."
+- Input: "Men should work out more than women"
     - Output: 'against'
 - Input: "Feminism has been a source of debate and discussion in many circles."
     - Output: 'none'
