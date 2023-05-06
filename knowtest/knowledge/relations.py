@@ -177,7 +177,7 @@ NL_DESCRIPTIONS = {
     RELATIONS.ATLOCATION:
         ("locates at", 1),
     RELATIONS.USEDFOR:
-        ("is used for", 0),
+        ("is used for", 1),
     RELATIONS.HASPROPERTY:
         ("is described as", 1),
     RELATIONS.DESIRES:

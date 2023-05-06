@@ -140,13 +140,17 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     }
 
     const handleExampleTextKeyDown = (event) => {
-        if ((event.key === 'Enter')) {
+        if ((event.key === 'Enter') || (event.key === "Escape")) {
             console.log(exampleText)
             commitUpdateRow(exampleData, {...exampleData, exampleText: exampleText});
             setIsEditingExampleText(false);
-        } else if (event.key === "Escape") {
-            setIsEditingExampleText(false);
         }
+    }
+
+    const handleExampleTextBlur = () => {
+        console.log(exampleText)
+        commitUpdateRow(exampleData, {...exampleData, exampleText: exampleText});
+        setIsEditingExampleText(false);
     }
 
     const handleExampleOutputChange = (e) => {
@@ -159,6 +163,12 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
             commitUpdateRow(exampleData, {...exampleData, exampleTrue: exampleOutput});
             setIsEditingExampleOutput(false);
         }
+    }
+
+    const handleExampleOutputBlur = () => {
+        console.log(exampleOutput)
+        commitUpdateRow(exampleData, {...exampleData, exampleTrue: exampleOutput});
+        setIsEditingExampleOutput(false);
     }
 
     const handleDeleteRow = () => {
@@ -308,6 +318,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
                         className="tree__input"
                         onChange={handleExampleTextChange} 
                         onKeyDown={handleExampleTextKeyDown} 
+                        onBlur={handleExampleTextBlur}
                         style={editSpecialCSSText} 
                         wrap="soft"/></td>:
                     <td onClick={handleExampleTextClick}>{exampleText}</td>
@@ -321,6 +332,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
                         <input list="output" name="output" value={exampleOutput} 
                         onChange={handleExampleOutputChange} 
                         onKeyDown={handleExampleOutputKeyDown} 
+                        onBlur={handleExampleOutputBlur}
                         style={editSpecialCSSOutput} wrap="soft"/>
                         <datalist id="output">
                             {
