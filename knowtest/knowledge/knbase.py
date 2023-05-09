@@ -127,13 +127,14 @@ class KnowledgeBase(object):
             #     continue
 
             # synchronous call for RELATEDTO
-            if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:            
-                self.extend_node(topic, relation, context=context)
-            else:
-                thread_name = f"{topic}_{relation}"
-                t = threading.Thread(target=self.extend_node, args=(topic,relation,context), name=thread_name)
-                threads.append(t)
-                t.start()
+            # if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:            
+            #     self.extend_node(topic, relation, context=context)
+            # else:
+            
+            thread_name = f"{topic}_{relation}"
+            t = threading.Thread(target=self.extend_node, args=(topic,relation,context), name=thread_name)
+            threads.append(t)
+            t.start()
 
         for thread in threads:
             thread.join()

@@ -1,0 +1,237 @@
+
+[
+    {
+        "id": "TYPEOF",
+        "tag": "has subtype",
+        "description": {
+            "text": "is a type of",
+            "position": "second"
+        },
+        "prompt": "List {N} types of {topic}."
+    },
+    {
+        "id": "PARTOF",
+        "tag": "has part",
+        "description": {
+            "text": "is a part of",
+            "position": "second"
+        },
+        "prompt": "List {N} parts or aspects of {topic}."
+    },
+    {
+        "id": "HASPROPERTY",
+        "tag": "has description",
+        "description": {
+            "text": "is described as",
+            "position": "first"
+        },
+        "prompt": "List {N} descriptions of {topic}."
+    },
+    {
+        "id": "USEDFOR",
+        "tag": "used for",
+        "description": {
+            "text": "is used for",
+            "position": "first"
+        },
+        "prompt": "List {N} things {topic} could be used for."
+    },
+    {
+        "id": "ATLOCATION",
+        "tag": "located at",
+        "description": {
+            "text": "locates at",
+            "position": "first"
+        },
+        "prompt": "List {N} locations {topic} could appear in."
+    },
+    {
+        "id": "CAUSES",
+        "tag": "causes",
+        "description": {
+            "text": "causes",
+            "position": "first"
+        },
+        "prompt": "List {N} consequences of {topic}."
+    },
+    {
+        "id": "MOTIVATEDBY",
+        "tag": "motivated by",
+        "description": {
+            "text": "is motivated by",
+            "position": "first"
+        },
+        "prompt": "List {N} motivations behind {topic}."
+    },
+    {
+        "id": "OBSTRUCTEDBY",
+        "tag": "obstructed by",
+        "description": {
+            "text": "is obstructed by",
+            "position": "first"
+        },
+        "prompt": "List {N} things, entities, or people against {topic}."
+    },
+    {
+        "id": "MANNEROF",
+        "tag": "done via",
+        "description": {
+            "text": "is a way to do",
+            "position": "second"
+        },
+        "prompt": "List {N} ways to do {topic}."
+    },
+    {
+        "id": "LOCATEDNEAR",
+        "tag": "located near",
+        "description": {
+            "text": "locates near",
+            "position": "second"
+        },
+        "prompt": "List {N} things that often locates near {topic}."
+    },
+    {
+        "id": "CAPABLEOF",
+        "tag": "capable of",
+        "description": {
+            "text": "is capable of",
+            "position": "first"
+        },
+        "prompt": "List {N} things that {topic} is capable of."
+    },
+    {
+        "id": "HASSUBEVENT",
+        "tag": "has subevent",
+        "description": {
+            "text": "happens during",
+            "position": "second"
+        },
+        "prompt": "List {N} subevents of {topic}."
+    },
+    {
+        "id": "HASPREREQUISITE",
+        "tag": "happens after",
+        "description": {
+            "text": "happens before",
+            "position": "second"
+        },
+        "prompt": "List {N} things that happen before {topic}."
+    }, 
+    {
+        "id": "DESIRES",
+        "tag": "desires",
+        "description": {
+            "text": "desires",
+            "position": "first"
+        },
+        "prompt": "List {N} things that {topic} desires."
+    },
+    {
+        "id": "CREATEDBY",
+        "tag": "created by",
+        "description": {
+            "text": "creates",
+            "position": "second"
+        },
+        "prompt": "List {N} creators of {topic}."
+    },
+    {
+        "id": "SYMBOLOF",
+        "tag": "has symbol",
+        "description": {
+            "text": "is a symbol of",
+            "position": "second"
+        },
+        "prompt": "List {N} symbols of {topic}."
+    },
+    {
+        "id": "CAUSESDESIRE",
+        "tag": "causes desire",
+        "description": {
+            "text": "causes desire of",
+            "position": "first"
+        },
+        "prompt": "List {N} desires caused by {topic}."
+    },
+    {
+        "id": "MADEOF",
+        "tag": "made of",
+        "description": {
+            "text": "is made of",
+            "position": "first"
+        },
+        "prompt": "List {N} materials of {topic}."
+    },
+    {
+        "id": "RECEIVESACTION",
+        "tag": "receives action",
+        "description": {
+            "text": "receives action of",
+            "position": "first"
+        },
+        "prompt": "List {N} actions that can be done to {topic}."
+    },
+    {
+        "id": "DESIREDBY",
+        "tag": "desired by",
+        "description": {
+            "text": "desires",
+            "position": "second"
+        },
+        "prompt": "List {N} entities or people that desire {topic}."
+    },
+    {
+        "id": "CREATES",
+        "tag": "creates",
+        "description": {
+            "text": "creates",  
+            "position": "first"
+        },
+        "prompt": "List {N} things that {topic} creates."
+    },
+    {
+        "id": "CAUSEDBY",
+        "tag": "caused by",
+        "description": {
+            "text": "causes",
+            "position": "second"
+        },
+        "prompt": "List {N} things that cause {topic}."
+    },
+    {
+        "id": "DONEBY",
+        "tag": "done by",
+        "description": {
+            "text": "does",
+            "position": "second"
+        },
+        "prompt": "List {N} entities or people that can do {topic}."
+    },
+    {
+        "id": "DESIRECAUSEDBY",
+        "tag": "desire caused by",
+        "description": {
+            "text": "causes desire of",
+            "position": "second"
+        },
+        "prompt": "List {N} things that cause desire of {topic}."
+    },
+    {
+        "id": "DONETO",
+        "tag": "done to",
+        "description": {
+            "text": "is done to",
+            "position": "first"
+        },
+        "prompt": "List {N} entities or people that {topic} can be done to."
+    },
+    {
+        "id": "RELATEDTO",
+        "tag": "related to",
+        "description": {
+            "text": "is related to",
+            "position": "second"
+        },
+        "prompt": "List {N} concepts related to {topic}."
+    }
+]
