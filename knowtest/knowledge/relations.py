@@ -1,3 +1,18 @@
+from .knmodel import ChatGPTModel
+
+class RephraseModel(object):
+
+    def __init__(self) -> None:
+        self.sys_msg = f''''''
+        self.model = ChatGPTModel(self.sys_msg, temparature=0)
+
+    def __call__(self, sentence):
+        msg = f'''Rephrase the sentence to make it less ambiguous and more readable.
+Sentence: {sentence}
+Rephrased sentence:'''
+        prompts = [{"role": "user", "content": msg}]
+        response = self.model(prompts)
+        return response['content']
 
 class Relations(object):
     TYPEOF = 0
@@ -62,6 +77,7 @@ class Relations(object):
             ]
         assert len(self.relations) == self.RELATEDTO + 1
         self.translate_dict = dict(zip(self.relations , range(len(self.relations))))
+        self.rephrase_model = RephraseModel()
 
     def has_relation(self, relation):
         relation = relation.upper()
@@ -76,7 +92,7 @@ def to_nl_tags(relation):
         return RELATION_NL_TAGS[relation][0]
     return relation
 
-def to_nl_description(topic, relation, parent_topic):
+def to_nl_description(topic, relation, parent_topic, rephrase=False):
     if RELATIONS.has_relation(relation):
         relation = RELATIONS.translate(relation)
         (descrp, pos) = NL_DESCRIPTIONS[relation]
@@ -86,7 +102,11 @@ def to_nl_description(topic, relation, parent_topic):
             sentence = f"{parent_topic} {descrp} {topic}."
     else:
         sentence = f"{topic} is {relation} {parent_topic}." # all custom relations should be in this form
-    return sentence.capitalize()
+    sentence = sentence.capitalize()
+    if rephrase: ## disabled, too costly
+        sentence = RELATIONS.rephrase_model(sentence)
+        print(sentence)
+    return sentence
 
 def path_to_nl_description(path):
     '''
