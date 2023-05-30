@@ -1,0 +1,53 @@
+{
+    "stance_classification_feminism": {
+        "model": "gpt-3.5-turbo",
+        "type": "classification",
+        "labels": [
+            "favor",
+            "against",
+            "none"
+        ],
+        "prompt": [
+            {
+                "role": "user",
+                "content": "Carefully classify a sentence's stance on feminism. The labels are \"favor\", \"against\" or \"none\". Only reply with the label.\nSentence: {example}"
+            }
+        ]
+    },
+    "stance_classification_climate_change": {
+        "model": "gpt-3.5-turbo",
+        "type": "classification",
+        "labels": [
+            "favor",
+            "against",
+            "none"
+        ],
+        "prompt": [
+            {
+                "role": "user",
+                "content": "Carefully classify a sentence's stance on combating climate change. The labels are \"favor\", \"against\" or \"none\". Only reply with the label.\nSentence: {example}"
+            }
+        ]
+    },
+    "sentiment_analysis_restaurant_reviews": {
+        "model": "gpt-3.5-turbo",
+        "type": "classification",
+        "labels": ["positive", "negative", "neutral"],
+        "prompt": [
+            {
+                "role": "user",
+                "content": "Carefully classify a restaurant review's sentiment. The labels are \"positive\", \"negative\" or \"neutral\". Only reply with the label.\nSentence: {example}"
+            }
+        ]
+    },
+    "fact_checking_nutrition": {
+        "model": "gpt-3.5-turbo",
+        "type": "generation",
+        "prompt": [
+            {
+                "role": "user",
+                "content": "You are an nutrition expert answering questions. Write a short explanation if it is a yes or no question. Keep the answer short. Question: {example}\n"
+            }
+        ]
+    }
+}

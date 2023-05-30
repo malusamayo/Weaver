@@ -1,5 +1,7 @@
 import numpy as np
 import json
+import copy
+import importlib.resources
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from transformers import pipeline
@@ -97,14 +99,22 @@ class Model(object):
 
     @staticmethod
     def create(path="") -> None:
-        if path.endswith("classification.json"):
-            with open(path, 'r') as f:
-                specs = json.load(f)
-            return GPTClassificationModel(specs['task'], specs['labels'])
-        elif path.endswith(".json"):
-            with open(path, 'r') as f:
-                specs = json.load(f)
-            return GPTGenerationModel(specs['role'], specs["answer_style"])
+        with importlib.resources.open_text("knowtest.specs", 'models.json') as file:
+            model_prompts = json.load(file)
+        if path in model_prompts:
+            model_specs = model_prompts[path]
+            if model_specs['type'] == 'classification':
+                return GPTClassificationModel(model_specs['prompt'], model_specs['labels'])
+            elif model_specs['type'] == 'generation':
+                return GPTGenerationModel(model_specs['prompt'])
+        # if path.endswith("classification.json"):
+        #     with open(path, 'r') as f:
+        #         specs = json.load(f)
+        #     return GPTClassificationModel(specs['task'], specs['labels'])
+        # elif path.endswith(".json"):
+        #     with open(path, 'r') as f:
+        #         specs = json.load(f)
+        #     return GPTGenerationModel(specs['role'], specs["answer_style"])
         else:
             return HuggingfaceClassificationModel(path)
 
@@ -163,19 +173,14 @@ class HuggingfaceClassificationModel(ClassificationModel):
     
 class GPTClassificationModel(ClassificationModel):
 
-    def __init__(self, task="a sentence's sentiment", labels=['positive', 'negative']) -> None:
-        label_msg = '", "'.join(labels[:-1])
-        label_msg = '"' + label_msg + '" or "' + labels[-1] + '"'
-        self.task = task
+    def __init__(self, prompt="", labels=['positive', 'negative']) -> None:
+        self.prompts = prompt
         self.labels = labels
-        self.sys_msg = '' 
-        # f'''You are a classification model. You are classifying {task}.
-        # The labels are {label_msg}. You should only keep the label as your answer.'''
-        self.prompt_msg = f'''Carefully classify {task}. The labels are {label_msg}. Only reply with the label.\n'''
-        self.model = ChatGPTModel(self.sys_msg, temparature=0)
+        self.model = ChatGPTModel('', temparature=0)
 
     def __call__(self, example):
-        prompts = [{"role": "user", "content": self.prompt_msg + f"Sentence: {example}"}]
+        prompts = copy.deepcopy(self.prompts)
+        prompts[0]["content"] = prompts[0]["content"].format(example=example)
         response = self.model(prompts)
         response_lower = response['content'].lower()
         label_in_response = [label for label in self.labels if label in response_lower]
@@ -198,13 +203,13 @@ class GPTClassificationModel(ClassificationModel):
     
 class GPTGenerationModel(Model):
     
-    def __init__(self, role="expert", answer_style="") -> None:
-        self.answer_style = answer_style
-        self.sys_msg = f'''You are an {role}.'''
-        self.model = ChatGPTModel(self.sys_msg, temparature=0.7)
+    def __init__(self, prompt="") -> None:
+        self.prompts = prompt
+        self.model = ChatGPTModel("", temparature=0.7)
 
     def __call__(self, example):
-        prompts = [{"role": "user", "content": f"Question: {example} {self.answer_style}"}]
+        prompts = copy.deepcopy(self.prompts)
+        prompts[0]["content"] = prompts[0]["content"].format(example=example)
         response = self.model(prompts)
         return response['content']
     
@@ -213,8 +218,10 @@ class GPTGenerationModel(Model):
         
 
 if __name__ == "__main__":
-    model = GPTClassificationModel(task = "a sentence's stance on feminism", labels = ["favor", "against", "none"])
+    model = Model.create("stance_classification_feminism")
+    # GPTClassificationModel(task = "a sentence's stance on feminism", labels = ["favor", "against", "none"])
+    print(model.predict("Gender pay gap is an issue that must be addressed."))
     print(model.predict("Gender-based violence is an issue that must be addressed."))
-    model = GPTGenerationModel(role = "nutrition expert")
+    model = Model.create("fact_checking_nutrition")
     print(model.predict("How does banana help your health?"))
     # print(model.predict_batch(["I love you", "I hate you"]))

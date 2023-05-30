@@ -1,5 +1,6 @@
 import json
 from .knmodel import ChatGPTModel
+import importlib.resources
 
 class RephraseModel(object):
 
@@ -16,9 +17,11 @@ Rephrased sentence:'''
         return response['content']
 
 class Relations(object):
-    def __init__(self, path_to_relations='specs/relations_default.json'):
-        with open(path_to_relations, 'r') as f:
-            self.relation_specs = json.loads(f.read()) 
+    def __init__(self, path_to_relations='relations_default.json'):
+        with importlib.resources.open_text("knowtest.specs", path_to_relations) as file:
+            self.relation_specs = json.load(file)  
+        # with open(path_to_relations, 'r') as f:
+        #     self.relation_specs = json.loads(f.read()) 
         self.relations = [r['id'] for r in self.relation_specs]
         self.translate_dict = dict(zip(self.relations , range(len(self.relations))))
         self.rephrase_model = RephraseModel()

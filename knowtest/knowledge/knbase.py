@@ -459,8 +459,8 @@ def run_kb_contruction(seed, max_depth=1, KGOutput="./output"):
 
 if __name__ == "__main__":
     # # constructing kb
-    seed = "feminism"
-    run_kb_contruction(seed, max_depth=1, path='./output/kg/feminism')
+    seed = "online toxicity"
+    run_kb_contruction(seed, max_depth=2, KGOutput='./output/kg/online_toxicity')
     # knbase = KnowledgeBase("output", "hate_speech")
     # tree = [
     #     {'topic': 'hate speech', 'parent': None},

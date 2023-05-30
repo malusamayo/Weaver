@@ -1,8 +1,10 @@
 import os
 import re
+import json
 import urllib
 import numpy as np
 import threading
+import importlib.resources
 from .knmodel import GPT3Model, CurieModel
 from .cache import Cache
 from .relations import RELATIONS, PROMPT_TEMPLATES
@@ -19,6 +21,8 @@ class Prompter(object):
         self.sep = "#"
         self.quote = "\""
         self.lock = threading.Lock() # for multi-threading
+        with importlib.resources.open_text("knowtest.specs", 'generator.json') as file:
+            self.generator_prompts = json.load(file)
 
     # [TODO] Use external models to evaluate prompt likelihood
     def select_prompts(self, prompts):
@@ -44,7 +48,7 @@ class Prompter(object):
             prompts += [prompt.format(topic=topic, N=N) for prompt in PROMPT_TEMPLATES[relation]]
         else:
             # open relations
-            prompts.append(f"List {N} {relation} {topic}")
+            prompts.append(f"List {N} {relation} {topic}.")
         prompt = self.select_prompts(prompts)
         return prompt
 
@@ -69,37 +73,21 @@ class Prompter(object):
             The topics that are already known to the user.
         """
         
-        prompt = ""
-        cached_topics = []
-
-        prompt += context
-        prompt += "\n"
-
         # check caches
         if self.cache.exists_cached_queries(topic, relation):
-            # if RELATIONS.translate(relation) == RELATIONS.RELATEDTO:
-            #     known_topic_list = self.cache.read_cached_queries_per_topic(topic)
-            # else:
             cached_topics = self.cache.read_cached_queries(topic, relation)
-            if len(known_topics) < len(cached_topics):
-                new_topics = [topic for topic in cached_topics if topic not in known_topics]
+            new_topics = [topic for topic in cached_topics if topic not in known_topics]
+            if len(new_topics) > 0:
                 return new_topics
-            else:
-                prompt += self.generate_prompt(topic, relation, N)
-                prompt = prompt.replace("List", "List extra")
         else:
-            prompt += self.generate_prompt(topic, relation, N)
-        
-        prompt += " Pay attention to the context above."
-        prompt += "\n"
-        # adding format instructions
-        prompt += f"Summarize in a list of words. Separate the list by '{self.sep}' only. Don't use numbers to separate. Keep only the list."
-        extend = len(cached_topics) > 0 # if there are cached topics, we are extending the list
-        if extend:
-            prompt += "\n"
-            prompt += "Known examples: "
-            prompt += self.sep.join(cached_topics) + "\n"
-            prompt += "Extra examples: "
+            cached_topics = []
+
+        if len(cached_topics) == 0:
+            prompt = self.generator_prompts["zero_shot_knowledge_graph"]
+            prompt = prompt.format(context=context, list_prompt=self.generate_prompt(topic, relation, N), sep=self.sep)
+        else:
+            prompt = self.generator_prompts["few_shot_knowledge_graph"]
+            prompt = prompt.format(context=context, list_prompt=self.generate_prompt(topic, relation, N+len(cached_topics)), sep=self.sep, examples=self.sep.join(cached_topics))
 
         print(prompt)
         response = self.model(prompt)
@@ -134,25 +122,19 @@ class Prompter(object):
         N : int
             The desired number of examples.
         '''
-        prompt = ""
         seed = self.seed_topic
 
         if len(examples) == 0:
-            prompt += context
-            prompt += "\n"
-            prompt += f"Write {N + len(examples)} {input_type} on the topic '{topic}' relevant to '{seed}' in {domain}. Pay attention to the context above.\n"
+            prompt = self.generator_prompts["zero_shot_data_gen"]
+            prompt = prompt.format(context=context, N=N, input_type=input_type,topic=topic, seed=seed, domain=domain)
         else:
-            prompt += f"Here are {N + len(examples)} examples:\n" # minimal instructions when there are examples
-        for i, example in enumerate(examples):
-            prompt += f"{i+1}. {example}\n" # [TODO] add label to the examples???
-        prompt += f"{len(examples) + 1}. "
+            prompt = self.generator_prompts["few_shot_data_gen"]
+            prompt = prompt.format(context=context, N=N+len(examples), examples="\n".join(["- " + e for e in examples])) # [TODO] add label to the examples???
         
         print(prompt)
         response = self.model(prompt)
         new_examples = response.split("\n")
-        for i in range(len(new_examples)):
-            idx = i + 1 + len(examples)
-            new_examples[i] = new_examples[i].strip().replace(f"{idx}. ", "")
+        new_examples = [example[1:].strip() if example.startswith("-") else example.strip() for example in new_examples]
 
         return new_examples
     
@@ -318,22 +300,23 @@ class Prompter(object):
         return topics
 
 if __name__ == "__main__":
-    prompter = Prompter("hate_speech")
-    print(prompter.query_topics("smartphone", "downsides of"))
+    prompter = Prompter("test")
+    print(prompter.query_topics("smartphone", "downsides of", known_topics=["data-usage"]))
+    # print(prompter.suggest_examples("feminism", "Twitter", "online comments", examples=["We must continue to fight against the hate speech that targets women and girls. #Feminism", "We must end the wage gap between men and women. #EqualPay"]))
 
-    known_topics = [
-        '/hate speech',
-        '/hate speech/abusive language',
-        '/hate speech/racism',
-        '/hate speech/sexism',
-        '/hate speech/sexism/sexist language',
-        '/hate speech/racism/anti-semitism',
-        '/hate speech/racism/anti-black',
-        '/hate speech/racism/white supremacy',
-        '/hate speech/racism/anti-asian',
-    ]
-    for _ in range(3):
-        topic = "/hate speech/racism"
-        topics = prompter.sugges_topics_adatest(known_topics, topic, K=5)
-        print(topics)
-        known_topics += [topic + '/' + t for t in topics]
+    # known_topics = [
+    #     '/hate speech',
+    #     '/hate speech/abusive language',
+    #     '/hate speech/racism',
+    #     '/hate speech/sexism',
+    #     '/hate speech/sexism/sexist language',
+    #     '/hate speech/racism/anti-semitism',
+    #     '/hate speech/racism/anti-black',
+    #     '/hate speech/racism/white supremacy',
+    #     '/hate speech/racism/anti-asian',
+    # ]
+    # for _ in range(3):
+    #     topic = "/hate speech/racism"
+    #     topics = prompter.sugges_topics_adatest(known_topics, topic, K=5)
+    #     print(topics)
+    #     known_topics += [topic + '/' + t for t in topics]
