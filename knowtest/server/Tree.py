@@ -12,7 +12,7 @@ from ..knowledge.relations import path_to_nl_description
 from .Node import Example
 
 class Tree:
-    def __init__(self, topic: str="root", file_directory: str="output", uid: str="", overwrite: bool=False, is_baseline_mode: bool=False):
+    def __init__(self, topic: str="root", file_directory: str="output", uid: str="", overwrite: bool=False, is_baseline_mode: bool=False, generator_specs=None):
 
         self.tag_filters = []
         self.number_of_topics = 0
@@ -27,7 +27,7 @@ class Tree:
 
         self.taskid = "_".join(topic.split(" "))
         kg_dir = os.path.join(file_directory, "kg")
-        self.kg = KnowledgeBase(kg_dir, taskid=self.taskid, is_baseline_mode=self.is_baseline_mode)
+        self.kg = KnowledgeBase(kg_dir, taskid=self.taskid, is_baseline_mode=self.is_baseline_mode, generator_specs=generator_specs)
         self.only_highlighted = False
 
         usr_dir = os.path.join(file_directory, "usr", uid)

@@ -10,24 +10,15 @@ from .utils import normalize, recommend_topics, PScorer
 
 class KnowledgeBase(object):
 
-    def __init__(self, path: str, taskid: str, uid: str="", is_baseline_mode: bool=False) -> None:
+    def __init__(self, path: str, taskid: str, uid: str="", is_baseline_mode: bool=False, generator_specs=None) -> None:
         self.dir = os.path.join(path, taskid)
         self.path_to_nodes = os.path.join(self.dir, "nodes.csv")
         self.path_to_edges = os.path.join(self.dir, "edges.csv")
-        self.path_to_specs = os.path.join(self.dir, "specs.json")
 
-        self.domain = "online platform" # setting domain to "online platform" by default
-        self.input_type = "comments" 
-        if os.path.exists(self.path_to_specs):
-            with open(self.path_to_specs, 'r') as f:
-                specs = json.load(f)
-                self.domain = specs["domain"]
-                self.input_type = specs["input_type"]
-            print("Specs loaded: ", specs)
         print("Path: ", path, "OS Path: ", os.getcwd())
         self.lock = threading.Lock() # for multi-threading
         print(normalize("Initializing wordnet"))
-        self.prompter = Prompter(taskid=taskid)
+        self.prompter = Prompter(taskid=taskid, generator_specs=generator_specs)
 
         if uid == None:
             uid = 0
@@ -391,7 +382,7 @@ class KnowledgeBase(object):
         #     print("Zero-shot example suggestion disabled. No examples provided.")
         #     return []
         
-        new_examples = self.prompter.suggest_examples(topic, self.domain, self.input_type, context=context, examples=examples, N=N)
+        new_examples = self.prompter.suggest_examples(topic, context=context, examples=examples, N=N)
         return new_examples
 
     def add_node(self, topic, parent_topic, relation, path=[]):
@@ -420,6 +411,7 @@ def graph_to_knbase(graph):
     for topic, children in graph.items():
         nodes.append({"id": topic})
         for relation, topics in children.items():
+            print(topics, len(topics))
             scores = PScorer.score_topics(topics, topic).tolist() # compute relevancy scores
             for topic_r, score in zip(topics, scores):
                 edges.append({"from": topic, "to": topic_r, "relation": relation, "score": score})
@@ -459,8 +451,8 @@ def run_kb_contruction(seed, max_depth=1, KGOutput="./output"):
 
 if __name__ == "__main__":
     # # constructing kb
-    seed = "online toxicity"
-    run_kb_contruction(seed, max_depth=2, KGOutput='./output/kg/online_toxicity')
+    seed = "climate change"
+    run_kb_contruction(seed, max_depth=2, KGOutput='./output/kg')
     # knbase = KnowledgeBase("output", "hate_speech")
     # tree = [
     #     {'topic': 'hate speech', 'parent': None},

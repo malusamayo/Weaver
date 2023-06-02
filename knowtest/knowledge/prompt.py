@@ -5,24 +5,28 @@ import urllib
 import numpy as np
 import threading
 import importlib.resources
-from .knmodel import GPT3Model, CurieModel
+from .knmodel import GPT3Model, GPT3ModelAsync, CurieModel
 from .cache import Cache
 from .relations import RELATIONS, PROMPT_TEMPLATES
 from .utils import normalize, is_subtopic, SScorer
 
 class Prompter(object):
     
-    def __init__(self, taskid):
+    def __init__(self, taskid, generator_specs=None):
         self.taskid = taskid
         self.seed_topic = ' '.join(taskid.split("_")) 
         self.model = GPT3Model()
+        self.model_async = GPT3ModelAsync()
         self.curie_model = CurieModel()
         self.cache = Cache(taskid)
         self.sep = "#"
         self.quote = "\""
         self.lock = threading.Lock() # for multi-threading
-        with importlib.resources.open_text("knowtest.specs", 'generator.json') as file:
+        with importlib.resources.open_text("knowtest.specs", 'generators.json') as file:
             self.generator_prompts = json.load(file)
+        if generator_specs is not None:
+            for k, v in generator_specs.items():
+                self.generator_prompts[k] = self.generator_prompts[v]
 
     # [TODO] Use external models to evaluate prompt likelihood
     def select_prompts(self, prompts):
@@ -107,12 +111,10 @@ class Prompter(object):
         self.lock.release()
         return topic_list
 
-    def suggest_examples(self, topic, domain, input_type, context="", examples=[], N=5):
+    def suggest_examples(self, topic, context="", examples=[], N=5):
         ''' Query the model of examples.
         Parameters
         ----------
-        domain : str
-            The domain of the examples.
         topic : str
             The topic of the examples.
         context : str
@@ -126,7 +128,7 @@ class Prompter(object):
 
         if len(examples) == 0:
             prompt = self.generator_prompts["zero_shot_data_gen"]
-            prompt = prompt.format(context=context, N=N, input_type=input_type,topic=topic, seed=seed, domain=domain)
+            prompt = prompt.format(context=context, N=N, topic=topic, seed=seed)
         else:
             prompt = self.generator_prompts["few_shot_data_gen"]
             prompt = prompt.format(context=context, N=N+len(examples), examples="\n".join(["- " + e for e in examples])) # [TODO] add label to the examples???

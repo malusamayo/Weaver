@@ -11,11 +11,18 @@ import sys
 from .Server import CapabilityApp
 
 class Capability(object):
-    def __init__(self, topic="hate speech", build_directory="Build", model_dir="Model", serverHost: str="localhost", serverPort: int=3001):
+    def __init__(self, topic="hate speech", build_directory="Build", file_directory: str="./output/", model_spec="", uid:str="", serverHost: str="localhost", serverPort: int=3001, overwrite: bool=False, generator_specs=None):
         self.topic = topic
         self.build_directory = os.path.abspath(__file__).replace("Capability.py", build_directory)
         self.server_link = f"http://{serverHost}:{serverPort}"
-        self.app = CapabilityApp(self.topic, model_dir=model_dir, serverHost=serverHost, serverPort=serverPort)
+        self.app = CapabilityApp(topic=self.topic, 
+                                    file_directory=file_directory,
+                                    model_dir=model_spec,
+                                    serverHost=serverHost,
+                                    serverPort=serverPort,
+                                    uid=uid,
+                                    overwrite=overwrite,
+                                    generator_specs=generator_specs)
         self.app.initializeServer()
 
     def get_tree(self):

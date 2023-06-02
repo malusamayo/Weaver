@@ -36,7 +36,7 @@ class ExampleRow(BaseModel):
 
 
 class CapabilityApp:
-    def __init__(self, topic: str, file_directory: str="./output/", model_dir:str="", uid:str="", serverHost: str="0.0.0.0", serverPort: int=3001, is_baseline_mode: bool=False, overwrite: bool=False):
+    def __init__(self, topic: str, file_directory: str="./output/", model_dir:str="", uid:str="", serverHost: str="0.0.0.0", serverPort: int=3001, is_baseline_mode: bool=False, overwrite: bool=False, generator_specs=None):
         self.file_directory = file_directory
         self.topic = topic
         self.is_baseline_mode = is_baseline_mode
@@ -51,6 +51,7 @@ class CapabilityApp:
             os.makedirs(os.path.join(self.file_directory, "kg"))
 
         self.model = Model.create(path=model_dir)
+        self.generator_specs=generator_specs
         self.change_topic(topic, overwrite=overwrite)
 
         self.serverHost = serverHost
@@ -271,7 +272,7 @@ class CapabilityApp:
         )
 
     def change_topic(self, topic: str, overwrite: bool = False):
-        self.t = Tree(topic=topic, file_directory=self.file_directory, uid=self.uid, is_baseline_mode=self.is_baseline_mode, overwrite=overwrite)
+        self.t = Tree(topic=topic, file_directory=self.file_directory, uid=self.uid, is_baseline_mode=self.is_baseline_mode, overwrite=overwrite, generator_specs=self.generator_specs)
         self.t.write_json()
 
     def initializeServer(self):
