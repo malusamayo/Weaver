@@ -6,6 +6,23 @@ import os
 import queue
 import json
 import time, openai
+from threading import Thread 
+
+class ThreadWithReturnValue(Thread):
+    
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}, Verbose=None):
+        Thread.__init__(self, group, target, name, args, kwargs)
+        self._return = None
+        self._name = name
+
+    def run(self):
+        if self._target is not None:
+            self._return = self._target(*self._args,
+                                                **self._kwargs)
+    def join(self, *args):
+        Thread.join(self, *args)
+        return self._return
 
 def build_graph(init_topic, prompter, max_depth = 3):
     graph = defaultdict(dict)
@@ -21,13 +38,40 @@ def build_graph(init_topic, prompter, max_depth = 3):
         if d >= max_depth:
             continue
         
-        for relation in RELATIONS.relations:
+        # for relation in RELATIONS.relations:
             
+        #     context = ""
+        #     if len(path) > 1:
+        #         context += "Context: " + path_to_nl_description(path)
+        #     topic_list = prompter.query_topics(topic, relation, context=context)
+        #     # remove self-loop edge
+        #     if topic in topic_list:
+        #         topic_list.remove(topic) 
+        #     if topic_list != []:
+        #         print(topic, relation, topic_list)
+
+        #     graph[topic][relation] = topic_list
+
+        #     # filter known topics 
+        #     topic_list = [topic for topic in topic_list if topic not in known_topics] 
+        #     known_topics |= set(topic_list)  
+        #     for new_topic in topic_list:
+        #         topic_queue.put((new_topic, path + [{"topic": new_topic, "relation": relation}], d + 1))
+
+        # threading version
+        threads = []
+        for relation in RELATIONS.relations:
             context = ""
             if len(path) > 1:
                 context += "Context: " + path_to_nl_description(path)
-            topic_list = prompter.query_topics(topic, relation, context=context)
-            # remove self-loop edge
+            thread_name = f"{topic}_{relation}"
+            t = ThreadWithReturnValue(target=prompter.query_topics, args=(topic,relation,context), name=thread_name)
+            threads.append(t)
+            t.start()
+
+        for thread in threads:
+            relation = thread._name.split("_")[-1]
+            topic_list = thread.join()
             if topic in topic_list:
                 topic_list.remove(topic) 
             if topic_list != []:
@@ -40,6 +84,7 @@ def build_graph(init_topic, prompter, max_depth = 3):
             known_topics |= set(topic_list)  
             for new_topic in topic_list:
                 topic_queue.put((new_topic, path + [{"topic": new_topic, "relation": relation}], d + 1))
+
     
     return graph
 
