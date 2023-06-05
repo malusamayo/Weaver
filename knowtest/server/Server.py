@@ -71,7 +71,7 @@ class CapabilityApp:
             # t.reset_state()
             if hasattr(self.model, "labels"):
                 return self.model.labels
-            return ""
+            return []
 
         @self.app.post("/addNode")
         @log_timestamped_calls
