@@ -321,10 +321,17 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
                         onBlur={handleExampleTextBlur}
                         style={editSpecialCSSText} 
                         wrap="soft"/></td>:
-                    <td onClick={handleExampleTextClick}>{exampleText}</td>
+                    <td onClick={handleExampleTextClick} style={{whiteSpace: "pre-wrap"}}>{exampleText}</td>
             }
 
             <td><FaLongArrowAltRight style={{fontSize: "30px", color: "rgb(144, 144, 144)"}}/></td>
+
+
+            <td>
+                {
+                    <td style={{whiteSpace: "pre-wrap"}}>{examplePredicted}</td>
+                }
+            </td>
             
             {
                 isEditingExampleOutput ?
@@ -342,15 +349,10 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
                             }
                         </datalist>
                     </td> :
-                    <td onClick={handleExampleOutputClick}>{exampleOutput}</td>
+                    <td onClick={handleExampleOutputClick}  style={{whiteSpace: "pre-wrap"}}>{exampleOutput}</td>
 
             }
             
-            <td>
-                {
-                    examplePredicted
-                }
-            </td>
             {/* <td>
                 {
                     exampleData.exampleConfidence

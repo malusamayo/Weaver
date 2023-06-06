@@ -507,7 +507,7 @@ const ExamplePanel = ({node}) => {
                             null
                         }
                         {/* For user study only */ }
-                        {
+                        {/* {
                             <p>Failing examples found: <b>{numFail}/3 </b>
                                 {
                                     numFail >= 3 ?
@@ -515,7 +515,7 @@ const ExamplePanel = ({node}) => {
                                         <TiTick style={{fontSize: "25px", opacity: "0.2", marginBottom: "6px"}}/>
                                 }
                             </p>
-                        }
+                        } */}
                         {
                             selectedNodeExamples.length === 0 ? 
                             <div style={{display: "flex", justifyContent: "right", alignItems: "center"}}>
@@ -564,8 +564,8 @@ const ExamplePanel = ({node}) => {
                             <tr>
                                 <td>Input</td>
                                 <td></td>
-                                <td>Output</td>
                                 <td>Predicted</td>
+                                <td>Notes</td>
                                 {/* <td>Conf</td> */}
                                 {/* <td>Off-topic</td>  */}
                                 <td>Pass</td>
