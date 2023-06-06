@@ -89,16 +89,35 @@ class GPT3Model(LanguageModel):
         messages = messages[0] if len(messages) == 1 else messages
         return messages
     
+class GPT3ModelAsync(LanguageModel):
+
+    def __init__(self, api_key: str = None) -> None:
+        super().__init__()
+        openai.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        assert openai.api_key is not None, "Please provide an OpenAI API key"
+
+    async def _get_completion(
+        self,
+        prompt: str,
+        temperature: float = 0.5,
+        stream: bool = False,
+    ):
+        """
+        Get the completion function
+        """
+        return await openai.Completion.acreate(
+            engine="text-davinci-003",
+            prompt=prompt,
+            temperature=temperature,
             max_tokens=256,
             stop=["\n\n\n"],
             stream=stream,
             user="kgtest"
         )
 
-    @retry(wait=wait_random_exponential(min=2, max=60), stop=stop_after_attempt(6))
-    def __call__(self, prompt):
+    async def __call__(self, prompt):
         response = self._get_completion(prompt)
-        return response["choices"][0]["text"]
+        return await response["choices"][0]["text"]
     
 class CurieModel(LanguageModel):
 
