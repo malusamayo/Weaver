@@ -285,7 +285,8 @@ class KnowledgeBase(object):
             tree.append({'topic': child['to'], 'relation': child['relation'], 'parent': topic})
 
         # expand children of the root node
-        children_n_expand = n_expand // 3 # expand children with one thirds the number of children
+        # children_n_expand = n_expand // 3 # expand children with one thirds the number of children
+        children_n_expand = 0 # do not expand children for now
         children = children[:children_n_expand]
         for child in children:
             path = [{'topic': topic, 'relation': None}, {'topic': child['to'], 'relation': child['relation']}] # depth-2 path
@@ -411,7 +412,7 @@ def graph_to_knbase(graph):
     for topic, children in graph.items():
         nodes.append({"id": topic})
         for relation, topics in children.items():
-            print(topics, len(topics))
+            print(topic, relation, len(topics))
             scores = PScorer.score_topics(topics, topic).tolist() # compute relevancy scores
             for topic_r, score in zip(topics, scores):
                 edges.append({"from": topic, "to": topic_r, "relation": relation, "score": score})
@@ -451,8 +452,8 @@ def run_kb_contruction(seed, max_depth=1, KGOutput="./output"):
 
 if __name__ == "__main__":
     # # constructing kb
-    seed = "climate change"
-    run_kb_contruction(seed, max_depth=2, KGOutput='./output/kg')
+    seed = "searching for an item in a library"
+    run_kb_contruction(seed, max_depth=1, KGOutput='./output/kg')
     # knbase = KnowledgeBase("output", "hate_speech")
     # tree = [
     #     {'topic': 'hate speech', 'parent': None},
