@@ -14,7 +14,7 @@ class Capability(object):
     def __init__(self, topic="hate speech", build_directory="Build", file_directory: str="./output/", model_spec="", uid:str="", serverHost: str="localhost", serverPort: int=3001, overwrite: bool=False, generator_specs=None):
         self.topic = topic
         self.build_directory = os.path.abspath(__file__).replace("Capability.py", build_directory)
-        self.server_link = f"http://{serverHost}:{serverPort}"
+        self.server_link = f"http://{serverHost}:{serverPort}/"
         self.app = CapabilityApp(topic=self.topic, 
                                     file_directory=file_directory,
                                     model_dir=model_spec,
@@ -51,6 +51,7 @@ class Capability(object):
             if filename.endswith(".js"):
                 with open(js_directory + "/" + filename, "r") as f:
                     content += f.read()
+        content = content.replace("http://localhost:3001/", self.server_link)
         return content
     
     def get_html_file(self):
@@ -87,3 +88,10 @@ class Capability(object):
     def display(self):
         html_content = self.get_html_file()
         display(HTML(html_content))
+
+    # def open_in_new_tab(self):
+    #     html_content = self.get_html_file()
+    #     tmp_html_path = "tmp.html"
+    #     with open(tmp_html_path, "w") as f:
+    #         f.write(html_content)
+    #     display(HTML(f'<a href="tmp_html_path" target="_blank">Click to open the link</a>'))

@@ -286,7 +286,7 @@ class CapabilityApp:
             while self.running:
                 uvicorn.run(self.app, host=self.serverHost, port=self.serverPort, log_level="error")
         
-        print("Starting server on port: ", self.serverPort)
+        print(f"Starting server on: {self.serverHost}:{self.serverPort}")
         thread = threading.Thread(target=run, args=(loop,))
         thread.start()
     
