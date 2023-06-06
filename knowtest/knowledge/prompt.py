@@ -131,7 +131,7 @@ class Prompter(object):
             prompt = prompt.format(context=context, topic=topic, seed=seed)
         else:
             prompt = self.generator_prompts["few_shot_data_gen"]
-            prompt = prompt.format(context=context, examples="\n".join(["- " + e for e in examples])) # [TODO] add label to the examples???
+            prompt = prompt.format(context=context, topic=topic, seed=seed, examples="\n\n".join(["- " + e for e in examples])) # [TODO] add label to the examples???
         
         print(prompt)
         response = self.model(prompt, n=N, max_tokens=2560)
