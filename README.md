@@ -1,5 +1,5 @@
 # KGTest
-KGTest builds knowledge graph (from language models) to elicit requirements for testing.
+KGTest builds knowledge graph (from language models) to elicit requirements for ML model testing.
 Use it to interactively explore different aspects of your model!
 
 ## Build
