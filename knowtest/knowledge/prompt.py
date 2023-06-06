@@ -128,15 +128,16 @@ class Prompter(object):
 
         if len(examples) == 0:
             prompt = self.generator_prompts["zero_shot_data_gen"]
-            prompt = prompt.format(context=context, N=N, topic=topic, seed=seed)
+            prompt = prompt.format(context=context, topic=topic, seed=seed)
         else:
             prompt = self.generator_prompts["few_shot_data_gen"]
-            prompt = prompt.format(context=context, N=N+len(examples), examples="\n".join(["- " + e for e in examples])) # [TODO] add label to the examples???
+            prompt = prompt.format(context=context, examples="\n".join(["- " + e for e in examples])) # [TODO] add label to the examples???
         
         print(prompt)
-        response = self.model(prompt)
-        new_examples = response.split("\n")
-        new_examples = [example[1:].strip() if example.startswith("-") else example.strip() for example in new_examples]
+        response = self.model(prompt, n=N, max_tokens=2560)
+        new_examples = [response] if isinstance(response, str) else response
+        # new_examples = response.split("\n")
+        # new_examples = [example[1:].strip() if example.startswith("-") else example.strip() for example in new_examples]
 
         return new_examples
     

@@ -55,6 +55,8 @@ class GPT3Model(LanguageModel):
         self,
         prompt: str,
         temperature: float = 0.5,
+        max_tokens: int=256,
+        n: int=1,
         stream: bool = False,
     ):
         """
@@ -64,6 +66,29 @@ class GPT3Model(LanguageModel):
             engine="text-davinci-003",
             prompt=prompt,
             temperature=temperature,
+            max_tokens=max_tokens,
+            n=n,
+            stop=["\n\n\n"],
+            stream=stream,
+            user="kgtest"
+        )
+
+    @retry(wait=wait_random_exponential(min=2, max=60), stop=stop_after_attempt(6))
+    def __call__(self, 
+                 prompt, 
+                 temperature: float = 0.5,
+                 max_tokens: int=256,
+                 n: int=1,
+                 stream: bool = False):
+        response = self._get_completion(prompt,
+                                        temperature=temperature,
+                                        max_tokens=max_tokens,
+                                        n=n,
+                                        stream=stream)
+        messages = [c["text"] for c in response["choices"]]
+        messages = messages[0] if len(messages) == 1 else messages
+        return messages
+    
             max_tokens=256,
             stop=["\n\n\n"],
             stream=stream,
@@ -102,7 +127,9 @@ class CurieModel(LanguageModel):
     @retry(wait=wait_random_exponential(min=2, max=60), stop=stop_after_attempt(6))
     def __call__(self, prompt):
         response = self._get_completion(prompt)
-        return response["choices"][0]["text"]
+        messages = [c["text"] for c in response["choices"]]
+        messages = messages[0] if len(messages) == 1 else messages
+        return messages
 
 class ChatGPTModel(LanguageModel):
     def __init__(self, sys_msg: str, api_key: str = None, temparature=1.0) -> None:
@@ -121,9 +148,10 @@ class ChatGPTModel(LanguageModel):
             user="kgtest",
             temperature=self.temperature,
         )
-        message = response["choices"][0]["message"]
-        return message
+        messages = [c["message"] for c in response["choices"]]
+        messages = messages[0] if len(messages) == 1 else messages
+        return messages
 
 if __name__ == "__main__":
     model = GPT3Model()
-    print(model('Hi!'))
+    print(model('Hi!', n=2))

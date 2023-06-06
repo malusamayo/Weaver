@@ -415,7 +415,8 @@ class Tree:
             suggested_examples = self.kg.suggest_examples(
                 topic=self.nodes[node_id].name.lower(),
                 path=path,
-                examples=[ex.exampleText for ex in self.nodes[node_id].examples.values()]
+                examples=[ex.exampleText for ex in self.nodes[node_id].examples.values()],
+                N=3
             )
 
             return suggested_examples
