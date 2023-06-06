@@ -6,7 +6,7 @@ Use it to interactively explore different aspects of your model!
 
 1. Install all Python dependencies: `pip install -r requirements.txt`
 2. Build front-end code: `cd Capability; npm install; npm run build; cd -`
-3. Open `demo.ipynb` to use the tool
+3. Open `demo.ipynb` in a Jupyter Notebook to use the tool
 
 ## User Interface
 ### Main-View: Topic Tree
