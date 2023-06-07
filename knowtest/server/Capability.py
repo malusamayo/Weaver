@@ -31,9 +31,9 @@ class Capability(object):
     def close(self):
         self.app.stopServer()
 
-    def change_topic(self, topic):
+    def change_topic(self, topic, model_spec=None, generator_specs=None):
         self.topic = topic
-        self.app.change_topic(topic)
+        self.app.change_topic(topic, model_spec, generator_specs)
 
     def get_css_file(self):
         content = ""

@@ -271,7 +271,11 @@ class CapabilityApp:
             allow_headers=["*"],
         )
 
-    def change_topic(self, topic: str, overwrite: bool = False):
+    def change_topic(self, topic: str, model_spec=None, generator_specs=None, overwrite: bool = False):
+        if model_spec is not None:
+            self.model = Model.create(path=model_spec)
+        if generator_specs is not None:
+            self.generator_specs = generator_specs
         self.t = Tree(topic=topic, file_directory=self.file_directory, uid=self.uid, is_baseline_mode=self.is_baseline_mode, overwrite=overwrite, generator_specs=self.generator_specs)
         self.t.write_json()
 
