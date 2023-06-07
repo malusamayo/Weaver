@@ -183,11 +183,13 @@ class KnowledgeBase(object):
             The expanded children of the current node.
         '''
 
-        topic = topic.lower() # temporary fix
+        topic = normalize(topic.lower()) # temporary fix
         known_items = []
         print(f"Expanding node {topic}...")
 
-        context = "Context: " + path_to_nl_description(path)
+        context = ""
+        if len(path) > 1:
+            context = "Context: " + path_to_nl_description(path)
 
         children = self.find_children(topic)
         # if the node has no children, extend the node
