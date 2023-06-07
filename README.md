@@ -4,9 +4,10 @@ Use it to interactively explore different aspects of your model!
 
 ## Build
 
-1. Install all Python dependencies: `pip install -r requirements.txt`
-2. Build front-end code: `cd Capability; npm install; npm run build; cd -`
-3. Open `demo.ipynb` in a Jupyter Notebook to use the tool
+1. Create new virtual environment: `conda create -n kgtest python=3.8; conda activate kgtest`
+2. Install all Python dependencies: `pip install -r requirements.txt`
+3. Build front-end code: `cd Capability; npm install; npm run build; cd -`
+4. Open `demo.ipynb` in a Jupyter Notebook to use the tool
 
 ## User Interface
 ### Main-View: Topic Tree
