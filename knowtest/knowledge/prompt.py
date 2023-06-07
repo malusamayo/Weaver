@@ -57,8 +57,12 @@ class Prompter(object):
         return prompt
 
     def postprocess_to_list(self, text):
-        text = text.strip().strip(self.sep).rstrip(self.sep).lower()
-        words = text.split(self.sep)
+        text = text.strip().lower()
+        text = text.replace("'''", "")
+        text = '[' + text if text[0] != '[' else text
+        words = json.loads(text)
+        # text = text.strip().strip(self.sep).rstrip(self.sep).lower()
+        # words = text.split(self.sep)
         words = [normalize(word) for word in words]
         return words
 
@@ -91,10 +95,11 @@ class Prompter(object):
             prompt = prompt.format(context=context, list_prompt=self.generate_prompt(topic, relation, N), sep=self.sep)
         else:
             prompt = self.generator_prompts["few_shot_knowledge_graph"]
-            prompt = prompt.format(context=context, list_prompt=self.generate_prompt(topic, relation, N+len(cached_topics)), sep=self.sep, examples=self.sep.join(cached_topics))
+            examples = ", ".join([self.quote + topic + self.quote for topic in cached_topics])
+            prompt = prompt.format(context=context, list_prompt=self.generate_prompt(topic, relation, N+len(cached_topics)), sep=self.sep, examples=examples)
 
         print(prompt)
-        response = self.model(prompt)
+        response = self.model(prompt, max_tokens=512)
         topic_list = self.postprocess_to_list(response)
 
         # deal with the case when the model can't generate topics

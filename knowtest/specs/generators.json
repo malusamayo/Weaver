@@ -1,6 +1,6 @@
 {
-    "zero_shot_knowledge_graph": "{context}\n{list_prompt} Pay attention to the context above.\nSummarize in a list of words. Separate the list by '{sep}' only. Don't use numbers to separate. Keep only the list.",
-    "few_shot_knowledge_graph": "{context}\n{list_prompt} Pay attention to the context above.\nSummarize in a list of words. Separate the list by '{sep}' only. Don't use numbers to separate. Keep only the list.\n{examples}{sep}",
+    "zero_shot_knowledge_graph": "{context}\n{list_prompt} Pay attention to the context above.\nSummarize in a JSON list.\n\n'''json\n",
+    "few_shot_knowledge_graph": "{context}\n{list_prompt} Pay attention to the context above.\nSummarize in a JSON list.\n\n'''json\n[{examples}, ",
     "zero_shot_data_gen": "{context}\nWrite one comment on the topic '{topic}' relevant to '{seed}' in an online platform. Pay attention to the context above.\nExamples should start with only '- '.\n- ",
     "few_shot_data_gen": "{context}\nHere are some examples:\n{examples}\n\n- "
 }
