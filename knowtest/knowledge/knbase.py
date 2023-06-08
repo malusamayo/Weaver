@@ -346,7 +346,7 @@ class KnowledgeBase(object):
         # self.recommended |= set([item['to'] for item in recommended_items])
         return recommended_items
 
-    def suggest_examples(self, topic, path=[], examples=[], N=5):
+    def suggest_examples(self, topic, path=[], prompt="", examples=[], N=5):
         ''' Suggest examples of a node.
         Parameters
         ----------
@@ -385,7 +385,7 @@ class KnowledgeBase(object):
         #     print("Zero-shot example suggestion disabled. No examples provided.")
         #     return []
         
-        new_examples = self.prompter.suggest_examples(topic, context=context, examples=examples, N=N)
+        new_examples = self.prompter.suggest_examples(topic, context=context, prompt=prompt, examples=examples, N=N)
         return new_examples
 
     def add_node(self, topic, parent_topic, relation, path=[]):

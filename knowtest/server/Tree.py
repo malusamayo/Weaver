@@ -406,7 +406,7 @@ class Tree:
             return example_list
         return []
     
-    def suggest_examples(self, node_id: str):
+    def suggest_examples(self, node_id: str, prompt: str):
         if node_id in self.nodes:
 
             path = self.get_path(node_id)
@@ -415,6 +415,7 @@ class Tree:
             suggested_examples = self.kg.suggest_examples(
                 topic=self.nodes[node_id].name.lower(),
                 path=path,
+                prompt=prompt,
                 examples=[ex.exampleText for ex in self.nodes[node_id].examples.values()],
                 N=3
             )

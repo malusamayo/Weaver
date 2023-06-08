@@ -254,8 +254,8 @@ class CapabilityApp:
 
         @self.app.get("/getMoreExamples")
         @log_timestamped_calls
-        def get_more_examples(nodeId: str):
-            suggested_examples = self.t.suggest_examples(nodeId)
+        def get_more_examples(nodeId: str, prompt: str):
+            suggested_examples = self.t.suggest_examples(nodeId, prompt)
             self.t.clear_suggested_examples(nodeId)
             for exampleText in suggested_examples:
                 example_predicted, example_conf = self.model.predict(exampleText)

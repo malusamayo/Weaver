@@ -140,7 +140,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     }
 
     const handleExampleTextKeyDown = (event) => {
-        if ((event.key === 'Enter') || (event.key === "Escape")) {
+        if (((event.key === 'Enter') || (event.key === "Escape")) && (!event.shiftKey)) {
             console.log(exampleText)
             commitUpdateRow(exampleData, {...exampleData, exampleText: exampleText});
             setIsEditingExampleText(false);

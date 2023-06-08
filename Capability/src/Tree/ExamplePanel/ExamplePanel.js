@@ -3,7 +3,7 @@ import { Tooltip } from 'react-tooltip';
 import {fetchAPIDATA} from "../../utils";
 import "./ExamplePanel.css";
 import { GoDiffAdded } from "react-icons/go";
-import { BsArrow90DegDown, BsArrow90DegRight } from "react-icons/bs";
+import { BsSearch, BsArrow90DegDown, BsArrow90DegRight } from "react-icons/bs";
 import { FaRedo } from "react-icons/fa";
 import { GrAddCircle } from "react-icons/gr";
 import { TiTick } from "react-icons/ti";
@@ -11,6 +11,43 @@ import { Row, ExamplePanelPass } from "./Row";
 import { v4 as uuidv4 } from "uuid";
 import { useTreeContext } from "../state/TreeContext";
 import { HelperPage } from "./HelperPage";
+
+const SearchBar = ({ onSearch }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const inputRef = useRef();
+  
+    const handleInputChange = (event) => {
+      setSearchTerm(event.target.value);
+    };
+  
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      onSearch(searchTerm);
+    };
+
+    const handleKeyDown = (event) => {
+        if ((event.key === 'Enter') && (!event.shiftKey)) {
+            event.preventDefault();
+            onSearch(searchTerm);
+        }
+    }
+  
+    return (
+      <form onSubmit={handleSubmit}>
+        <textarea
+          type="text"
+          placeholder="Ask for suggestions..."
+          value={searchTerm}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown} 
+          style={{ width: '250px', height: '30px'}}
+        />
+        &nbsp;
+        <BsSearch onClick={handleSubmit} id="example-panel-explore"/>
+      </form>
+    );
+  };
+  
 
 const ExamplePanel = ({node}) => {
 
@@ -137,7 +174,7 @@ const ExamplePanel = ({node}) => {
         commitMoreSuggestions();
     }
 
-    const commitMoreSuggestions = async () => {
+    const commitMoreSuggestions = async (prompt) => {
         try {
             setIsLoading(true);
             const filteredNodeExamples = selectedNodeExamples.filter((example) => {
@@ -145,7 +182,8 @@ const ExamplePanel = ({node}) => {
             });
             setSelectedNodeExamples(filteredNodeExamples);
             const newDataExamples = await fetchAPIDATA("getMoreExamples", {
-                "nodeId": selectedNode.id
+                "nodeId": selectedNode.id,
+                "prompt": prompt
             });
             setSelectedNodeExamples(sortSelectedNodeExamples(newDataExamples));
             if (!node.node.isHighlighed)
@@ -155,7 +193,7 @@ const ExamplePanel = ({node}) => {
             console.log("Error: ", error);
         }
     };
-        
+
 
     // useEffect(() => {
     //     const handleKeyDown = (event) => {     
@@ -539,6 +577,9 @@ const ExamplePanel = ({node}) => {
                                 <p style={{marginLeft: "5px"}}>Add Examples</p>
                                 <Tooltip place="bottom" anchorSelect="#add-example" content="Add Example" style={tooltip_style}/>
                             </div>
+                        </div>
+                        <div style={{display: "flex", justifyContent: "right", alignItems: "center"}}>
+                                <SearchBar onSearch={commitMoreSuggestions}></SearchBar>
                         </div>
                         {/* <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                             <p><u>Selected Examples</u></p>

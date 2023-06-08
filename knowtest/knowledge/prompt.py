@@ -116,7 +116,7 @@ class Prompter(object):
         self.lock.release()
         return topic_list
 
-    def suggest_examples(self, topic, context="", examples=[], N=5):
+    def suggest_examples(self, topic, context="", prompt="", examples=[], N=5):
         ''' Query the model of examples.
         Parameters
         ----------
@@ -131,12 +131,13 @@ class Prompter(object):
         '''
         seed = self.seed_topic
 
-        if len(examples) == 0:
-            prompt = self.generator_prompts["zero_shot_data_gen"]
-            prompt = prompt.format(context=context, topic=topic, seed=seed)
-        else:
-            prompt = self.generator_prompts["few_shot_data_gen"]
-            prompt = prompt.format(context=context, topic=topic, seed=seed, examples="\n\n".join(["- " + e for e in examples])) # [TODO] add label to the examples???
+        if prompt == "":
+            if len(examples) == 0:
+                prompt = self.generator_prompts["zero_shot_data_gen"]
+                prompt = prompt.format(context=context, topic=topic, seed=seed)
+            else:
+                prompt = self.generator_prompts["few_shot_data_gen"]
+                prompt = prompt.format(context=context, topic=topic, seed=seed, examples="\n\n".join(["- " + e for e in examples])) # [TODO] add label to the examples???
         
         print(prompt)
         response = self.model(prompt, n=N, max_tokens=2560)
