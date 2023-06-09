@@ -70,6 +70,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
         fetchLabels();
     }, []);
 
+    // [TODO] disable auto mark
     useEffect(() => {
         if ((exampleOutput === examplePredicted) || (exampleOutput === "")) {
             setPass(true);
@@ -140,7 +141,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     }
 
     const handleExampleTextKeyDown = (event) => {
-        if (((event.key === 'Enter') || (event.key === "Escape")) && (!event.shiftKey)) {
+        if (((event.key === 'Enter') || (event.key === "Escape")) && (event.shiftKey)) {
             console.log(exampleText)
             commitUpdateRow(exampleData, {...exampleData, exampleText: exampleText});
             setIsEditingExampleText(false);
@@ -158,7 +159,7 @@ const Row = ({exampleData, setSelectedRow, selectedRow, nodeId, isSuggested, com
     }
 
     const handleExampleOutputKeyDown = (event) => {
-        if (event.key === "Escape" ||  (event.key === 'Enter')) {
+        if ((event.key === "Escape" ||  (event.key === 'Enter'))  && (event.shiftKey)) {
             console.log(exampleOutput)
             commitUpdateRow(exampleData, {...exampleData, exampleTrue: exampleOutput});
             setIsEditingExampleOutput(false);

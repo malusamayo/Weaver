@@ -26,7 +26,7 @@ const SearchBar = ({ onSearch }) => {
     };
 
     const handleKeyDown = (event) => {
-        if ((event.key === 'Enter') && (!event.shiftKey)) {
+        if ((event.key === 'Enter') && (event.shiftKey)) {
             event.preventDefault();
             onSearch(searchTerm);
         }
@@ -605,7 +605,7 @@ const ExamplePanel = ({node}) => {
                             <tr>
                                 <td>Input</td>
                                 <td></td>
-                                <td>Predicted</td>
+                                <td>Model Output</td>
                                 <td>Notes</td>
                                 {/* <td>Conf</td> */}
                                 {/* <td>Off-topic</td>  */}
