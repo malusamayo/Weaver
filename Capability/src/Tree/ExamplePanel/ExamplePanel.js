@@ -171,7 +171,7 @@ const ExamplePanel = ({node}) => {
     };
 
     const handleMoreSuggestions = () => {
-        commitMoreSuggestions();
+        commitMoreSuggestions("");
     }
 
     const commitMoreSuggestions = async (prompt) => {
