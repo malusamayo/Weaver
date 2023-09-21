@@ -1,10 +1,10 @@
-# KGTest
-KGTest builds knowledge graph (from language models) to elicit requirements for ML model testing.
+# Weaver
+Weaver builds knowledge graph (from language models) to elicit requirements for ML model testing.
 Use it to interactively explore different aspects of your model!
 
 ## Build
 
-1. Create new virtual environment: `conda create -n kgtest python=3.8; conda activate kgtest`
+1. Create new virtual environment: `conda create -n weaver python=3.8; conda activate weaver`
 2. Install all Python dependencies: `pip install -r requirements.txt`
 3. Build front-end code: `cd Capability; npm install; npm run build; cd -`
 4. Open `demo.ipynb` in a Jupyter Notebook to use the tool
@@ -12,7 +12,7 @@ Use it to interactively explore different aspects of your model!
 ## User Interface
 ### Main-View: Topic Tree
 
-The main view of this tool is a **topic tree** that helps users to explore related topics for their task. Users actively elicit requirements in this process.
+The main view of this tool is a **topic tree** that helps users explore related topics for their task. Users actively elicit requirements in this process.
 
 Suppose our task is to detect a sentence's stance on feminism and the seed topic is **feminism**. The topic tree will show related topics (e.g., sex objectification, gender pay gap) along with their relation to the parent topic.
 
