@@ -55,7 +55,7 @@ You could start crafting examples by either asking for model suggestions
 or writing your own examples 
 (![image](icons/add-example.svg) Add Examples).
 
-Click the textbox to edit the inputs. Submit the edits by 'Enter'. Model predictions and confidence will be updated upon submission.
+Click the textbox to edit the inputs. Submit the edits by 'shift + Enter'. Model predictions and confidence will be updated upon submission.
 
 ### Adding suggested examples
 The suggested examples will be in a blue background color. If you find a suggested example interesting, add it to the user examples by clicking on 
