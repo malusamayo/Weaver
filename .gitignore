@@ -1,7 +1,6 @@
 # dependencies
-/Capability/node_modules
-/CapabilityClient/Build
-/knowtest/server/Build
+/frontend/node_modules
+/weaver/server/Build
 /.pnp
 .pnp.js
 node_modules
@@ -11,13 +10,10 @@ node_modules
 
 # production
 /build
-/CapabilityTesting - DO NOT RUN
-/Data  - DO NOT EDIT
 
 # data
 query_cache
 output
-knowtest/server/data.csv
 
 # misc
 .DS_Store
@@ -28,7 +24,7 @@ knowtest/server/data.csv
 __pycache__
 *.pyc
 .ipynb_checkpoints
-notebooks/config.json
+notebooks
 
 npm-debug.log*
 yarn-debug.log*
