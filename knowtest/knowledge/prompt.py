@@ -60,10 +60,16 @@ class Prompter(object):
         text = text.strip().lower()
         text = text.replace("'''", "")
         text = '[' + text if text[0] != '[' else text
-        words = json.loads(text)
+        try:
+            words = json.loads(text)
+        except json.decoder.JSONDecodeError:
+            print(text)
+            words = []
         # text = text.strip().strip(self.sep).rstrip(self.sep).lower()
         # words = text.split(self.sep)
         words = [normalize(word) for word in words]
+        # remove starting numbers in each word
+        words = [re.sub(r"^\d.", "", word).strip() for word in words]
         return words
 
     def query_topics(self, topic, relation, context="", known_topics=[], N=20):
