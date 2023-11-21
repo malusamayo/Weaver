@@ -222,7 +222,7 @@ class KnowledgeBase(object):
         print("Recommending children...")
         children = children.dropna() # in case there are empty pre-computed scores
         items = children[['to', 'relation', 'score']].to_dict('records')
-        recommended_items = recommend_topics(items, topic, known_items, K=n_expand)
+        recommended_items = recommend_topics(items, topic, known_items, K=n_expand, embdCache=self.prompter.cache.embdCache)
         # self.recommended |= set([item['to'] for item in recommended_items])
 
         # # prefetch children of the recommended topics

@@ -92,8 +92,9 @@ class SimilarityScorer:
         model_string = 'sentence-transformers/all-MiniLM-L6-v2'
         self.tokenizer = AutoTokenizer.from_pretrained(model_string)
         self.model = AutoModel.from_pretrained(model_string)
+        self.embdCache = None
 
-    def get_embeddings(self, topics):
+    def compute_embeddings(self, topics):
         tokenizer = self.tokenizer
         model = self.model
         
@@ -116,6 +117,21 @@ class SimilarityScorer:
         sentence_embeddings = F.normalize(sentence_embeddings, p=2, dim=1)
         return sentence_embeddings
 
+    def get_embeddings(self, topics):
+        sentence_embeddings = [None] * len(topics)
+        if self.embdCache is None:
+            return self.compute_embeddings(topics)
+        
+        sentence_embeddings = self.embdCache.read_embeddings(topics)
+        unk_topics = [topic for topic, embd in zip(topics, sentence_embeddings) if embd is None]
+        if len(unk_topics) > 0:
+            unk_embeddings = self.compute_embeddings(unk_topics)
+            # convert to a list of numpy arrays
+            unk_embeddings = [embd for embd in unk_embeddings]
+            self.embdCache.cache_embeddings(unk_topics, unk_embeddings)
+            sentence_embeddings = self.embdCache.read_embeddings(topics)
+        sentence_embeddings = torch.cat([embd.unsqueeze(0) for embd in sentence_embeddings], dim=0)
+        return sentence_embeddings
 
     def similarity(self, topic, topics):
         sentence_embeddings = self.get_embeddings([topic] + topics)
@@ -136,6 +152,9 @@ class SimilarityScorer:
         sentences = [to_sentence(item) for item in items]
         scores = self.similarity_matrix(sentences)
         return scores
+
+    def setEmbCache(self, embdCache):
+        self.embdCache = embdCache
 
 PScorer = PerplexityScorer()
 SScorer = SimilarityScorer()
@@ -213,7 +232,7 @@ def deduplicate_items(items):
             new_items.append(item)
     return new_items
 
-def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, randomization=False):
+def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, randomization=False, embdCache=None):
     ''' Select K topics from the pool of topics.
     Parameters:
     ----------
@@ -247,6 +266,7 @@ def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, randomi
     w_V = np.array(scores)
     w_V = (w_V - w_V.min()) / (w_V.max() - w_V.min()) # scale to [0,1]
 
+    SScorer.setEmbCache(embdCache)
     w_E = SScorer.score(items, parent_topic) # [0, 1]
 
     # use random Gaussian noise to bring in some randomness (exploration)
