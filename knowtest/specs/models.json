@@ -29,10 +29,28 @@
             }
         ]
     },
+    "toxicity_detection": {
+        "model": "gpt-3.5-turbo",
+        "type": "classification",
+        "labels": [
+            "is-toxic",
+            "non-toxic"
+        ],
+        "prompt": [
+            {
+                "role": "user",
+                "content": "Carefully classify whether a sentence is toxic. The labels are \"is-toxic\" or \"non-toxic\". Only reply with the label.\nSentence: {example}"
+            }
+        ]
+    },
     "sentiment_analysis_restaurant_reviews": {
         "model": "gpt-3.5-turbo",
         "type": "classification",
-        "labels": ["positive", "negative", "neutral"],
+        "labels": [
+            "positive",
+            "negative",
+            "neutral"
+        ],
         "prompt": [
             {
                 "role": "user",
@@ -47,6 +65,16 @@
             {
                 "role": "user",
                 "content": "You are an nutrition expert answering questions. Write a short explanation if it is a yes or no question. Keep the answer short. Question: {example}\n"
+            }
+        ]
+    },
+    "dummy": {
+        "model": "gpt-3.5-turbo",
+        "type": "generation",
+        "prompt": [
+            {
+                "role": "user",
+                "content": ""
             }
         ]
     }
