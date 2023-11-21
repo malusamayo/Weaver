@@ -19,10 +19,12 @@ For more details, please see our EMNLP'23 [paper](https://www.cs.cmu.edu/~cyang3
 
 Weaver's UI consists of two parts: 
 1. Topic tree (left) for exploring requirements to test (e.g., the toxicity detector should be able to detect toxicity against *disable people*).
-    - ➀ User first needs to specify a seed topic related to their task (in this case, *online toxicity*.) 
-    - Optionally, they can specify the set of relations they want to explore. Weaver defaults to ConceptNet relations if not specified.
+    - ➀ User first needs to specify a **seed topic** related to their task (in this case, *online toxicity*.) 
+    - Optionally, they can **specify the set of relations** they want to explore. Weaver defaults to ConceptNet relations if not specified.
     - ➁ When user finds an interesting topic, they can start testing by **clicking the topic text**. 
     - Or they can just mark the topic and save it for later (➅).
-    - They can interactively explore the topic tree by expanding a topic (➂) or ask for more topics (➃).
+    - They can interactively **explore the topic tree** by expanding a topic (➂) or asking for more topics (➃).
     - They can manually edit, create, or remove topics (➄). This is helpful when they have a topic in mind and want to explore deeper with Weaver.
-2. Example panel for testing. This is a re-implementation of [AdaTest](https://github.com/microsoft/adatest), but we allow users to customize their data generator (see `demo.ipynb` for more details).
+2. Example panel for testing. This is a re-implementation of [AdaTest](https://github.com/microsoft/adatest), but we allow users to customize their data generator (see `demo.ipynb` for examples).
+
+Check [doc](docs/tool-walkthrough.md) for more UI details.
