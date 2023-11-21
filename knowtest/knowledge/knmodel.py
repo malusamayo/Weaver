@@ -63,7 +63,7 @@ class GPT3Model(LanguageModel):
         Get the completion function
         """
         return openai.Completion.create(
-            engine="text-davinci-003",
+            engine="gpt-3.5-turbo-instruct",
             prompt=prompt,
             temperature=temperature,
             max_tokens=max_tokens,
@@ -106,7 +106,7 @@ class GPT3ModelAsync(LanguageModel):
         Get the completion function
         """
         return await openai.Completion.acreate(
-            engine="text-davinci-003",
+            engine="gpt-3.5-turbo-instruct",
             prompt=prompt,
             temperature=temperature,
             max_tokens=256,
