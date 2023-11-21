@@ -8,7 +8,7 @@ For more details, please see our EMNLP'23 [paper](https://www.cs.cmu.edu/~cyang3
 
 1. Create new virtual environment: `conda create -n weaver python=3.8; conda activate weaver`
 2. Install all Python dependencies: `pip install -r requirements.txt`
-3. Build front-end code: `cd Capability; npm install; npm run build; cd -`
+3. Build front-end code: `cd frontend; npm install; npm run build; cd -`
 4. Open `demo.ipynb` in a Jupyter Notebook to use the tool
 
 ## User Interface

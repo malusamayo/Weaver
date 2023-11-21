@@ -22,7 +22,7 @@ class SpecManager(object):
             }
         }
         '''
-        with importlib.resources.open_text("knowtest.specs", 'models.json') as file:
+        with importlib.resources.open_text("weaver.specs", 'models.json') as file:
             model_prompts = json.load(file)
         for name, value in spec.items():
             if overwrite:
@@ -32,13 +32,13 @@ class SpecManager(object):
                     model_prompts[name] = value
                 else:
                     raise ValueError(f"Spec {name} already exists. Use overwrite=True to overwrite.")
-        with importlib.resources.path("knowtest.specs", 'models.json') as c:
+        with importlib.resources.path("weaver.specs", 'models.json') as c:
             with c.open('w') as file:
                 json.dump(model_prompts, file)
     
     @staticmethod
     def add_generator_specs(spec: dict, overwrite: bool=False):
-        with importlib.resources.open_text("knowtest.specs", 'generators.json') as file:
+        with importlib.resources.open_text("weaver.specs", 'generators.json') as file:
             generator_prompts = json.load(file)
         for name, value in spec.items():
             if overwrite:
@@ -48,7 +48,7 @@ class SpecManager(object):
                     generator_prompts[name] = value
                 else:
                     raise ValueError(f"Spec {name} already exists. Use overwrite=True to overwrite.")
-        with importlib.resources.path("knowtest.specs", 'generators.json') as c:
+        with importlib.resources.path("weaver.specs", 'generators.json') as c:
             with c.open('w') as file:
                 json.dump(generator_prompts, file)
 
@@ -73,10 +73,10 @@ class SpecManager(object):
             "TYPEOF"
         '''
         SpecManager.use_custom_relation_specs = True
-        with importlib.resources.open_text("knowtest.specs", 'relations_default.json') as file:
+        with importlib.resources.open_text("weaver.specs", 'relations_default.json') as file:
             default_relations = json.load(file)
         id2relation = {relation["id"]: relation for relation in default_relations}
         spec = [s if isinstance(s, dict) else id2relation[s] for s in spec]
-        with importlib.resources.path("knowtest.specs", 'relations.json') as c:
+        with importlib.resources.path("weaver.specs", 'relations.json') as c:
             with c.open('w') as file:
                 json.dump(spec, file)

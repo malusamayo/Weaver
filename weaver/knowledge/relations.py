@@ -21,7 +21,7 @@ class Relations(object):
     def __init__(self, path_to_relations='relations_default.json'):
         if SpecManager.use_custom_relation_specs:
             path_to_relations = 'relations.json'
-        with importlib.resources.open_text("knowtest.specs", path_to_relations) as file:
+        with importlib.resources.open_text("weaver.specs", path_to_relations) as file:
             self.relation_specs = json.load(file)
         # with open(path_to_relations, 'r') as f:
         #     self.relation_specs = json.loads(f.read()) 

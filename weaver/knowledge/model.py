@@ -99,7 +99,7 @@ class Model(object):
 
     @staticmethod
     def create(path="") -> None:
-        with importlib.resources.open_text("knowtest.specs", 'models.json') as file:
+        with importlib.resources.open_text("weaver.specs", 'models.json') as file:
             model_prompts = json.load(file)
         if path in model_prompts:
             model_specs = model_prompts[path]
