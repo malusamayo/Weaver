@@ -273,7 +273,8 @@ def recommend_topics(items, parent_topic, known_items=[], K=10, alpha=1, randomi
     if randomization:
         w_V += np.random.normal(0, 0.1, size=w_V.shape) # [TODO] adjust the scale
 
-    selected_ids = greedy_peeling(filtered_nodes, known_nodes, w_E, w_V, K, alpha=alpha)
+    # selected_ids = greedy_peeling(filtered_nodes, known_nodes, w_E, w_V, K, alpha=alpha)
+    selected_ids = greedy_collect(filtered_nodes, known_nodes, w_E, w_V, K, alpha=1)
 
     selected_items = [items[i] for i in selected_ids]
     return selected_items
