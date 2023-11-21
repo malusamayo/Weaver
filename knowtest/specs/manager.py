@@ -3,6 +3,8 @@ import json
 
 class SpecManager(object):
 
+    use_custom_relation_specs = False
+
     def __init__(self):
         pass
 
@@ -49,3 +51,32 @@ class SpecManager(object):
         with importlib.resources.path("knowtest.specs", 'generators.json') as c:
             with c.open('w') as file:
                 json.dump(generator_prompts, file)
+
+    @staticmethod
+    def specify_custom_relation_specs(spec: list, overwrite: bool=False):
+        '''
+        Use custom relation specs to the relation specs file.
+        Spec is a list of relation, specified in a dict or a string.
+        
+        Specified in a dict:
+            {
+                "id": "TYPEOF",
+                "tag": "has subtype",
+                "description": {
+                    "text": "is a type of",
+                    "position": "second"
+                },
+                "prompt": "List {N} types of {topic}."
+            }
+
+        Specified in a string (when id exists in the default relation specs):
+            "TYPEOF"
+        '''
+        SpecManager.use_custom_relation_specs = True
+        with importlib.resources.open_text("knowtest.specs", 'relations_default.json') as file:
+            default_relations = json.load(file)
+        id2relation = {relation["id"]: relation for relation in default_relations}
+        spec = [s if isinstance(s, dict) else id2relation[s] for s in spec]
+        with importlib.resources.path("knowtest.specs", 'relations.json') as c:
+            with c.open('w') as file:
+                json.dump(spec, file)
